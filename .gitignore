@@ -37,6 +37,9 @@ dist/
 nbdist/
 .nb-gradle/
 
+### Intellij ###
+.idea/
+
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db
