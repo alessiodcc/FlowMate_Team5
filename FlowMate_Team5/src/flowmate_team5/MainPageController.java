@@ -66,7 +66,7 @@ public class MainPageController implements Initializable {
         ruleObservableList = FXCollections.observableArrayList();
         RuleList.setItems(ruleObservableList);
 
-        // --- THE FIX: Custom Row Factory for Red X Button ---
+        // Custom Row Factory for Red X Button
         RuleList.setCellFactory(param -> new ListCell<Rule>() {
             @Override
             protected void updateItem(Rule item, boolean empty) {
