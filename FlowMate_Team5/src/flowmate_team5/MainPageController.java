@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package flowmate_team5;
 
 import java.io.IOException;
@@ -48,6 +43,7 @@ public class MainPageController implements Initializable {
 
     private Action chosenAction;
     private Trigger chosenTrigger;
+    // Uses the Singleton pattern now
     private RuleEngine ruleEngine;
     private ObservableList<Rule> ruleObservableList;
 
@@ -67,12 +63,20 @@ public class MainPageController implements Initializable {
 
         triggerDropDownMenu.setItems(triggerOptions);
         actionDropDownMenu.setItems(actionOptions);
+
+        // Get the single instance of the RuleEngine
         ruleEngine = RuleEngine.getInstance();
 
         ruleObservableList = FXCollections.observableArrayList();
         RuleList.setItems(ruleObservableList);
     }
 
+    /**
+     * Helper method to open a new modal window and return its controller.
+     * @param fxmlPath The path to the FXML file.
+     * @param title The title for the new stage.
+     * @return The controller of the new window, or null on error.
+     */
     private <T> T openNewWindow(String fxmlPath, String title) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath)); // Loading the GUI we want to switch to
@@ -94,6 +98,9 @@ public class MainPageController implements Initializable {
         }
     }
 
+    /**
+     * Handles the button push to create and configure a new Rule.
+     */
     @FXML
     public void confirmButtonPushed() {
         String selectedTrigger = triggerDropDownMenu.getValue();
@@ -101,11 +108,13 @@ public class MainPageController implements Initializable {
         String selectedAction = actionDropDownMenu.getValue();
         String ruleName = RuleNameTextArea.getText();
 
+        // Input validation for selection and name.
         if (selectedTrigger == null || selectedAction == null || ruleName.trim().isEmpty()) {
-            System.err.println("ERRORE: Devi selezionare Trigger, Action e inserire un nome.");
+            System.err.println("ERROR: You must select a Trigger, an Action, and enter a name.");
             return;
         }
 
+        // Configuration of the selected Action
         switch(selectedAction) {
             case("Message Action"):
                 WriteAMessageController wamcController = openNewWindow("WriteAMessage.fxml", "Select the message to show!");
@@ -121,6 +130,7 @@ public class MainPageController implements Initializable {
                 break;
         }
 
+        // Configuration of the selected Trigger
         switch(selectedTrigger) {
             case("Temporal Trigger"):
                 SelectTimeController stcController = openNewWindow("SelectTime.fxml", "Select the time for the trigger!");
@@ -130,18 +140,20 @@ public class MainPageController implements Initializable {
                 break;
         }
 
+        // Validation after modal configuration
         if (chosenTrigger == null || chosenAction == null) {
-            System.err.println("ERRORE: La configurazione del Trigger o dell'Action è stata annullata o non è stata completata.");
+            System.err.println("ERROR: The Trigger or Action configuration was cancelled or not completed.");
             return;
         }
 
+        // Rule creation and registration with the engine
         Rule createdRule = new Rule(ruleName, chosenTrigger, chosenAction);
         ruleEngine.addRule(createdRule);
         ruleObservableList.add(createdRule);
 
+        // Reset state for the next rule creation
         this.chosenAction = null;
         this.chosenTrigger = null;
         RuleNameTextArea.clear();
     }
-
 }
