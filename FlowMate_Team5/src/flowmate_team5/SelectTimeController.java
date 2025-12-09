@@ -62,6 +62,7 @@ public class SelectTimeController implements Initializable {
         }
         comboBox.setItems(options);
 
+        // Applies two-digit zero-padding formatting (ex -> 5 becomes 05) to its displayed items.
         comboBox.setCellFactory(lv -> new javafx.scene.control.ListCell<Integer>() {
             @Override
             protected void updateItem(Integer item, boolean empty) {
@@ -73,11 +74,13 @@ public class SelectTimeController implements Initializable {
         comboBox.setButtonCell(comboBox.getCellFactory().call(null));
     }
 
+    // Method executed when the confirm button is pushed
     @FXML
     public void confirmButtonPushed(ActionEvent event) {
         Integer selectedHour = HourDropDownMenu.getValue();
         Integer selectedMinutes = MinutesDropDownMenu.getValue();
 
+        // To guarantee that the user confirms only when he has selected both the hour and the minute
         if (selectedHour == null || selectedMinutes == null) {
             Alert emptyAlert = new Alert(AlertType.ERROR);
             emptyAlert.setTitle("ATTENTION!");
@@ -90,6 +93,7 @@ public class SelectTimeController implements Initializable {
 
         LocalTime selectedTime = LocalTime.of(selectedHour, selectedMinutes);
 
+        // Creation of the Trigger
         this.finalTrigger = new TemporalTrigger("TemporalTrigger1", selectedTime);
 
         Node source = (Node) event.getSource();
