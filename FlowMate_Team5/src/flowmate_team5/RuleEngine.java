@@ -33,7 +33,11 @@ public class RuleEngine {
     }
 
     public void checkAllRules() {
-      
+        for (Rule rule : rules) {
+            if (rule.isActive() && rule.getTrigger().isTriggered()) {
+                rule.getAction().execute();
+            }
+        }
     }
 
     public void addRule(Rule newRule) {
