@@ -43,4 +43,17 @@ public class RuleEngine {
     public void addRule(Rule newRule) {
         rules.add(newRule);
     }
+
+    /**
+     * Task 7.1: Delete a Rule.
+     * Removes the specified rule from the list.
+     */
+    public void deleteRule(Rule rule) {
+        if (rules.contains(rule)) {
+            rules.remove(rule);
+            System.out.println("[RuleEngine] Rule deleted: " + rule.getName());
+        } else {
+            System.out.println("[RuleEngine] Error: Rule not found.");
+        }
+    }
 }
