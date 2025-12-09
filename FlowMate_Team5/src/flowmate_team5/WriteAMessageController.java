@@ -1,4 +1,3 @@
-
 package flowmate_team5;
 
 import java.net.URL;
@@ -15,9 +14,8 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 /**
- * FXML Controller class
- *
- * @author Principale
+ * Controller for the "Write a Message" GUI.
+ * Handles the creation of a MessageAction based on user input.
  */
 public class WriteAMessageController implements Initializable {
 
@@ -30,43 +28,43 @@ public class WriteAMessageController implements Initializable {
     @FXML
     private TextField inputText;
 
-    private MessageAction finalAction;
+    private MessageAction finalAction; // Stores the created action to return it to the main controller
 
     public Action getFinalAction() {
         return finalAction;
     }
-
-
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        // Initialization logic if needed
     }
 
+    /**
+     * Triggered when the "Confirm" button is clicked.
+     * Validates input and creates the MessageAction.
+     */
     @FXML
     public void confirmButtonPushed(ActionEvent event) {
         String writtenMessage = inputText.getText();
 
-        if (writtenMessage.trim().isEmpty()) {
+        // Validate input using the centralized validation logic from the Model
+        if (!MessageAction.isValidMessage(writtenMessage)) {
             Alert emptyAlert = new Alert(AlertType.ERROR);
             emptyAlert.setTitle("ATTENTION!");
-            emptyAlert.setHeaderText("To continue, it's necessary that you write something in the apposit space!");
-
+            emptyAlert.setHeaderText("Invalid message! It must not be empty and under 500 characters.");
             emptyAlert.showAndWait();
             return;
         }
 
+        // Instantiate the concrete Action object
         this.finalAction = new MessageAction("MessageAction1", writtenMessage);
 
+        // Close the current window to return control to the Main Page
         Node source = (Node) event.getSource();
-
         Stage stage = (Stage) source.getScene().getWindow();
-
         stage.close();
-
     }
-
 }
