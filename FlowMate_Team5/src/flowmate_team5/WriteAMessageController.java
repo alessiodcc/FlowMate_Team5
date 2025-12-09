@@ -50,11 +50,10 @@ public class WriteAMessageController implements Initializable {
     public void confirmButtonPushed(ActionEvent event) {
         String writtenMessage = inputText.getText();
 
-        if (writtenMessage.trim().isEmpty()) {
+        if (!MessageAction.isValidMessage(writtenMessage)) {
             Alert emptyAlert = new Alert(AlertType.ERROR);
             emptyAlert.setTitle("ATTENTION!");
-            emptyAlert.setHeaderText("To continue, it's necessary that you write something in the apposit space!");
-
+            emptyAlert.setHeaderText("Invalid message! It must not be empty and under 500 characters.");
             emptyAlert.showAndWait();
             return;
         }
