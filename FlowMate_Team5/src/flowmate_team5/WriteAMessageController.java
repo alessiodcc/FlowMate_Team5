@@ -59,7 +59,7 @@ public class WriteAMessageController implements Initializable {
             return;
         }
 
-        //this.finalAction = new MessageAction("MessageAction1", "writtenMessage"); 
+        this.finalAction = new MessageAction("MessageAction1", writtenMessage);
 
         Node source = (Node) event.getSource();
 
