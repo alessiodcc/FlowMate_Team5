@@ -1,35 +1,29 @@
-package flowmate_team5; // Test package
+package flowmate_team5;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.io.File;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayAudioActionTest {
 
     @Test
-    void testConstructor_InitializationSuccessful() {
-        // Arrange: Define a valid file path for initialization
-        String validPath = "test.wav";
+    void testExecute_WithMissingFile_ShouldNotCrash() {
+        // Arrange: Define an invalid path to simulate a missing file scenario
+        String invalidPath = "src/flowmate_team5/resources/missing_file.wav";
+        PlayAudioAction action = new PlayAudioAction(invalidPath);
 
-        // Act: Instantiate the PlayAudioAction class
-        PlayAudioAction action = new PlayAudioAction(validPath);
-
-        // Assert: Verify the object was created successfully
-        assertNotNull(action, "The PlayAudioAction object must not be null.");
+        // Act & Assert: Verify that execute() handles the error internally without crashing
+        assertDoesNotThrow(() -> action.execute(), "Action must handle IOExceptions gracefully without crashing.");
     }
 
     @Test
-    void testExecute_HandlesFileNotFoundGracefully() {
-        // Arrange: Define a path that should cause an error (Task 4.3 Error Handling)
-        String nonExistingPath = "/non/esiste/file.mp3";
-        PlayAudioAction action = new PlayAudioAction(nonExistingPath);
+    void testConstructor_Initialization() {
+        // Arrange: Define a dummy path
+        String path = "test_audio.wav";
 
-        // Act: Execute the action. This should trigger the internal error handler.
-        action.execute();
+        // Act: Create the object
+        PlayAudioAction action = new PlayAudioAction(path);
 
-        // Assert: Verify that the system did not crash (graceful failure).
-        // This test passes if execution reaches this point without throwing an unhandled exception.
-        assertTrue(true, "Execution must gracefully handle the file not found error.");
+        // Assert: Verify object creation
+        assertNotNull(action, "PlayAudioAction object should be successfully initialized.");
     }
 }
