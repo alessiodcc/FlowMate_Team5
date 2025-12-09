@@ -67,7 +67,7 @@ public class MainPageController implements Initializable {
 
         triggerDropDownMenu.setItems(triggerOptions);
         actionDropDownMenu.setItems(actionOptions);
-        ruleEngine = new RuleEngine();
+        ruleEngine = RuleEngine.getInstance();
 
         ruleObservableList = FXCollections.observableArrayList();
         RuleList.setItems(ruleObservableList);
@@ -119,7 +119,7 @@ public class MainPageController implements Initializable {
                     this.chosenAction = sapcController.getFinalAction();
                 }
                 break;
-        }
+        }+
 
         switch(selectedTrigger) {
             case("Temporal Trigger"):
