@@ -24,12 +24,12 @@ import javafx.stage.Stage;
 import javafx.scene.control.ListView;
 
 /**
- * FXML Controller class
- *
- * @author Principale
+ * Controller for the main application page.
+ * Handles rule creation and list display.
  */
 public class MainPageController implements Initializable {
 
+    // FXML UI Components
     @FXML
     private TextArea Title;
     @FXML
@@ -45,7 +45,7 @@ public class MainPageController implements Initializable {
     @FXML
     private ListView<Rule> RuleList;
 
-
+    // Logic components
     private Action chosenAction;
     private Trigger chosenTrigger;
     private RuleEngine ruleEngine;
@@ -53,13 +53,16 @@ public class MainPageController implements Initializable {
 
     /**
      * Initializes the controller class.
+     * Populates dropdowns and sets up the rule list.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Populate Trigger options
         ObservableList<String> triggerOptions = FXCollections.observableArrayList(
                 "Temporal Trigger"
         );
 
+        // Populate Action options
         ObservableList<String> actionOptions = FXCollections.observableArrayList(
                 "Message Action",
                 "Audio Action"
@@ -67,24 +70,27 @@ public class MainPageController implements Initializable {
 
         triggerDropDownMenu.setItems(triggerOptions);
         actionDropDownMenu.setItems(actionOptions);
-        ruleEngine = new RuleEngine();
 
+        // Initialize Engine and UI List binding
+        ruleEngine = new RuleEngine();
         ruleObservableList = FXCollections.observableArrayList();
         RuleList.setItems(ruleObservableList);
     }
 
+    /**
+     * Helper method to open a new modal window and return its controller.
+     */
     private <T> T openNewWindow(String fxmlPath, String title) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath)); // Loading the GUI we want to switch to
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
 
-            Stage stage = new Stage(); // Creating a new stage
+            Stage stage = new Stage();
             stage.setTitle(title);
-
-            stage.initModality(Modality.APPLICATION_MODAL); // So the previous GUI doesn't automatically close
+            stage.initModality(Modality.APPLICATION_MODAL); // Blocks interaction with main window
 
             stage.setScene(new Scene(root));
-            stage.showAndWait(); // Show the new GUI
+            stage.showAndWait(); // Wait for user to close window
             return loader.getController();
 
         } catch (IOException e) {
@@ -94,18 +100,23 @@ public class MainPageController implements Initializable {
         }
     }
 
+    /**
+     * Handles the "Create Rule" button click.
+     * Validates input, configures triggers/actions and adds the rule.
+     */
     @FXML
     public void confirmButtonPushed() {
         String selectedTrigger = triggerDropDownMenu.getValue();
-        System.out.println(selectedTrigger);
         String selectedAction = actionDropDownMenu.getValue();
         String ruleName = RuleNameTextArea.getText();
 
+        // Basic Validation
         if (selectedTrigger == null || selectedAction == null || ruleName.trim().isEmpty()) {
             System.err.println("ERRORE: Devi selezionare Trigger, Action e inserire un nome.");
             return;
         }
 
+        // Configure Action (Open specific modal if needed)
         switch(selectedAction) {
             case("Message Action"):
                 WriteAMessageController wamcController = openNewWindow("WriteAMessage.fxml", "Select the message to show!");
@@ -114,9 +125,11 @@ public class MainPageController implements Initializable {
                 }
                 break;
             case("Audio Action"):
+                // Placeholder for Audio configuration
                 break;
         }
 
+        // Configure Trigger (Open specific modal if needed)
         switch(selectedTrigger) {
             case("Temporal Trigger"):
                 SelectTimeController stcController = openNewWindow("SelectTime.fxml", "Select the time for the trigger!");
@@ -126,18 +139,20 @@ public class MainPageController implements Initializable {
                 break;
         }
 
+        // Ensure Configuration was successful
         if (chosenTrigger == null || chosenAction == null) {
             System.err.println("ERRORE: La configurazione del Trigger o dell'Action è stata annullata o non è stata completata.");
             return;
         }
 
+        // Create and Register the Rule
         Rule createdRule = new Rule(ruleName, chosenTrigger, chosenAction);
         ruleEngine.addRule(createdRule);
-        ruleObservableList.add(createdRule);
+        ruleObservableList.add(createdRule); // Updates the ListView
 
+        // Reset fields for next rule
         this.chosenAction = null;
         this.chosenTrigger = null;
         RuleNameTextArea.clear();
     }
-
 }
