@@ -27,13 +27,20 @@ import javafx.stage.Stage;
  */
 public class MainPageController implements Initializable {
 
-    @FXML private TextArea Title;
-    @FXML private TextArea Introduction;
-    @FXML private ComboBox<String> triggerDropDownMenu;
-    @FXML private ComboBox<String> actionDropDownMenu;
-    @FXML private Button createRuleButton;
-    @FXML private TextField RuleNameTextArea;
-    @FXML private ListView<Rule> RuleList;
+    @FXML
+    private TextArea Title;
+    @FXML
+    private TextArea Introduction;
+    @FXML
+    private ComboBox<String> triggerDropDownMenu;
+    @FXML
+    private ComboBox<String> actionDropDownMenu;
+    @FXML
+    private Button createRuleButton;
+    @FXML
+    private TextField RuleNameTextArea;
+    @FXML
+    private ListView<Rule> RuleList;
 
     private Action chosenAction;
     private Trigger chosenTrigger;
