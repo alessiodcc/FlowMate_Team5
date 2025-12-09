@@ -2,10 +2,10 @@ package flowmate_team5;
 
 
 /**
- * Integration (Audio Action).
+ * Integration Test 4.4 (Audio Action).
  * Verifies that the Rule Engine correctly triggers the PlayAudioAction.
  */
-public class AudioRuleIntegration {
+public class AudioRuleIntegrationTest {
 
     public static void main(String[] args) {
         System.out.println("=== Starting Audio Rule Integration Test ===");
