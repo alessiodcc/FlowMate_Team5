@@ -5,6 +5,7 @@
  */
 package flowmate_team5;
 
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
@@ -42,18 +43,20 @@ public class MessageAction implements Action{
     // Method that shows graphically the message through an Alert
     @Override
     public void execute() {
-        Alert alert = new Alert(AlertType.INFORMATION);
 
-        alert.setTitle("Reminder!");
-        alert.setHeaderText("Here is your reminder!");
+        Platform.runLater(() -> {
+            Alert alert = new Alert(AlertType.INFORMATION);
 
-        if (this.messageToShow != null) {
-            alert.setContentText(this.messageToShow.toString());
-        } else {
-            alert.setContentText("No message configured.");
-        }
+            alert.setTitle("Reminder!");
+            alert.setHeaderText("Here is your reminder!");
 
-        alert.showAndWait();
+            String content = (this.messageToShow != null) ? this.messageToShow : "No message configured!";
+            alert.setContentText(content);
+
+
+            alert.showAndWait();
+            System.out.println("[Message Action] Alert visualizzato.");
+        });
     }
 
     public static boolean isValidMessage(String message) {

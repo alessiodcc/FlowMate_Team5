@@ -126,6 +126,11 @@ public class MainPageController implements Initializable {
                 break;
         }
 
+        if (chosenTrigger == null || chosenAction == null) {
+            System.err.println("ERRORE: La configurazione del Trigger o dell'Action è stata annullata o non è stata completata.");
+            return;
+        }
+
         Rule createdRule = new Rule(ruleName, chosenTrigger, chosenAction);
         ruleEngine.addRule(createdRule);
         ruleObservableList.add(createdRule);
