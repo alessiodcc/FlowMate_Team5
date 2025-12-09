@@ -15,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 public class TemporalTrigger implements Trigger{
     private String TriggerName; // Name of the trigger
     private LocalTime timeToTrigger; // the time that we want the trigger to fire
+    private boolean hasTriggered = false; // indicates if the trigger has already fired
 
     // constructor that initializes all the Trigger's fields
     public TemporalTrigger(String TriggerName, LocalTime timeToTrigger) {
@@ -38,14 +39,24 @@ public class TemporalTrigger implements Trigger{
     public void setTimeToTrigger(LocalTime timeToTrigger) {
         this.timeToTrigger = timeToTrigger;
     }
-    
+
     @Override
     public boolean isTriggered() {
         LocalTime currentTime = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
-        // If the time assigned to the trigger corresponds to the current date-time from the system clock in the default time-zone.
-        if(timeToTrigger.equals(currentTime)) 
-            return true;
-        else
+
+        if (currentTime.equals(timeToTrigger)) {
+            // if the timer has not already triggered
+            if (!hasTriggered) {
+                hasTriggered = true;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (hasTriggered) {
+                hasTriggered = false;
+            }
             return false;
+        }
     }
 }
