@@ -17,7 +17,7 @@ public class MessageAction implements Action{
     private String messageToShow; // Message that the user wants to show
 
     // Constructor
-    public MessageAction(String name) {
+    public MessageAction(String name, String messageToShow) {
         this.name = name; 
         this.messageToShow = messageToShow;
     }
@@ -43,25 +43,27 @@ public class MessageAction implements Action{
     @Override
     public void execute() {
         Alert alert = new Alert(AlertType.INFORMATION);
-        
+
         alert.setTitle("Reminder!");
         alert.setHeaderText("Here is your reminder!");
-        
-        alert.setContentText(this.messageToShow.toString());
-        
+
+        if (this.messageToShow != null) {
+            alert.setContentText(this.messageToShow.toString());
+        } else {
+            alert.setContentText("No message configured.");
+        }
+
         alert.showAndWait();
     }
 
-    public class ValidationHelper {
-        public static boolean isValidMessage(String message) {
-            if (message == null || message.trim().isEmpty()) {
-                return false;
-            }
-            if (message.length() > 500) {
-                return false;
-            }
-            return true;
+    public static boolean isValidMessage(String message) {
+        if (message == null || message.trim().isEmpty()) {
+            return false;
         }
+        if (message.length() > 500) {
+            return false;
+        }
+        return true;
     }
     
 }
