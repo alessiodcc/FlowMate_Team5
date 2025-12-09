@@ -5,33 +5,78 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The core engine responsible for managing and evaluating all rules.
+ * This class is implemented as a **Singleton** to ensure only one instance of the
+ * RuleEngine and its associated scheduler runs within the application.
+ */
 public class RuleEngine {
 
+    private static RuleEngine instance;
+
     private final List<Rule> rules = new ArrayList<>();
+
+    // Scheduler to run the checkAllRules method on a fixed schedule in a background thread.
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor();
-    
-    List<Rule> getRules() {
-    return rules;
-}
 
-
-    // ✔ Usato dall'app reale → avvia il thread periodico
-    public RuleEngine() {
+    private RuleEngine() {
         startScheduler();
     }
 
-    // ✔ Usato nei test → nessun thread
-    public RuleEngine(boolean startScheduler) {
+    // Private constructor alternative for tests (to avoid starting the scheduler automatically)
+    private RuleEngine(boolean startScheduler) {
         if (startScheduler) {
             startScheduler();
         }
     }
 
-    private void startScheduler() {
-        scheduler.scheduleAtFixedRate(this::checkAllRules, 0, 2, TimeUnit.SECONDS);
+    /**
+     * Provides the global access point to the single instance of the RuleEngine,
+     * ensuring it is initialized only once.
+     * @return The single instance of RuleEngine.
+     */
+    public static synchronized RuleEngine getInstance() {
+        if (instance == null) {
+            instance = new RuleEngine();
+        }
+        return instance;
     }
 
+    /**
+     * Provides an alternative, thread-safe access point specifically for setup/testing
+     * where the caller may choose whether to start the scheduler immediately.
+     * @param startScheduler If true, the scheduler is initialized and started.
+     * @return The single instance of RuleEngine.
+     */
+    public static synchronized RuleEngine getInstance(boolean startScheduler) {
+        if (instance == null) {
+            instance = new RuleEngine(startScheduler);
+        }
+        return instance;
+    }
+
+    /**
+     * Returns the internal list of rules.
+     * @return The list of rules.
+     */
+    List<Rule> getRules() {
+        return rules;
+    }
+
+    /**
+     * Configures and starts the background thread that checks rules.
+     * It runs immediately (initial delay 0) and then every 2 seconds.
+     */
+    private void startScheduler() {
+        scheduler.scheduleAtFixedRate(this::checkAllRules, 0, 2, TimeUnit.SECONDS);
+        System.out.println("[RuleEngine] Scheduler started.");
+    }
+
+    /**
+     * The main logic loop. Iterates through all rules and executes the action
+     * if the rule is active and its trigger condition is met.
+     */
     public void checkAllRules() {
         for (Rule rule : rules) {
             if (rule.isActive() && rule.getTrigger().isTriggered()) {
@@ -40,12 +85,16 @@ public class RuleEngine {
         }
     }
 
+    /**
+     * Adds a new rule to the engine's internal list.
+     * @param newRule The Rule object to add.
+     */
     public void addRule(Rule newRule) {
         rules.add(newRule);
     }
 
     /**
-     * Task 7.1: Delete a Rule.
+     * Delete a Rule.
      * Removes the specified rule from the list.
      */
     public void deleteRule(Rule rule) {
