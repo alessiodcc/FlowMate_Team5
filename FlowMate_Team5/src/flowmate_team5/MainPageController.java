@@ -22,6 +22,8 @@ import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.control.ListView;
+import javafx.stage.FileChooser;
+import java.io.File;
 
 /**
  * FXML Controller class
@@ -114,6 +116,27 @@ public class MainPageController implements Initializable {
                 }
                 break;
             case("Audio Action"):
+                // 1. Create a File Chooser to let user pick a song
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Select Audio File");
+
+                // 2. Filter for audio files only
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac")
+                );
+
+                // 3. Show the window (Get the stage from the button)
+                Stage stage = (Stage) createRuleButton.getScene().getWindow();
+                File selectedFile = fileChooser.showOpenDialog(stage);
+
+                // 4. If user picked a file, CONNECT it (Task 4.4)
+                if (selectedFile != null) {
+                    this.chosenAction = new PlayAudioAction(selectedFile.getAbsolutePath());
+                    System.out.println("Audio Action Configured: " + selectedFile.getName());
+                } else {
+                    System.err.println("No audio file selected!");
+                    return; // Stop creation if no file is picked
+                }
                 break;
         }
 
