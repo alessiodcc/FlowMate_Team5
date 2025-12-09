@@ -37,7 +37,8 @@ public class RuleEngineTest {
     @BeforeEach
     void setUp() {
         // Initialize RuleEngine without starting the scheduler (essential for testing list state).
-        engineForTesting = new RuleEngine(false);
+        // Uses the Singleton accessor for testing purposes.
+        engineForTesting = RuleEngine.getInstance(false);
 
         MockTrigger mockTrigger = new MockTrigger();
         MockAction mockAction = new MockAction();
@@ -53,10 +54,10 @@ public class RuleEngineTest {
     @Test
     void testAddNullRule() {
         assertDoesNotThrow(() -> engineForTesting.addRule(null),
-                "addRule(null) non deve lanciare eccezioni se l'implementazione interna usa ArrayList.");
+                "addRule(null) should not throw exceptions if the internal implementation uses ArrayList.");
 
         assertTrue(engineForTesting.getRules().contains(null),
-                "La lista deve contenere l'elemento null dopo l'aggiunta.");
+                "The list must contain the null element after addition.");
         assertEquals(1, engineForTesting.getRules().size());
     }
 
@@ -71,7 +72,7 @@ public class RuleEngineTest {
         engineForTesting.addRule(testRule1);
 
         assertEquals(2, engineForTesting.getRules().size(),
-                "La lista deve permettere l'aggiunta di regole duplicate.");
+                "The list must allow the addition of duplicate rules.");
     }
 
     /**
@@ -88,9 +89,9 @@ public class RuleEngineTest {
         rulesReference.add(testRule2);
 
         assertEquals(2, engineForTesting.getRules().size(),
-                "La modifica alla lista esterna ha modificato la lista interna.");
+                "The modification to the external list modified the internal list.");
         assertTrue(engineForTesting.getRules().contains(testRule2),
-                "L'oggetto RuleEngine non ha protetto la sua lista interna.");
+                "The RuleEngine object did not protect its internal list.");
     }
 
 
@@ -103,9 +104,9 @@ public class RuleEngineTest {
         engineForTesting.addRule(testRule2);
 
         List<Rule> rules = engineForTesting.getRules();
-        assertEquals(2, rules.size(), "Dovrebbero esserci esattamente due regole.");
-        assertTrue(rules.contains(testRule1), "La prima regola deve essere presente.");
-        assertTrue(rules.contains(testRule2), "La seconda regola deve essere presente.");
+        assertEquals(2, rules.size(), "There should be exactly two rules.");
+        assertTrue(rules.contains(testRule1), "The first rule must be present.");
+        assertTrue(rules.contains(testRule2), "The second rule must be present.");
     }
 
     /**
@@ -120,12 +121,12 @@ public class RuleEngineTest {
     }
 
     /**
-     * Verifies that the constructor used for testing (RuleEngine(false)) correctly
-     * initializes the internal rule list.
+     * Verifies that the setup method correctly initializes the internal rule list
+     * when using the test-specific Singleton accessor.
      */
     @Test
     void testConstructorWithFalseFlagInitializesEmptyList() {
-        assertNotNull(engineForTesting.getRules(), "La lista delle regole non deve essere nulla.");
-        assertTrue(engineForTesting.getRules().isEmpty(), "La lista deve essere vuota all'inizio.");
+        assertNotNull(engineForTesting.getRules(), "The rules list must not be null.");
+        assertTrue(engineForTesting.getRules().isEmpty(), "The list must be empty initially.");
     }
 }
