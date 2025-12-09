@@ -58,5 +58,15 @@ public class MessageAction implements Action{
             System.out.println("[Message Action] Alert visualizzato.");
         });
     }
+
+    public static boolean isValidMessage(String message) {
+        if (message == null || message.trim().isEmpty()) {
+            return false;
+        }
+        if (message.length() > 500) {
+            return false;
+        }
+        return true;
+    }
     
 }
