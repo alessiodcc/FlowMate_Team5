@@ -35,11 +35,11 @@ public class SelectAudioPathController implements Initializable {
     @FXML
     public void selectFileButtonPushed() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Seleziona File Audio (.wav)");
 
-        // Set extension filters to guide the user towards compatible formats (WAV, AIFF).
+        fileChooser.setTitle("Select Audio File (.wav)");
+
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("File Audio (WAV, AIFF)", "*.wav", "*.aiff", "*.aif")
+                new FileChooser.ExtensionFilter("Audio Files (WAV, AIFF)", "*.wav", "*.aiff", "*.aif")
         );
 
         Stage stage = (Stage) pathTextField.getScene().getWindow();
@@ -63,8 +63,10 @@ public class SelectAudioPathController implements Initializable {
         // Validation: Check if a file path was selected.
         if (audioPath == null || audioPath.trim().isEmpty()) {
             Alert emptyAlert = new Alert(AlertType.ERROR);
-            emptyAlert.setTitle("ATTENZIONE!");
-            emptyAlert.setHeaderText("Per continuare, devi selezionare il percorso del file audio tramite il pulsante 'Sfoglia'.");
+            emptyAlert.setTitle("ATTENTION!");
+
+            emptyAlert.setHeaderText("To continue, you must select the audio file path using the 'Browse' button.");
+
             emptyAlert.showAndWait();
             return;
         }
