@@ -119,7 +119,7 @@ public class MainPageController implements Initializable {
                     this.chosenAction = sapcController.getFinalAction();
                 }
                 break;
-        }+
+        }
 
         switch(selectedTrigger) {
             case("Temporal Trigger"):
