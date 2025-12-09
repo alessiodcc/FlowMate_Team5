@@ -60,7 +60,7 @@ public class MainPageController implements Initializable {
         actionDropDownMenu.setItems(actionOptions);
 
         // Initialize Backend
-        ruleEngine = new RuleEngine();
+        ruleEngine = RuleEngine.getInstance();
 
         // Initialize Frontend List
         ruleObservableList = FXCollections.observableArrayList();
