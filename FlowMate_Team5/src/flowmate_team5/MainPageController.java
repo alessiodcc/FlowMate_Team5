@@ -114,6 +114,10 @@ public class MainPageController implements Initializable {
                 }
                 break;
             case("Audio Action"):
+                SelectAudioPathController sapcController = openNewWindow("SelectAudioPath.fxml", "Select the audio file path!");
+                if(sapcController != null) {
+                    this.chosenAction = sapcController.getFinalAction();
+                }
                 break;
         }
 
