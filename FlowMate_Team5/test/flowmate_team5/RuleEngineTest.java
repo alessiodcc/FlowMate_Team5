@@ -129,4 +129,21 @@ public class RuleEngineTest {
         assertNotNull(engineForTesting.getRules(), "The rules list must not be null.");
         assertTrue(engineForTesting.getRules().isEmpty(), "The list must be empty initially.");
     }
+
+    /**
+     * Verifies Task 7.1: Deleting a rule removes it from the engine.
+     */
+    @Test
+    void testDeleteRule() {
+        // 1. Setup: Add a rule first
+        engineForTesting.addRule(testRule1);
+        assertTrue(engineForTesting.getRules().contains(testRule1), "Rule should be present before deletion.");
+
+        // 2. Act: Delete the rule (Your Task logic)
+        engineForTesting.deleteRule(testRule1);
+
+        // 3. Assert: Verify it is gone
+        assertFalse(engineForTesting.getRules().contains(testRule1), "Rule should be removed after deleteRule() is called.");
+        assertEquals(0, engineForTesting.getRules().size(), "List should be empty after deleting the only rule.");
+    }
 }
