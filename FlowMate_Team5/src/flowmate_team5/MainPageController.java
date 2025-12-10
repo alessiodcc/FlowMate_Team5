@@ -113,7 +113,7 @@ public class MainPageController implements Initializable {
                 }
             }
         });
-        // ----------------------------------------------------
+
     }
 
     private <T> T openNewWindow(String fxmlPath, String title) {
@@ -165,20 +165,9 @@ public class MainPageController implements Initializable {
                 }
                 break;
             case("Audio Action"):
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Select Audio File");
-                fileChooser.getExtensionFilters().addAll(
-                        new FileChooser.ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac")
-                );
-                Stage stage = (Stage) createRuleButton.getScene().getWindow();
-                File selectedFile = fileChooser.showOpenDialog(stage);
-
-                if (selectedFile != null) {
-                    this.chosenAction = new PlayAudioAction(selectedFile.getAbsolutePath());
-                    System.out.println("Audio Action Configured: " + selectedFile.getName());
-                } else {
-                    System.err.println("No audio file selected!");
-                    return;
+                SelectAudioPathController sapcController = openNewWindow("SelectAudioPath.fxml", "Select the audio file path!");
+                if(sapcController != null) {
+                    this.chosenAction = sapcController.getFinalAction();
                 }
                 break;
         }
