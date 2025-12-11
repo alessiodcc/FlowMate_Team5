@@ -49,103 +49,123 @@ public class MainPageController implements Initializable {
 
     /**
      * Initializes the controller class.
-     * This is where the Red X Button logic lives.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        ObservableList<String> triggerOptions = FXCollections.observableArrayList("Temporal Trigger");
-        ObservableList<String> actionOptions = FXCollections.observableArrayList("Message Action", "Audio Action");
-
+        // Initialize the available options for the ComboBoxes
+        ObservableList<String> triggerOptions = FXCollections.observableArrayList("Temporal Trigger", "Location Trigger");
         triggerDropDownMenu.setItems(triggerOptions);
+
+        ObservableList<String> actionOptions = FXCollections.observableArrayList("Message Action", "Play Audio Action", "Write to Text File Action");
         actionDropDownMenu.setItems(actionOptions);
 
         // Initialize Backend
         ruleEngine = RuleEngine.getInstance();
+        ruleObservableList = FXCollections.observableArrayList(ruleEngine.getRules());
 
-        // Initialize Frontend List
-        ruleObservableList = FXCollections.observableArrayList();
-        RuleList.setItems(ruleObservableList);
+        RuleList.setCellFactory(lv -> new ListCell<Rule>() {
+            private final HBox hbox = new HBox(10);
+            private final Label label = new Label();
+            private final Pane pane = new Pane();
+            private final Button configSleepButton = new Button("Set Sleep");
+            private final Button deleteButton = new Button("X");
 
-        // Custom Row Factory for Red X Button
-        RuleList.setCellFactory(param -> new ListCell<Rule>() {
+            {
+                // Configuration of the Sleep Button
+                configSleepButton.setOnAction(event -> {
+                    Rule rule = getItem();
+                    if (rule != null) {
+                        openSleepConfigurationWindow(rule);
+                        updateItem(rule, false);
+                    }
+                });
+
+                // Configuration of the Delete button
+                deleteButton.setOnAction(event -> {
+                    Rule rule = getItem();
+                    if (rule != null) {
+                        deleteSpecificRule(rule);
+                    }
+                });
+                deleteButton.setStyle("-fx-background-color: red; -fx-text-fill: white;");
+
+                HBox.setHgrow(pane, Priority.ALWAYS);
+                hbox.setAlignment(Pos.CENTER_LEFT);
+                hbox.getChildren().addAll(label, pane, configSleepButton, deleteButton);
+            }
+
             @Override
-            protected void updateItem(Rule item, boolean empty) {
-                super.updateItem(item, empty);
+            protected void updateItem(Rule rule, boolean empty) {
+                super.updateItem(rule, empty);
 
-                if (empty || item == null) {
-                    setText(null);
+                if (empty || rule == null) {
                     setGraphic(null);
-                } else {
-                    // 1. Create Layout Container
-                    HBox hbox = new HBox(10);
-                    hbox.setAlignment(Pos.CENTER_LEFT);
-
-                    // 2. Create Rule Name Label
-                    Label label = new Label(item.getName());
-                    label.setStyle("-fx-text-fill: #333333; -fx-font-size: 13px;");
-
-                    // 3. Create Spacer (pushes button to the right)
-                    Pane spacer = new Pane();
-                    HBox.setHgrow(spacer, Priority.ALWAYS);
-
-                    // 4. Create the Red X Button
-                    Button deleteBtn = new Button("X");
-                    deleteBtn.setStyle(
-                            "-fx-background-color: #E53935;" +
-                                    "-fx-text-fill: white;" +
-                                    "-fx-font-weight: bold;" +
-                                    "-fx-cursor: hand;" +
-                                    "-fx-background-radius: 15;" +
-                                    "-fx-padding: 2 8 2 8;" +
-                                    "-fx-font-size: 10px;"
-                    );
-
-                    // 5. Connect Button to Delete Logic
-                    deleteBtn.setOnAction(event -> deleteSpecificRule(item));
-
-                    // 5. Connect Button to Delete Logic
-                    deleteBtn.setOnAction(event -> deleteSpecificRule(item));
-
-                    // 6. Add all to row
-                    hbox.getChildren().addAll(label, spacer, deleteBtn);
-                    setText(null); // Clear default text
-                    setGraphic(hbox); // Show custom layout
+                    setText(null);
+                } else{
+                    String status = rule.getSleepDurationMillis() == 0 ? " (One-Shot)" : String.format(" (Cooldown: %ds)", rule.getSleepDurationMillis() / 1000);
+                    label.setText(rule.getName() + status);
+                    setGraphic(hbox);
                 }
             }
         });
+        // --- FINE CellFactory ---
 
+        RuleList.setItems(ruleObservableList);
     }
 
-    private <T> T openNewWindow(String fxmlPath, String title) {
+    /**
+     * Helper function to open a new window (modal stage) for Trigger/Action configuration.
+     * @param fxmlName The FXML file name of the window to open.
+     * @param title The title of the modal window.
+     * @return The controller instance of the newly opened window.
+     */
+    private <T> T openNewWindow(String fxmlName, String title) {
         try {
-            // Safety Check for FXML file
-            URL fxmlLocation = getClass().getResource(fxmlPath);
-            if (fxmlLocation == null) {
-                // If in a different package, try adding a slash
-                fxmlLocation = getClass().getResource("/" + fxmlPath);
-            }
-            if (fxmlLocation == null) {
-                System.err.println("CRITICAL ERROR: Could not find FXML: " + fxmlPath);
-                return null;
-            }
-
-            FXMLLoader loader = new FXMLLoader(fxmlLocation);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlName));
             Parent root = loader.load();
 
             Stage stage = new Stage();
             stage.setTitle(title);
-            stage.initModality(Modality.APPLICATION_MODAL);
             stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(createRuleButton.getScene().getWindow());
             stage.showAndWait();
+
             return loader.getController();
 
         } catch (IOException e) {
-            System.err.println("Errors in the GUI load: " + fxmlPath);
+            System.err.println("Errore nel caricamento della finestra modale: " + fxmlName);
             e.printStackTrace();
             return null;
         }
     }
 
+
+    private void openSleepConfigurationWindow(Rule ruleToConfigure) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("SleepConfiguration.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Set Sleep Period for: " + ruleToConfigure.getName());
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(RuleList.getScene().getWindow());
+            stage.showAndWait();
+
+            //Refresh the UI
+            RuleList.refresh();
+
+        } catch (IOException e) {
+            System.err.println("Error in loading the Sleep Window");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Handles the creation of a new rule when the confirm button is pushed.
+     * It initiates the configuration process for the chosen Action and Trigger.
+     */
     @FXML
     public void confirmButtonPushed() {
         String selectedTrigger = triggerDropDownMenu.getValue();
@@ -159,16 +179,21 @@ public class MainPageController implements Initializable {
 
         switch(selectedAction) {
             case("Message Action"):
-                WriteAMessageController wamcController = openNewWindow("WriteAMessage.fxml", "Select the message to show!");
-                if(wamcController != null) {
-                    this.chosenAction = wamcController.getFinalAction();
+                WriteAMessageController wamController = openNewWindow("WriteAMessage.fxml", "Write a message for the Message Action!");
+                if(wamController != null) {
+                    this.chosenAction = wamController.getFinalAction();
                 }
                 break;
-            case("Audio Action"):
-                SelectAudioPathController sapcController = openNewWindow("SelectAudioPath.fxml", "Select the audio file path!");
-                if(sapcController != null) {
-                    this.chosenAction = sapcController.getFinalAction();
+            case("Play Audio Action"):
+                SelectAudioPathController sapController = openNewWindow("SelectAudioPath.fxml", "Select the audio file for the Play Audio Action!");
+                if(sapController != null) {
+                    this.chosenAction = sapController.getFinalAction();
                 }
+                break;
+            case("Write to Text File Action"):
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Select the Text File for the Write to Text File Action!");
+                File selectedFile = fileChooser.showSaveDialog(createRuleButton.getScene().getWindow());
                 break;
         }
 
@@ -187,6 +212,7 @@ public class MainPageController implements Initializable {
         }
 
         Rule createdRule = new Rule(ruleName, chosenTrigger, chosenAction);
+
         ruleEngine.addRule(createdRule);
         ruleObservableList.add(createdRule);
 
