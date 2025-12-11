@@ -2,98 +2,84 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="flowmate_team5.MainPageController">
-    <children>
-        <AnchorPane layoutX="-2.0" prefHeight="400.0" prefWidth="600.0">
-            <children>
-                <VBox layoutX="109.0" layoutY="-1.0" prefHeight="400.0" prefWidth="492.0">
-                    <children>
-                        <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@images/AppLogo.png" />
-                            </image>
-                        </ImageView>
-                        <TextArea fx:id="Introduction" editable="false" prefHeight="16.0" prefWidth="492.0" promptText="CREATE YOUR RULE!" style="-fx-text-fill: #80c5d9;" text="CREATE YOUR RULE!">
-                            <font>
-                                <Font name="Arial Bold" size="18.0" />
-                            </font>
-                        </TextArea>
-                        <TextArea editable="false" prefHeight="0.0" prefWidth="492.0" style="-fx-text-fill: #568a99;" text="Select a Trigger and the specific Action you want to associate, and create the rule!">
-                            <font>
-                                <Font name="Arial" size="11.0" />
-                            </font>
-                        </TextArea>
-                        <HBox prefHeight="100.0" prefWidth="200.0">
-                            <children>
-                                <ComboBox fx:id="triggerDropDownMenu" prefHeight="25.0" prefWidth="139.0" promptText="Select the trigger">
-                                    <HBox.margin>
-                                        <Insets left="15.0" right="10.0" top="30.0" />
-                                    </HBox.margin>
-                                </ComboBox>
-                                <ImageView fitHeight="89.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
-                                    <HBox.margin>
-                                        <Insets left="40.0" />
-                                    </HBox.margin>
-                                    <image>
-                                        <Image url="@images/arrowImage.png" />
-                                    </image>
-                                </ImageView>
-                                <ComboBox fx:id="actionDropDownMenu" layoutX="20.0" layoutY="40.0" prefWidth="150.0" promptText="Select the action">
-                                    <HBox.margin>
-                                        <Insets left="40.0" right="15.0" top="30.0" />
-                                    </HBox.margin>
-                                </ComboBox>
-                            </children>
-                        </HBox>
-                        <HBox prefHeight="100.0" prefWidth="200.0">
-                            <children>
-                                <TextField fx:id="RuleNameTextArea" prefHeight="25.0" prefWidth="249.0" promptText="Insert the rule name here!">
-                                    <HBox.margin>
-                                        <Insets left="15.0" right="70.0" />
-                                    </HBox.margin>
-                                </TextField>
-                                <Button fx:id="createRuleButton" mnemonicParsing="false" onAction="#confirmButtonPushed" text="Create rule">
-                                    <font>
-                                        <Font name="Arial" size="12.0" />
-                                    </font>
-                                </Button>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.HBox?>
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="flowmate_team5.MainPageController"
+            prefWidth="750" prefHeight="460">
 
-                            </children>
-                            <VBox.margin>
-                                <Insets top="20.0" />
-                            </VBox.margin>
-                        </HBox>
-                    </children>
-                </VBox>
-                <VBox layoutX="1.0" layoutY="-1.0" prefHeight="400.0" prefWidth="108.0">
-                    <children>
-                        <Label text="YOUR RULES" textFill="RED">
-                            <font>
-                                <Font name="Arial Rounded MT Bold" size="13.0" />
-                            </font>
-                            <padding>
-                                <Insets left="4.0" top="3.0" />
-                            </padding>
-                        </Label>
-                        <ListView fx:id="RuleList" prefHeight="200.0" prefWidth="91.0">
-                            <VBox.margin>
-                                <Insets />
-                            </VBox.margin>
-                        </ListView>
-                    </children></VBox>
+    <children>
+
+        <!-- SIDEBAR RULE LIST -->
+        <VBox prefWidth="180" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
+              style="-fx-background-color: #fafafa; -fx-border-color: #ddd;">
+            <children>
+                <Label text="YOUR RULES"
+                       style="-fx-text-fill: #C0392B; -fx-font-size: 16px; -fx-font-weight: bold;">
+                    <padding>
+                        <Insets top="10" right="10" bottom="10" left="10"/>
+                    </padding>
+                </Label>
+                <ListView fx:id="RuleList" VBox.vgrow="ALWAYS" />
             </children>
-        </AnchorPane>
+        </VBox>
+
+        <!-- MAIN CONTENT -->
+        <VBox spacing="20" AnchorPane.leftAnchor="180" AnchorPane.rightAnchor="0"
+              AnchorPane.topAnchor="20" AnchorPane.bottomAnchor="20"
+              alignment="TOP_CENTER">
+
+            <!-- Logo -->
+            <ImageView fitHeight="110" preserveRatio="true">
+                <image>
+                    <Image url="@images/AppLogo.png" />
+                </image>
+            </ImageView>
+
+            <!-- Title -->
+            <Label text="Create your rule"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #3498db;" />
+
+            <Label text="Select a Trigger and the Action you want to associate"
+                   style="-fx-font-size: 13px; -fx-text-fill: #555;" />
+
+            <!-- Trigger + arrow + Action -->
+            <HBox spacing="25"
+                  alignment="CENTER">
+                <ComboBox fx:id="triggerDropDownMenu" prefWidth="180" promptText="Select trigger"/>
+
+                <ImageView fitWidth="50" preserveRatio="true">
+                    <image>
+                        <Image url="@images/arrowImage.png"/>
+                    </image>
+                </ImageView>
+
+                <ComboBox fx:id="actionDropDownMenu" prefWidth="180" promptText="Select action"/>
+            </HBox>
+
+            <!-- Rule name + button -->
+            <HBox spacing="15" alignment="CENTER">
+                <TextField fx:id="RuleNameTextArea" prefWidth="260"
+                           promptText="Insert the rule name..." />
+                <Button fx:id="createRuleButton" text="Create rule"
+                        onAction="#confirmButtonPushed"
+                        style="-fx-background-color: #3498db; -fx-text-fill: white;
+                               -fx-background-radius: 6;" />
+            </HBox>
+
+        </VBox>
+
     </children>
+
 </AnchorPane>
