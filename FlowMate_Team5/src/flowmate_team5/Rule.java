@@ -6,6 +6,8 @@ public class Rule {
     private Trigger trigger;
     private Action action;
     private boolean active;
+    private long sleepDurationMillis = 0;
+    private long canBeFiredAfter = 0;
 
     // Constructor
     public Rule(String name, Trigger trigger, Action action) {
@@ -20,13 +22,44 @@ public class Rule {
      */
     public void check() {
         if (this.active) {
+            if (System.currentTimeMillis() < canBeFiredAfter) {
+                return;
+            }
             if (this.trigger != null && this.trigger.isTriggered()) {
                 if (this.action != null) {
                     this.action.execute();
                     System.out.println("[Rule Fired]: " + this.name);
                 }
+                if (this.sleepDurationMillis > 0) {
+                    this.canBeFiredAfter = System.currentTimeMillis() + this.sleepDurationMillis;
+                    System.out.println("[Rule Cooldown]: " + this.name + " in sleep until: " + new java.util.Date(canBeFiredAfter));
+                } else {
+                    // Se sleepDurationMillis è 0, la regola è in modalità one-shot
+                    this.active = false;
+                    System.out.println("[Rule One-Shot]: " + this.name + " disattivata dopo l'esecuzione.");
+                }
             }
         }
+    }
+
+    /**
+     * Sets the rule's cooldown period.
+     * @param durationMillis The length of the sleep period in milliseconds.
+     * Set to 0 for one-shot mode (disabling the rule after execution).
+     */
+    public void setSleepDuration(long durationMillis) {
+        if (durationMillis < 0) {
+            this.sleepDurationMillis = 0;
+        } else {
+            this.sleepDurationMillis = durationMillis;
+        }
+
+        if (durationMillis > 0 && !this.active) {
+            this.active = true;
+            this.canBeFiredAfter = 0;
+        }
+
+        System.out.println("[Rule Update]: " + this.name + " Sleep Duration impostata a " + this.sleepDurationMillis + "ms.");
     }
 
     // --- Getters and Setters ---
@@ -48,6 +81,10 @@ public class Rule {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public long getSleepDurationMillis() {
+        return sleepDurationMillis;
     }
 
     @Override
