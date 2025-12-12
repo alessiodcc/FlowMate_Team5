@@ -30,14 +30,10 @@ public class TextAction implements Action {
 
     @Override
     public void execute() {
-        // Formatta la data e l'ora attuali
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        // Combina il timestamp con il messaggio dell'utente
-        String contentToAppend = String.format("[%s] %s%n", timestamp, message);
 
         try ( PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath, true)))) {
 
-            out.print(contentToAppend);
+            out.print(message);
 
             System.out.println("[Text Action] Scrittura riuscita sul file: " + filePath);
 
