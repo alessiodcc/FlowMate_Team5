@@ -61,7 +61,8 @@ public class MainPageController implements Initializable {
                 "Message Action",
                 "Play Audio Action",
                 "Write to Text File Action",
-                "Copy File Action"
+                "Copy File Action",
+                "Delete File Action"
         );
         actionDropDownMenu.setItems(actionOptions);
 
@@ -191,6 +192,11 @@ public class MainPageController implements Initializable {
                 // Assumendo CopyFile.fxml e CopyFileActionController esistano
                 showAlert("WIP", "Copy File Action is not yet implemented.", Alert.AlertType.INFORMATION);
                 return; // Impedisce la creazione se non implementato
+            case("Delete File Action"):
+                DeleteFileController dfcController = openNewWindow("DeleteFileView.fxml", "Select the file you want to delete!");
+                if(dfcController != null)
+                    this.chosenAction = dfcController.getFinalAction();
+                break;
         }
 
         if (chosenTrigger == null || chosenAction == null) {
