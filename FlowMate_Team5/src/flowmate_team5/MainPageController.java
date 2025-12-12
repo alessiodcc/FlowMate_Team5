@@ -56,7 +56,7 @@ public class MainPageController implements Initializable {
         ObservableList<String> triggerOptions = FXCollections.observableArrayList("Temporal Trigger", "Location Trigger");
         triggerDropDownMenu.setItems(triggerOptions);
 
-        ObservableList<String> actionOptions = FXCollections.observableArrayList("Message Action", "Play Audio Action", "Write to Text File Action", "Copy File Acrion");
+        ObservableList<String> actionOptions = FXCollections.observableArrayList("Message Action", "Play Audio Action", "Write to Text File Action", "Copy File Action");
         actionDropDownMenu.setItems(actionOptions);
 
         // Initialize Backend
