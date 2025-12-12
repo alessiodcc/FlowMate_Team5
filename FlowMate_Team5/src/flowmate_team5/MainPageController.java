@@ -87,7 +87,19 @@ public class MainPageController implements Initializable {
                         deleteSpecificRule(rule);
                     }
                 });
-                deleteButton.setStyle("-fx-background-color: red; -fx-text-fill: white;");
+                deleteButton.setStyle(
+                        "-fx-shape: 'M 50 0 A 50 50 0 1 1 50 100 A 50 50 0 1 1 50 0 Z';" +
+                                "-fx-min-width: 20px; " +
+                                "-fx-min-height: 20px; " +
+                                "-fx-max-width: 20px; " +
+                                "-fx-max-height: 20px; " +
+                                "-fx-background-color: linear-gradient(to bottom, #ff6666, #cc0000);" +
+                                "-fx-text-fill: white; " +
+                                "-fx-font-weight: bold; " +
+                                "-fx-font-size: 10px; " +
+                                "-fx-padding: 0; " +
+                                "-fx-cursor: hand;"
+                );
 
                 HBox.setHgrow(pane, Priority.ALWAYS);
                 hbox.setAlignment(Pos.CENTER_LEFT);
