@@ -17,41 +17,22 @@ public class RuleItemController {
     public void setRule(Rule rule) {
         this.rule = rule;
 
-        // Nome della regola
         ruleName.setText(rule.getName());
+        ruleSummary.setText(buildSummary());
 
-        // Riepilogo automatico
-        ruleSummary.setText(generateSummary(rule));
-
-        // Toggle attivo/disattivo
         toggleActive.setSelected(rule.isActive());
-        toggleActive.selectedProperty().addListener((obs, oldV, newV) -> {
-            rule.setActive(newV);
-        });
+        toggleActive.selectedProperty()
+                .addListener((o, a, b) -> rule.setActive(b));
 
-        // Cancellazione regola
-        deleteBtn.setOnAction(e -> {
-            RuleEngine.getInstance().deleteRule(rule);
-        });
+        deleteBtn.setOnAction(e ->
+                RuleEngine.getInstance().deleteRule(rule));
     }
 
-    /**
-     * Genera automaticamente un riepilogo basato sul tipo di Trigger e Action.
-     * Esempio:
-     *   FileExistsTrigger → CopyFileAction
-     *   TemporalTrigger → PlayAudioAction
-     */
-    private String generateSummary(Rule rule) {
-
-        // Nome classe Trigger (senza package)
-        String triggerName = rule.getTrigger().getClass().getSimpleName();
-
-        // Nome classe Action (senza package)
-        Action action = rule.getAction();
-        String actionName = (action != null)
-                ? action.getClass().getSimpleName()
-                : "No Action";
-
-        return triggerName + " → " + actionName;
+    private String buildSummary() {
+        String trigger =
+                rule.getTrigger().getClass().getSimpleName();
+        String action =
+                rule.getAction().getClass().getSimpleName();
+        return trigger + " → " + action;
     }
 }

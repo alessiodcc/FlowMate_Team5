@@ -4,34 +4,64 @@
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="flowmate_team5.MainPageController">
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="flowmate_team5.MainPageController">
 
-    //Top bar
+    <!-- TOP BAR -->
     <top>
-        <HBox spacing="10" style="-fx-padding:10; -fx-background-color:#f4f4f4;">
-            <Button fx:id="menuButton" onAction="#toggleSidebar" styleClass="threeDotsButton">
-                <graphic>
-                    <Label text="⋮" style="-fx-font-size: 20px;" />
-                </graphic>
-            </Button>
-
-            <Label text="FlowMate" style="-fx-font-size: 20px; -fx-font-weight:bold;" />
+        <HBox alignment="CENTER_LEFT"
+              spacing="10"
+              style="-fx-padding:10; -fx-background-color:#f4f4f4;">
+            <Button text="⋮"
+                    onAction="#toggleSidebar"
+                    style="-fx-font-size:18;" />
         </HBox>
     </top>
 
-    //Sidebar
+    <!-- SIDEBAR -->
     <left>
-        <AnchorPane fx:id="sidebar" prefWidth="260" style="-fx-background-color: #ffffff;">
-            <VBox fx:id="rulesContainer" spacing="10" style="-fx-padding:15;">
-            </VBox>
+        <AnchorPane fx:id="sidebar"
+                    prefWidth="320"
+                    style="-fx-background-color:#ffffff;">
+            <ListView fx:id="RuleList"
+                      AnchorPane.topAnchor="0"
+                      AnchorPane.bottomAnchor="0"
+                      AnchorPane.leftAnchor="0"
+                      AnchorPane.rightAnchor="0"/>
         </AnchorPane>
     </left>
 
-    //Central area
+    <!-- CENTRO -->
     <center>
-        <StackPane>
-            <Label text="Benvenuto in FlowMate!" style="-fx-font-size:18;" />
-        </StackPane>
+        <VBox spacing="12"
+              alignment="TOP_CENTER"
+              style="-fx-padding:20;">
+
+            <Label fx:id="Title"
+                   text="FlowMate"
+                   style="-fx-font-size:24; -fx-font-weight:bold;" />
+
+            <Label fx:id="Introduction"
+                   text="Create your automation rules below."
+                   wrapText="true" />
+
+            <TextField fx:id="RuleNameTextArea"
+                       promptText="Rule name"
+                       maxWidth="300"/>
+
+            <ComboBox fx:id="triggerDropDownMenu"
+                      promptText="Select Trigger"
+                      maxWidth="300"/>
+
+            <ComboBox fx:id="actionDropDownMenu"
+                      promptText="Select Action"
+                      maxWidth="300"/>
+
+            <Button fx:id="createRuleButton"
+                    text="Create Rule"
+                    onAction="#confirmButtonPushed"
+                    maxWidth="200"/>
+        </VBox>
     </center>
 
 </BorderPane>

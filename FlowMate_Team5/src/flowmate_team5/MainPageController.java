@@ -3,8 +3,9 @@ package flowmate_team5;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.io.File;
 import java.util.Optional;
+
+import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,91 +18,71 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.stage.FileChooser;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
-/**
- * FXML Controller class
- * Handles GUI interactions for the Main Page.
- */
 public class MainPageController implements Initializable {
 
-    @FXML
-    private TextArea Title;
-    @FXML
-    private TextArea Introduction;
-    @FXML
-    private ComboBox<String> triggerDropDownMenu;
-    @FXML
-    private ComboBox<String> actionDropDownMenu;
-    @FXML
-    private Button createRuleButton;
-    @FXML
-    private TextField RuleNameTextArea;
-    @FXML
-    private ListView<Rule> RuleList;
+    // --- UI ---
+    @FXML private Label Title;
+    @FXML private Label Introduction;
+    @FXML private ComboBox<String> triggerDropDownMenu;
+    @FXML private ComboBox<String> actionDropDownMenu;
+    @FXML private Button createRuleButton;
+    @FXML private TextField RuleNameTextArea;
+    @FXML private ListView<Rule> RuleList;
 
+    // --- SIDEBAR ---
+    @FXML private AnchorPane sidebar;
+
+    // --- BACKEND ---
     private Action chosenAction;
     private Trigger chosenTrigger;
     private RuleEngine ruleEngine;
     private ObservableList<Rule> ruleObservableList;
 
-    /**
-     * Initializes the controller class.
-     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Initialize the available options for the ComboBoxes
-        ObservableList<String> triggerOptions = FXCollections.observableArrayList("Temporal Trigger", "Location Trigger");
-        triggerDropDownMenu.setItems(triggerOptions);
 
-        // Opzioni di Action aggiornate per includere Text Action
-        ObservableList<String> actionOptions = FXCollections.observableArrayList(
+        triggerDropDownMenu.setItems(FXCollections.observableArrayList(
+                "Temporal Trigger",
+                "Location Trigger"
+        ));
+
+        actionDropDownMenu.setItems(FXCollections.observableArrayList(
                 "Message Action",
                 "Play Audio Action",
                 "Write to Text File Action",
                 "Copy File Action",
                 "Delete File Action"
-        );
-        actionDropDownMenu.setItems(actionOptions);
+        ));
 
-        // Initialize Backend
         ruleEngine = RuleEngine.getInstance();
         ruleObservableList = FXCollections.observableArrayList(ruleEngine.getRules());
 
-        // --- CUSTOM CELL FACTORY PER LA LISTA (Implementazione Active/Inactive) ---
-        RuleList.setCellFactory(lv -> new ListCell<Rule>() {
+        RuleList.setCellFactory(lv -> new ListCell<>() {
+
             private final HBox hbox = new HBox(10);
             private final Label label = new Label();
             private final Pane pane = new Pane();
-            private final CheckBox activeToggle = new CheckBox("Active"); // ELEMENTO PER LO STATO
+            private final CheckBox activeToggle = new CheckBox("Active");
             private final Button deleteButton = new Button("X");
 
             {
-                // Gestione del click sulla CheckBox per attivare/disattivare la regola
-                activeToggle.setOnAction(event -> {
-                    Rule rule = getItem();
-                    if (rule != null) {
-                        rule.setActive(activeToggle.isSelected()); // Aggiorna lo stato nel Rule Object
-                        // Log e aggiornamento visivo
-                        System.out.println("[GUI] Rule '" + rule.getName() + "' set to " + (rule.isActive() ? "ACTIVE" : "INACTIVE"));
-                        // Ricarica la cella per mostrare il nuovo indicatore (✅ / ❌)
-                        updateItem(rule, false);
+                activeToggle.setOnAction(e -> {
+                    Rule r = getItem();
+                    if (r != null) {
+                        r.setActive(activeToggle.isSelected());
+                        updateItem(r, false);
                     }
                 });
 
-                // Configurazione del pulsante Elimina (Delete)
-                deleteButton.setOnAction(event -> {
-                    Rule rule = getItem();
-                    if (rule != null) {
-                        deleteSpecificRule(rule);
-                    }
-                });
-                deleteButton.setStyle("-fx-background-color: red; -fx-text-fill: white;");
+                deleteButton.setOnAction(e -> deleteSpecificRule(getItem()));
+                deleteButton.setStyle("-fx-background-color:red; -fx-text-fill:white;");
 
-                // Configurazione dell'HBox (layout)
-                HBox.setHgrow(pane, Priority.ALWAYS); // Spinge gli elementi a destra
+                HBox.setHgrow(pane, Priority.ALWAYS);
                 hbox.setAlignment(Pos.CENTER_LEFT);
                 hbox.getChildren().addAll(label, pane, activeToggle, deleteButton);
             }
@@ -109,33 +90,49 @@ public class MainPageController implements Initializable {
             @Override
             protected void updateItem(Rule rule, boolean empty) {
                 super.updateItem(rule, empty);
-
                 if (empty || rule == null) {
                     setGraphic(null);
-                    setText(null);
-                } else{
-                    // Aggiorna lo stato visivo della CheckBox in base allo stato della Rule
+                } else {
                     activeToggle.setSelected(rule.isActive());
-
-                    // Aggiunge un'indicazione visiva dello stato al nome
-                    String statusIndicator = rule.isActive() ? "✅" : "❌";
-                    label.setText(statusIndicator + " " + rule.getName());
-
+                    label.setText((rule.isActive() ? "✅ " : "❌ ") + rule.getName());
                     setGraphic(hbox);
                 }
             }
         });
-        // --- FINE CellFactory ---
 
         RuleList.setItems(ruleObservableList);
+
+        // Sidebar nascosta
+        sidebar.setVisible(false);
+        sidebar.setManaged(false);
+        sidebar.setTranslateX(-320);
     }
 
-    // --- LOGICA DI CREAZIONE REGOLA ---
+    // -------- SIDEBAR --------
+    @FXML
+    private void toggleSidebar() {
+        boolean visible = sidebar.isVisible();
 
-    /**
-     * Handles the creation of a new rule when the confirm button is pushed.
-     * @param event The ActionEvent from the button press.
-     */
+        TranslateTransition tt =
+                new TranslateTransition(Duration.millis(250), sidebar);
+
+        if (!visible) {
+            sidebar.setManaged(true);
+            sidebar.setVisible(true);
+            tt.setFromX(-320);
+            tt.setToX(0);
+        } else {
+            tt.setFromX(0);
+            tt.setToX(-320);
+            tt.setOnFinished(e -> {
+                sidebar.setVisible(false);
+                sidebar.setManaged(false);
+            });
+        }
+        tt.play();
+    }
+
+    // -------- CREAZIONE REGOLA --------
     @FXML
     public void confirmButtonPushed(javafx.event.ActionEvent event) {
         String ruleName = RuleNameTextArea.getText();
@@ -152,122 +149,90 @@ public class MainPageController implements Initializable {
             return;
         }
 
-        // 1. Configurazione del Trigger
-        switch(selectedTrigger) {
-            case("Temporal Trigger"):
-                SelectTimeController stcController = openNewWindow("SelectTime.fxml", "Select the time for the trigger!");
-                if(stcController != null) {
-                    this.chosenTrigger = stcController.getFinalTrigger();
-                }
+        switch (selectedTrigger) {
+            case "Temporal Trigger":
+                SelectTimeController stc =
+                        openNewWindow("SelectTime.fxml", "Select the time for the trigger!");
+                if (stc != null) chosenTrigger = stc.getFinalTrigger();
                 break;
-            // Aggiungere altri Trigger qui (es. Location Trigger)
-            case("Location Trigger"):
+            case "Location Trigger":
                 showAlert("WIP", "Location Trigger is not yet implemented.", Alert.AlertType.INFORMATION);
-                return; // Impedisce la creazione se non implementato
+                return;
         }
 
-        // 2. Configurazione dell'Action
-        switch(selectedAction) {
-            case("Message Action"):
-                // Assumendo WriteAMessage.fxml esista
-                Object wamcController = openNewWindow("WriteAMessage.fxml", "Select the message to show!");
-                if(wamcController instanceof WriteAMessageController) {
-                    this.chosenAction = ((WriteAMessageController)wamcController).getFinalAction();
-                }
+        switch (selectedAction) {
+            case "Message Action":
+                WriteAMessageController wamc =
+                        openNewWindow("WriteAMessage.fxml", "Select the message to show!");
+                if (wamc != null) chosenAction = wamc.getFinalAction();
                 break;
-            case("Play Audio Action"):
-                SelectAudioPathController sapcController = openNewWindow("SelectAudioPath.fxml", "Select the audio file path!");
-                if(sapcController != null) {
-                    this.chosenAction = sapcController.getFinalAction();
-                }
+            case "Play Audio Action":
+                SelectAudioPathController sapc =
+                        openNewWindow("SelectAudioPath.fxml", "Select the audio file path!");
+                if (sapc != null) chosenAction = sapc.getFinalAction();
                 break;
-            case("Write to Text File Action"):
-                // Assumendo WriteToText.fxml e TextActionController esistano
-                Object wttcController = openNewWindow("WriteToText.fxml", "Specify file path and message!");
-                if(wttcController instanceof WriteOnFileController) {
-                    this.chosenAction = ((WriteOnFileController)wttcController).getFinalAction();
-                }
+            case "Write to Text File Action":
+                WriteOnFileController wofc =
+                        openNewWindow("WriteOnFile.fxml", "Specify file path and message!");
+                if (wofc != null) chosenAction = wofc.getFinalAction();
                 break;
-            case("Copy File Action"):
-                CopyFileController cfc = openNewWindow("CopyFile.fxml", "Copy File Configuration");
-                if (cfc != null) {
-                    this.chosenAction = cfc.getFinalAction();
-                }
-                break;
-            case("Delete File Action"):
-                DeleteFileController dfcController = openNewWindow("DeleteFileView.fxml", "Select the file you want to delete!");
-                if(dfcController != null)
-                    this.chosenAction = dfcController.getFinalAction();
+            case "Copy File Action":
+                showAlert("WIP", "Copy File Action is not yet implemented.", Alert.AlertType.INFORMATION);
+                return;
+            case "Delete File Action":
+                DeleteFileController dfc =
+                        openNewWindow("DeleteFileView.fxml", "Select the file you want to delete!");
+                if (dfc != null) chosenAction = dfc.getFinalAction();
                 break;
         }
 
-        if (chosenTrigger == null || chosenAction == null) {
-            System.err.println("ERRORE: La configurazione del Trigger o dell'Action è stata annullata.");
-            return;
-        }
+        if (chosenTrigger == null || chosenAction == null) return;
 
-        // 3. Creazione e Aggiunta della Regola
         Rule createdRule = new Rule(ruleName, chosenTrigger, chosenAction);
         ruleEngine.addRule(createdRule);
         ruleObservableList.add(createdRule);
-        System.out.println("[GUI] Rule added: " + createdRule.getName() + " (Active: " + createdRule.isActive() + ")");
 
-        // Reset
-        this.chosenAction = null;
-        this.chosenTrigger = null;
+        chosenTrigger = null;
+        chosenAction = null;
         RuleNameTextArea.clear();
     }
 
-    // --- LOGICA DI CANCELLAZIONE REGOLA ---
-
+    // -------- DELETE --------
     private void deleteSpecificRule(Rule ruleToDelete) {
         if (ruleToDelete == null) return;
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delete Rule");
-        alert.setHeaderText("Are you sure you want to delete this rule?");
-        alert.setContentText("Rule: " + ruleToDelete.getName());
+        alert.setHeaderText("Are you sure?");
+        alert.setContentText(ruleToDelete.getName());
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        Optional<ButtonType> res = alert.showAndWait();
+        if (res.isPresent() && res.get() == ButtonType.OK) {
             ruleEngine.deleteRule(ruleToDelete);
             ruleObservableList.remove(ruleToDelete);
-            System.out.println("GUI: Deleted Rule: " + ruleToDelete.getName());
         }
     }
 
-    // --- UTILITY METHODS ---
-
-    /**
-     * Utility method to open a new modal window for configuration.
-     * @param fxmlPath Path to the FXML file.
-     * @param title Title of the new window.
-     * @return The controller of the new window, or null if loading fails or cancelled.
-     */
+    // -------- WINDOW UTILITY --------
     private <T> T openNewWindow(String fxmlPath, String title) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent parent = fxmlLoader.load();
-            T controller = fxmlLoader.getController();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+            T controller = loader.getController();
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle(title);
-            stage.setScene(new Scene(parent));
-            stage.showAndWait(); // Blocca l'esecuzione finché la finestra non viene chiusa
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
 
             return controller;
-
         } catch (IOException e) {
-            showAlert("ERROR", "Failed to load configuration window: " + fxmlPath, Alert.AlertType.ERROR);
             e.printStackTrace();
             return null;
         }
     }
 
-    /**
-     * Utility method to display alerts.
-     */
     private void showAlert(String title, String message, Alert.AlertType type) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

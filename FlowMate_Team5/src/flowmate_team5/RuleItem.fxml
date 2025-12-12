@@ -3,18 +3,21 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 
-<HBox spacing="10" styleClass="ruleItem"
+<HBox spacing="10"
+      styleClass="ruleItem"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="RuleItemController">
+      fx:controller="flowmate_team5.RuleItemController">
 
     <VBox spacing="2">
-        <Label fx:id="ruleName" styleClass="ruleName"/>
-        <Label fx:id="ruleSummary" styleClass="ruleSummary"/>
+        <Label fx:id="ruleName"
+               styleClass="ruleName"/>
+        <Label fx:id="ruleSummary"
+               styleClass="ruleSummary"/>
     </VBox>
 
     <Pane HBox.hgrow="ALWAYS"/>
 
-    <ToggleButton fx:id="toggleActive" />
-    <Button fx:id="deleteBtn" text="✕" styleClass="deleteButton"/>
-
+    <ToggleButton fx:id="toggleActive"/>
+    <Button fx:id="deleteBtn"
+            text="✕"/>
 </HBox>
