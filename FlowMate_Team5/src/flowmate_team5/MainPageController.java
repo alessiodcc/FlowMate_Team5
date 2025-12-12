@@ -56,7 +56,7 @@ public class MainPageController implements Initializable {
         ObservableList<String> triggerOptions = FXCollections.observableArrayList("Temporal Trigger", "Location Trigger");
         triggerDropDownMenu.setItems(triggerOptions);
 
-        ObservableList<String> actionOptions = FXCollections.observableArrayList("Message Action", "Play Audio Action", "Write to Text File Action");
+        ObservableList<String> actionOptions = FXCollections.observableArrayList("Message Action", "Play Audio Action", "Write to Text File Action", "Copy File Acrion");
         actionDropDownMenu.setItems(actionOptions);
 
         // Initialize Backend
@@ -191,9 +191,12 @@ public class MainPageController implements Initializable {
                 }
                 break;
             case("Write to Text File Action"):
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Select the Text File for the Write to Text File Action!");
-                File selectedFile = fileChooser.showSaveDialog(createRuleButton.getScene().getWindow());
+                WriteOnFileController wofController = openNewWindow("WriteOnFile.fxml", "Append to file");
+                if(wofController != null) this.chosenAction = wofController.getFinalAction();
+                break;
+            case("Copy File Action"):
+                CopyFileController cfc = openNewWindow("CopyFile.fxml", "Copy a file");
+                if(cfc != null) this.chosenAction = cfc.getFinalAction();
                 break;
         }
 
