@@ -39,6 +39,7 @@ public class DeleteFileController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        confirmButton.setDisable(false);
     }
 
     /**
