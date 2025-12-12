@@ -189,9 +189,11 @@ public class MainPageController implements Initializable {
                 }
                 break;
             case("Copy File Action"):
-                // Assumendo CopyFile.fxml e CopyFileActionController esistano
-                showAlert("WIP", "Copy File Action is not yet implemented.", Alert.AlertType.INFORMATION);
-                return; // Impedisce la creazione se non implementato
+                CopyFileController cfc = openNewWindow("CopyFile.fxml", "Copy File Configuration");
+                if (cfc != null) {
+                    this.chosenAction = cfc.getFinalAction();
+                }
+                break;
             case("Delete File Action"):
                 DeleteFileController dfcController = openNewWindow("DeleteFileView.fxml", "Select the file you want to delete!");
                 if(dfcController != null)
