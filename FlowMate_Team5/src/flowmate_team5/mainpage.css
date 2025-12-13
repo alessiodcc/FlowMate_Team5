@@ -1,0 +1,52 @@
+.root {
+    -fx-font-family: "Segoe UI", "Roboto", sans-serif;
+    -fx-background-color: #f7f8fa;
+}
+
+/* Contenitore principale */
+.main-container {
+    -fx-padding: 40;
+}
+
+/* Titolo */
+.app-title {
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Etichette */
+.section-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #555;
+}
+
+/* Pulsante create */
+.create-button {
+    -fx-background-color: #4a6cf7;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10 30;
+    -fx-background-radius: 8;
+}
+
+.create-button:hover {
+    -fx-background-color: #3a5ae0;
+}
+
+/* Menu */
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-font-size: 18px;
+}
+
+.menu-button:hover {
+    -fx-background-color: rgba(0,0,0,0.08);
+    -fx-background-radius: 6;
+}
+
+/* Sidebar */
+.sidebar {
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+}
