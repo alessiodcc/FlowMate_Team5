@@ -29,6 +29,14 @@ public class FlowMate_Team5 extends Application {
         primaryStage.getIcons().add(new Image(logoStream));
         primaryStage.setScene(scene);
         primaryStage.setTitle("FlowMate - Task Automation");
+
+        primaryStage.setOnCloseRequest(event -> {
+            System.out.println("[App] Closing FlowMate...");
+            RulePersistenceManager.saveRules(
+                    RuleEngine.getInstance().getRules()
+            );
+        });
+
         primaryStage.show();
     }
 }

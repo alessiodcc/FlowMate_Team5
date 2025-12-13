@@ -9,11 +9,13 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Sara
  */
-public class MessageAction implements Action{
+public class MessageAction implements Action, Serializable {
     private String name; // Name of the action
     private String messageToShow; // Message that the user wants to show
 

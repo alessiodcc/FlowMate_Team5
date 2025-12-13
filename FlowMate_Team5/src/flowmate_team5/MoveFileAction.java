@@ -1,6 +1,7 @@
 package flowmate_team5;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,7 +14,7 @@ import java.nio.file.StandardCopyOption;
  *
  * @author Ayesha
  */
-public class MoveFileAction implements Action {
+public class MoveFileAction implements Action, Serializable {
 
     private final String sourcePathString;
     private final String destinationDirectoryString;
