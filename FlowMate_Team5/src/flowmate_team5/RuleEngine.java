@@ -79,11 +79,10 @@ public class RuleEngine {
      */
     public void checkAllRules() {
         for (Rule rule : rules) {
-            if (rule.isActive() && rule.getTrigger().isTriggered()) {
-                rule.getAction().execute();
-            }
+            rule.check();
         }
     }
+
 
     /**
      * Adds a new rule to the engine's internal list.
