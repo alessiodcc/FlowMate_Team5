@@ -1,5 +1,7 @@
 package flowmate_team5;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,7 +10,7 @@ import java.nio.file.Paths;
  *
  * @author Alessio
  */
-public class FileExistsTrigger implements Trigger {
+public class FileExistsTrigger implements Trigger, Serializable {
     private String fileName; // The name of the file.
     private Path folderPath; // the path of the folder we want to search the file in.
     private boolean hasTriggered = false; // indicates if the trigger has already fired

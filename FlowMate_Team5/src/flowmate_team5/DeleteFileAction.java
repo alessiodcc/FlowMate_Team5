@@ -1,10 +1,11 @@
 package flowmate_team5;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class DeleteFileAction implements Action{
+public class DeleteFileAction implements Action, Serializable {
     private Path filePath;
 
     public DeleteFileAction(Path filePath){
