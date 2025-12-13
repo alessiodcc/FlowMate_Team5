@@ -48,7 +48,8 @@ public class MainPageController implements Initializable {
 
         triggerDropDownMenu.setItems(FXCollections.observableArrayList(
                 "Temporal Trigger",
-                "Location Trigger"
+                "Location Trigger",
+                "File Exists Trigger"
         ));
 
         actionDropDownMenu.setItems(FXCollections.observableArrayList(
@@ -56,7 +57,8 @@ public class MainPageController implements Initializable {
                 "Play Audio Action",
                 "Write to Text File Action",
                 "Copy File Action",
-                "Delete File Action"
+                "Delete File Action",
+                "Move File Action"
         ));
 
         ruleEngine = RuleEngine.getInstance();
@@ -155,9 +157,14 @@ public class MainPageController implements Initializable {
                         openNewWindow("SelectTime.fxml", "Select the time for the trigger!");
                 if (stc != null) chosenTrigger = stc.getFinalTrigger();
                 break;
+            case("File Exists Trigger"):
+                FileExistsController fileController = openNewWindow("FileExistsView.fxml", "Configure File Trigger");
+                if (fileController != null) {this.chosenTrigger = fileController.getFinalTrigger();}
+                break;
             case "Location Trigger":
                 showAlert("WIP", "Location Trigger is not yet implemented.", Alert.AlertType.INFORMATION);
                 return;
+
         }
 
         switch (selectedAction) {
@@ -183,6 +190,10 @@ public class MainPageController implements Initializable {
                 DeleteFileController dfc =
                         openNewWindow("DeleteFileView.fxml", "Select the file you want to delete!");
                 if (dfc != null) chosenAction = dfc.getFinalAction();
+                break;
+            case("Move File Action"):
+                MoveFileController moveController = openNewWindow("MoveFileView.fxml", "Configure Move File");
+                if(moveController != null) {this.chosenAction = moveController.getFinalAction();}
                 break;
         }
 

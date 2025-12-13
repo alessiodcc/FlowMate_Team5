@@ -39,6 +39,7 @@ nbdist/
 
 ### Intellij ###
 .idea/
+*.iml
 
 ### Windows ###
 # Windows thumbnail cache files
@@ -62,6 +63,8 @@ $RECYCLE.BIN/
 *.msix
 *.msm
 *.msp
+
+out/
 
 # Windows shortcuts
 *.lnk
