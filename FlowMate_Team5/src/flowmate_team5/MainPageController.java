@@ -51,7 +51,8 @@ public class MainPageController implements Initializable {
 
         triggerDropDownMenu.setItems(FXCollections.observableArrayList(
                 "Temporal Trigger",
-                "Location Trigger"
+                "Location Trigger",
+                "File Exists Trigger"
         ));
 
         actionDropDownMenu.setItems(FXCollections.observableArrayList(
@@ -59,12 +60,15 @@ public class MainPageController implements Initializable {
                 "Play Audio Action",
                 "Write to Text File Action",
                 "Copy File Action",
+                "Move File Action",
                 "Delete File Action"
         ));
 
         ruleEngine = RuleEngine.getInstance();
-        ruleObservableList =
-                FXCollections.observableArrayList(ruleEngine.getRules());
+        // Load from file
+        java.util.List<Rule> savedRules = RulePersistenceManager.loadRules();
+        ruleEngine.getRules().addAll(savedRules); // Add to engine
+        ruleObservableList = FXCollections.observableArrayList(ruleEngine.getRules());
 
         RuleList.setItems(ruleObservableList);
         RuleList.setCellFactory(lv -> new RuleCell());
@@ -126,7 +130,11 @@ public class MainPageController implements Initializable {
                         openNewWindow("SelectTime.fxml", "Select time");
                 if (stc != null) chosenTrigger = stc.getFinalTrigger();
                 break;
-
+            case "File Exists Trigger":
+                FileExistsController fec =
+                        openNewWindow("FileExistsView.fxml", "Configure File Trigger");
+                if (fec != null) chosenTrigger = fec.getFinalTrigger();
+                break;
             case "Location Trigger":
                 showAlert("WIP", "Location trigger not implemented",
                         Alert.AlertType.INFORMATION);
@@ -157,7 +165,11 @@ public class MainPageController implements Initializable {
                         openNewWindow("DeleteFileView.fxml", "Delete file");
                 if (dfc != null) chosenAction = dfc.getFinalAction();
                 break;
-
+            case "Move File Action":
+                MoveFileController mfc =
+                        openNewWindow("MoveFileView.fxml", "Move File");
+                if (mfc != null) chosenAction = mfc.getFinalAction();
+                break;
             default:
                 showAlert("WIP", "Action not implemented",
                         Alert.AlertType.INFORMATION);
