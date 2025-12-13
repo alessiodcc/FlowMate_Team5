@@ -10,9 +10,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
+import javafx.scene.image.Image;
 /**
- *
+
  * @author husse
  */
 public class FlowMate_Team5 extends Application {
@@ -25,7 +25,8 @@ public class FlowMate_Team5 extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("MainPage.fxml"));
         Scene scene = new Scene(root);
-
+        java.io.InputStream logoStream = getClass().getResourceAsStream("images/AppIcon.png");
+        primaryStage.getIcons().add(new Image(logoStream));
         primaryStage.setScene(scene);
         primaryStage.setTitle("FlowMate - Task Automation");
         primaryStage.show();
