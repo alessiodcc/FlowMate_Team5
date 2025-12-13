@@ -3,14 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
 package flowmate_team5;
+import java.io.Serializable;
 
 /**
- *
+ * Task 1.1: Interface representing an action to be executed.
+ * Updated for Task 9: Must extend Serializable to allow saving/loading.
  * @author husse
  */
-/**
- * Task 1.1: Interface representing an action to be executed.
- */
-public interface Action {
+public interface Action extends Serializable {
     void execute();
 }

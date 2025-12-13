@@ -4,6 +4,7 @@
  */
 package flowmate_team5;
 
+import java.io.Serializable;
 /**
  *
  * @author husse
@@ -11,6 +12,7 @@ package flowmate_team5;
 /**
  * Task 1.2: Interface representing a condition that triggers a rule.
  */
-public interface Trigger {
+public interface Trigger extends Serializable {
     boolean isTriggered();
 }
+
