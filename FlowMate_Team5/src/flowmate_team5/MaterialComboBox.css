@@ -24,3 +24,40 @@
     -fx-background-color: #2196f3;
     -fx-shape: "M 0 0 L 6 0 L 3 4 z";
 }
+
+.threeDotsButton {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 6 10;
+}
+
+.threeDotsButton:hover {
+    -fx-background-color: rgba(0,0,0,0.08);
+    -fx-background-radius: 5px;
+}
+
+.ruleItem {
+    -fx-padding: 10;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 4, 0, 0, 2);
+}
+
+.ruleName {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.ruleSummary {
+    -fx-font-size: 12px;
+    -fx-text-fill: #555;
+}
+
+.deleteButton {
+    -fx-background-color: transparent;
+    -fx-font-size: 14px;
+}
+
+.deleteButton:hover {
+    -fx-text-fill: red;
+}

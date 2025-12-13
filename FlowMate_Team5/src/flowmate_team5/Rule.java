@@ -1,6 +1,8 @@
 package flowmate_team5;
 
-public class Rule {
+import java.io.Serializable;
+
+public class Rule implements Serializable {
 
     private String name;
     private Trigger trigger;
