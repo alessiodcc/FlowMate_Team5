@@ -7,30 +7,31 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Logger;
 
-/**
- * Task 12.3: Controller for setting up the File Exists Trigger.
- * It connects the GUI to the backend logic (Task 12.1).
- */
 public class FileExistsController {
 
-    private static final Logger LOGGER = Logger.getLogger(FileExistsController.class.getName());
+    private static final Logger LOGGER =
+            Logger.getLogger(FileExistsController.class.getName());
 
-    @FXML private TextField folderPathField;
-    @FXML private TextField fileNameField;
+    @FXML
+    private TextField folderPathField;
 
-    private FileExistsTrigger finalTrigger;
+    @FXML
+    private TextField fileNameField;
 
-    // Returns the created trigger to the Main Page
-    public FileExistsTrigger getFinalTrigger() {
-        return finalTrigger;
+    // Trigger instance received from the main controller (NOT created here)
+    private FileExistsTrigger trigger;
+
+    public void setTrigger(FileExistsTrigger trigger) {
+        this.trigger = trigger;
     }
 
-    // Opens a popup to select a folder from the computer
     @FXML
     public void handleBrowseFolder() {
+
         DirectoryChooser dirChooser = new DirectoryChooser();
         dirChooser.setTitle("Select Folder to Watch");
 
@@ -42,29 +43,33 @@ public class FileExistsController {
         }
     }
 
-    // Validates input and creates the Trigger object
     @FXML
     public void handleConfirm() {
+
         String folder = folderPathField.getText();
         String file = fileNameField.getText();
 
-        // 1. Check if fields are empty
-        if (folder.isEmpty() || file.trim().isEmpty()) {
+        // Validate inputs
+        if (folder == null || folder.isEmpty() ||
+                file == null || file.trim().isEmpty()) {
+
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Missing Information");
-            alert.setContentText("Please select a folder and enter a filename.");
+            alert.setContentText(
+                    "Please select a folder and enter a filename."
+            );
             alert.showAndWait();
             return;
         }
 
-        // 2. Create the Trigger (Connecting to Task 12.1)
-        // We must convert the folder String to a Path object to match the constructor
-        this.finalTrigger = new FileExistsTrigger(file.trim(), Paths.get(folder));
+        // ONLY configuration logic
+        Path folderPath = Paths.get(folder);
+        trigger.setFolderPath(folderPath);
+        trigger.setFileName(file.trim());
 
         LOGGER.info("Trigger configured for file: " + file);
 
-        // 3. Close the window
         Stage stage = (Stage) folderPathField.getScene().getWindow();
         stage.close();
     }

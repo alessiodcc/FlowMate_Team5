@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package flowmate_team5;
 
 import javafx.application.Platform;
@@ -11,21 +6,15 @@ import javafx.scene.control.Alert.AlertType;
 
 import java.io.Serializable;
 
-/**
- *
- * @author Sara
- */
 public class MessageAction implements Action, Serializable {
-    private String name; // Name of the action
-    private String messageToShow; // Message that the user wants to show
 
-    // Constructor
-    public MessageAction(String name, String messageToShow) {
-        this.name = name; 
-        this.messageToShow = messageToShow;
+    private String name;
+    private String messageToShow;
+
+    public MessageAction() {
+        // Empty constructor (Factory Method)
     }
 
-    // Getter and Setter
     public String getName() {
         return name;
     }
@@ -41,34 +30,38 @@ public class MessageAction implements Action, Serializable {
     public void setMessageToShow(String messageToShow) {
         this.messageToShow = messageToShow;
     }
-    
-    // Method that shows graphically the message through an Alert
+
     @Override
     public void execute() {
-
+        // JavaFX UI updates must run on the JavaFX Application Thread
         Platform.runLater(() -> {
             Alert alert = new Alert(AlertType.INFORMATION);
 
             alert.setTitle("Reminder!");
             alert.setHeaderText("Here is your reminder!");
 
-            String content = (this.messageToShow != null) ? this.messageToShow : "No message configured!";
+            // Determine content to display
+            String content =
+                    (messageToShow != null && !messageToShow.isBlank())
+                            ? messageToShow
+                            : "No message configured!";
+
             alert.setContentText(content);
-
-
             alert.showAndWait();
-            System.out.println("[Message Action] Alert visualizzato.");
+
+            System.out.println("[MessageAction] Alert displayed.");
         });
     }
 
     public static boolean isValidMessage(String message) {
-        if (message == null || message.trim().isEmpty()) {
-            return false;
-        }
-        if (message.length() > 500) {
-            return false;
-        }
-        return true;
+        // Validation: not null, not empty, max length 500
+        return message != null &&
+                !message.trim().isEmpty() &&
+                message.length() <= 500;
     }
-    
+
+    @Override
+    public String toString() {
+        return "Message Action";
+    }
 }
