@@ -5,6 +5,10 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ *
+ * @author Alessio
+ */
 public class DeleteFileAction implements Action, Serializable {
     private Path filePath;
 
