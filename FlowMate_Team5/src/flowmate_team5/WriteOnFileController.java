@@ -28,6 +28,7 @@ public class WriteOnFileController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Set path field to read-only to ensure valid file selection
         pathTextField.setEditable(false);
     }
 
@@ -35,6 +36,7 @@ public class WriteOnFileController implements Initializable {
     public void browseButtonPushed() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Text File");
+        // Filter to allow only text files
         fileChooser.getExtensionFilters()
                 .add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
 
@@ -51,6 +53,7 @@ public class WriteOnFileController implements Initializable {
         String path = pathTextField.getText();
         String content = contentTextField.getText();
 
+        // Validate that both fields are populated
         if (path == null || path.isEmpty() || content == null || content.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("Missing Information");
@@ -59,9 +62,11 @@ public class WriteOnFileController implements Initializable {
             return;
         }
 
+        // Configure the action object
         action.setFilePath(path);
         action.setMessage(content);
 
+        // Close the window
         ((Stage) ((Node) event.getSource())
                 .getScene()
                 .getWindow())

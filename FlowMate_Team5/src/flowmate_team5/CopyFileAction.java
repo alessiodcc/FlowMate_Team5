@@ -9,11 +9,19 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class CopyFileAction implements Action, Serializable {
-    private final String sourcePath;
-    private final String destinationDir;
 
-    public CopyFileAction(String sourcePath, String destinationDir) {
+    private String sourcePath;
+    private String destinationDir;
+
+    public CopyFileAction() {
+        // Empty constructor (Factory Method)
+    }
+
+    public void setSourcePath(String sourcePath) {
         this.sourcePath = sourcePath;
+    }
+
+    public void setDestinationDir(String destinationDir) {
         this.destinationDir = destinationDir;
     }
 
@@ -21,16 +29,22 @@ public class CopyFileAction implements Action, Serializable {
     public void execute() {
         try {
             File srcFile = new File(sourcePath);
+            // Check if the source file exists
             if (!srcFile.exists()) {
                 System.err.println("[CopyFileAction] Source file does not exist: " + sourcePath);
                 return;
             }
 
-            // Construct destination path
+            // Construct destination path using the source filename
             Path destPath = Paths.get(destinationDir, srcFile.getName());
 
-            // Perform copy
-            Files.copy(Paths.get(sourcePath), destPath, StandardCopyOption.REPLACE_EXISTING);
+            // Perform copy, replacing if file already exists
+            Files.copy(
+                    Paths.get(sourcePath),
+                    destPath,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+
             System.out.println("[CopyFileAction] Successfully copied to: " + destPath);
 
         } catch (IOException e) {

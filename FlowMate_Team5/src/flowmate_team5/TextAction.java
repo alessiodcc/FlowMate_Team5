@@ -9,7 +9,7 @@ public class TextAction implements Action {
     private String message;
 
     public TextAction() {
-        // Costruttore vuoto
+        // Empty constructor
     }
 
     public void setFilePath(String filePath) {
@@ -22,7 +22,9 @@ public class TextAction implements Action {
 
     @Override
     public void execute() {
+        // Open the file in append mode (true)
         try (FileWriter writer = new FileWriter(filePath, true)) {
+            // Write the message followed by a system-dependent line separator
             writer.write(message + System.lineSeparator());
         } catch (IOException e) {
             e.printStackTrace();

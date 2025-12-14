@@ -3,6 +3,7 @@ package flowmate_team5;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -24,33 +25,30 @@ import javafx.util.Duration;
 
 public class MainPageController implements Initializable {
 
-    // ---------- UI ----------
-    @FXML private Label Title;
-    @FXML private Label Introduction;
+    // ================= UI Components =================
     @FXML private ComboBox<String> triggerDropDownMenu;
     @FXML private ComboBox<String> actionDropDownMenu;
-    @FXML private Button createRuleButton;
     @FXML private TextField RuleNameTextArea;
     @FXML private ListView<Rule> RuleList;
-
-    // ---------- SIDEBAR ----------
     @FXML private AnchorPane sidebar;
 
-    // ---------- BACKEND ----------
+    // ================= Backend Variables =================
     private RuleEngine ruleEngine;
     private ObservableList<Rule> ruleObservableList;
-    private Action chosenAction;
+
+    // Temporary storage for the rule currently being configured
     private Trigger chosenTrigger;
+    private Action chosenAction;
 
     // ======================================================
-    // INITIALIZE
+    // INITIALIZATION
     // ======================================================
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        // Note: These strings must match the keys in RuleFactoryManager exactly
         triggerDropDownMenu.setItems(FXCollections.observableArrayList(
                 "Temporal Trigger",
-                "Location Trigger",
                 "File Exists Trigger"
         ));
 
@@ -64,14 +62,17 @@ public class MainPageController implements Initializable {
         ));
 
         ruleEngine = RuleEngine.getInstance();
-        // Load from file
-        java.util.List<Rule> savedRules = RulePersistenceManager.loadRules();
-        ruleEngine.getRules().addAll(savedRules); // Add to engine
-        ruleObservableList = FXCollections.observableArrayList(ruleEngine.getRules());
+
+        // Load rules from persistence
+        ruleEngine.getRules().addAll(RulePersistenceManager.loadRules());
+
+        ruleObservableList =
+                FXCollections.observableArrayList(ruleEngine.getRules());
 
         RuleList.setItems(ruleObservableList);
         RuleList.setCellFactory(lv -> new RuleCell());
 
+        // Initialize sidebar state (hidden)
         sidebar.setVisible(false);
         sidebar.setManaged(false);
         sidebar.setTranslateX(-320);
@@ -82,12 +83,10 @@ public class MainPageController implements Initializable {
     // ======================================================
     @FXML
     private void toggleSidebar() {
-        boolean visible = sidebar.isVisible();
-
         TranslateTransition tt =
                 new TranslateTransition(Duration.millis(250), sidebar);
 
-        if (!visible) {
+        if (!sidebar.isVisible()) {
             sidebar.setManaged(true);
             sidebar.setVisible(true);
             tt.setFromX(-320);
@@ -104,117 +103,161 @@ public class MainPageController implements Initializable {
     }
 
     // ======================================================
-    // CREATE RULE (IDENTICA ALLA TUA)
+    // CREATE RULE (Using Factory Manager)
     // ======================================================
     @FXML
-    public void confirmButtonPushed(javafx.event.ActionEvent event) {
+    public void confirmButtonPushed() {
 
         String ruleName = RuleNameTextArea.getText();
-        String selectedTrigger = triggerDropDownMenu.getValue();
-        String selectedAction = actionDropDownMenu.getValue();
-
         if (ruleName == null || ruleName.isBlank()) {
             showAlert("Error", "Rule name required", Alert.AlertType.ERROR);
             return;
         }
 
-        if (selectedTrigger == null || selectedAction == null) {
-            showAlert("Error", "Select trigger and action", Alert.AlertType.ERROR);
+        String triggerType = triggerDropDownMenu.getValue();
+        String actionType = actionDropDownMenu.getValue();
+
+        if (triggerType == null || actionType == null) {
+            showAlert("Error", "Select both trigger and action", Alert.AlertType.ERROR);
             return;
         }
 
-        switch (selectedTrigger) {
-            case "Temporal Trigger":
-                SelectTimeController stc =
-                        openNewWindow("SelectTime.fxml", "Select time");
-                if (stc != null) chosenTrigger = stc.getFinalTrigger();
-                break;
-            case "File Exists Trigger":
-                FileExistsController fec =
-                        openNewWindow("FileExistsView.fxml", "Configure File Trigger");
-                if (fec != null) chosenTrigger = fec.getFinalTrigger();
-                break;
-            case "Location Trigger":
-                showAlert("WIP", "Location trigger not implemented",
-                        Alert.AlertType.INFORMATION);
-                return;
+        try {
+            //
+
+            // 1. CREATE TRIGGER via Factory Manager
+            chosenTrigger = RuleFactoryManager.createTrigger(triggerType);
+
+            // 2. CONFIGURE TRIGGER (Open specific UI)
+            // We use the switch here to map the Trigger Type to its specific Configuration View
+            switch (triggerType) {
+                case "Temporal Trigger" -> openNewWindowWithInjection(
+                        "/flowmate_team5/SelectTime.fxml",
+                        "Select Time",
+                        (SelectTimeController c) ->
+                                c.setTrigger((TemporalTrigger) chosenTrigger)
+                );
+                case "File Exists Trigger" -> openNewWindowWithInjection(
+                        "/flowmate_team5/FileExistsView.fxml",
+                        "Configure File Trigger",
+                        (FileExistsController c) ->
+                                c.setTrigger((FileExistsTrigger) chosenTrigger)
+                );
+            }
+
+            // 3. CREATE ACTION via Factory Manager
+            chosenAction = RuleFactoryManager.createAction(actionType);
+
+            // 4. CONFIGURE ACTION (Open specific UI)
+            switch (actionType) {
+                case "Message Action" -> openNewWindowWithInjection(
+                        "/flowmate_team5/WriteAMessage.fxml",
+                        "Message",
+                        (WriteAMessageController c) ->
+                                c.setAction((MessageAction) chosenAction)
+                );
+                case "Play Audio Action" -> openNewWindowWithInjection(
+                        "/flowmate_team5/SelectAudioPath.fxml",
+                        "Audio",
+                        (SelectAudioPathController c) ->
+                                c.setAction((PlayAudioAction) chosenAction)
+                );
+                case "Write to Text File Action" -> openNewWindowWithInjection(
+                        "/flowmate_team5/WriteOnFile.fxml",
+                        "Write to File",
+                        (WriteOnFileController c) ->
+                                c.setAction((TextAction) chosenAction)
+                );
+                case "Copy File Action" -> openNewWindowWithInjection(
+                        "/flowmate_team5/CopyFileView.fxml",
+                        "Copy File",
+                        (CopyFileController c) ->
+                                c.setAction((CopyFileAction) chosenAction)
+                );
+                case "Move File Action" -> openNewWindowWithInjection(
+                        "/flowmate_team5/MoveFileView.fxml",
+                        "Move File",
+                        (MoveFileController c) ->
+                                c.setAction((MoveFileAction) chosenAction)
+                );
+                case "Delete File Action" -> openNewWindowWithInjection(
+                        "/flowmate_team5/DeleteFileView.fxml",
+                        "Delete File",
+                        (DeleteFileController c) ->
+                                c.setAction((DeleteFileAction) chosenAction)
+                );
+            }
+
+            // 5. ASSEMBLE RULE
+            Rule rule = new Rule(ruleName, chosenTrigger, chosenAction);
+            ruleEngine.addRule(rule);
+            ruleObservableList.add(rule);
+
+            // Clear input
+            RuleNameTextArea.clear();
+            triggerDropDownMenu.getSelectionModel().clearSelection();
+            actionDropDownMenu.getSelectionModel().clearSelection();
+
+        } catch (IllegalArgumentException e) {
+            showAlert("Factory Error", e.getMessage(), Alert.AlertType.ERROR);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Error", "An unexpected error occurred", Alert.AlertType.ERROR);
         }
-
-        switch (selectedAction) {
-            case "Message Action":
-                WriteAMessageController wamc =
-                        openNewWindow("WriteAMessage.fxml", "Message");
-                if (wamc != null) chosenAction = wamc.getFinalAction();
-                break;
-
-            case "Play Audio Action":
-                SelectAudioPathController sapc =
-                        openNewWindow("SelectAudioPath.fxml", "Audio");
-                if (sapc != null) chosenAction = sapc.getFinalAction();
-                break;
-
-            case "Write to Text File Action":
-                WriteOnFileController wofc =
-                        openNewWindow("WriteOnFile.fxml", "Write to file");
-                if (wofc != null) chosenAction = wofc.getFinalAction();
-                break;
-
-            case "Delete File Action":
-                DeleteFileController dfc =
-                        openNewWindow("DeleteFileView.fxml", "Delete file");
-                if (dfc != null) chosenAction = dfc.getFinalAction();
-                break;
-            case "Move File Action":
-                MoveFileController mfc =
-                        openNewWindow("MoveFileView.fxml", "Move File");
-                if (mfc != null) chosenAction = mfc.getFinalAction();
-                break;
-            default:
-                showAlert("WIP", "Action not implemented",
-                        Alert.AlertType.INFORMATION);
-                return;
-        }
-
-        if (chosenTrigger == null || chosenAction == null) return;
-
-        Rule rule = new Rule(ruleName, chosenTrigger, chosenAction);
-        ruleEngine.addRule(rule);
-        ruleObservableList.add(rule);
-
-        RuleNameTextArea.clear();
-        chosenTrigger = null;
-        chosenAction = null;
     }
 
     // ======================================================
-    // CUSTOM RULE CELL (SIDEBAR)
+    // GENERIC WINDOW OPENER + INJECTION
+    // ======================================================
+    private <T> void openNewWindowWithInjection(
+            String fxmlPath,
+            String title,
+            Consumer<T> injector
+    ) {
+        try {
+            FXMLLoader loader =
+                    new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+
+            T controller = loader.getController();
+            // Inject the specific object into the controller
+            injector.accept(controller);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle(title);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ======================================================
+    // SIDEBAR RULE CELL (Custom List View Item)
     // ======================================================
     private class RuleCell extends ListCell<Rule> {
 
-        private final VBox root = new VBox(6);
-
-        // titolo
+        private final VBox root = new VBox(8);
         private final Circle statusDot = new Circle(6);
         private final Label nameLabel = new Label();
-        private final HBox titleBox = new HBox(8);
-
-        // dettagli
         private final Label descriptionLabel = new Label();
+
         private final Button toggleActiveBtn = new Button();
         private final Button sleepBtn = new Button("Sleep");
         private final Button deleteBtn = new Button("Delete");
-        private final VBox detailsBox = new VBox(6);
 
+        private final VBox detailsBox = new VBox(6);
         private boolean expanded = false;
 
         RuleCell() {
-            root.setPadding(new Insets(8));
-
-            titleBox.setAlignment(Pos.CENTER_LEFT);
+            root.setPadding(new Insets(10));
             nameLabel.setStyle("-fx-font-weight: bold;");
-            titleBox.getChildren().addAll(statusDot, nameLabel);
 
-            descriptionLabel.setStyle("-fx-text-fill: #555;");
+            HBox header = new HBox(8, statusDot, nameLabel);
+            header.setAlignment(Pos.CENTER_LEFT);
+
             deleteBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
 
             detailsBox.getChildren().addAll(
@@ -226,28 +269,55 @@ public class MainPageController implements Initializable {
             detailsBox.setVisible(false);
             detailsBox.setManaged(false);
 
-            root.getChildren().addAll(titleBox, detailsBox);
+            root.getChildren().addAll(header, detailsBox);
 
+            // Expand/Collapse logic
             root.setOnMouseClicked(e -> {
                 expanded = !expanded;
                 detailsBox.setVisible(expanded);
                 detailsBox.setManaged(expanded);
             });
 
+            // Toggle Active State
             toggleActiveBtn.setOnAction(e -> {
                 Rule r = getItem();
                 if (r != null) {
                     r.setActive(!r.isActive());
                     updateItem(r, false);
                 }
+                e.consume();
             });
 
+            // Delete Rule
             deleteBtn.setOnAction(e -> {
                 Rule r = getItem();
-                if (r != null) deleteSpecificRule(r);
+                if (r == null) return;
+
+                Alert a = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Delete rule \"" + r.getName() + "\"?",
+                        ButtonType.OK, ButtonType.CANCEL);
+
+                a.showAndWait().ifPresent(btn -> {
+                    if (btn == ButtonType.OK) {
+                        ruleEngine.deleteRule(r);
+                        ruleObservableList.remove(r);
+                    }
+                });
+                e.consume();
             });
 
-            sleepBtn.setOnAction(e -> openSleepDialog());
+            // Set Sleep Mode
+            sleepBtn.setOnAction(e -> {
+                Rule r = getItem();
+                if (r == null) return;
+
+                SleepingStateController controller = openSleepWindow();
+                if (controller != null && controller.getSleepDuration() != null) {
+                    r.setSleepDuration(controller.getSleepDuration().toMillis());
+                    updateItem(r, false);
+                }
+                e.consume();
+            });
         }
 
         @Override
@@ -260,25 +330,19 @@ public class MainPageController implements Initializable {
             }
 
             nameLabel.setText(rule.getName());
-
-            // ---- STATO VISIVO SEMPLICE ----
-            if (!rule.isActive()) {
-                statusDot.setFill(Color.RED);
-                statusDot.setStroke(null);
-            } else if (rule.getSleepDurationMillis() > 0) {
-                // Regola con sleep configurata
-                statusDot.setFill(Color.YELLOW);
-                statusDot.setStrokeWidth(2);
-            } else {
-                statusDot.setFill(Color.LIMEGREEN);
-                statusDot.setStroke(null);
-            }
-
             descriptionLabel.setText(
                     rule.getTrigger().getClass().getSimpleName()
                             + " → "
                             + rule.getAction().getClass().getSimpleName()
             );
+
+            if (!rule.isActive()) {
+                statusDot.setFill(Color.RED);
+            } else if (rule.getSleepDurationMillis() > 0) {
+                statusDot.setFill(Color.GOLD); // Yellow for sleeping
+            } else {
+                statusDot.setFill(Color.LIMEGREEN);
+            }
 
             toggleActiveBtn.setText(
                     rule.isActive() ? "Deactivate" : "Activate"
@@ -286,64 +350,34 @@ public class MainPageController implements Initializable {
 
             setGraphic(root);
         }
-
-        private void openSleepDialog() { // <--- AGGIORNAMENTO LOGICA SLEEP
-            Rule rule = getItem();
-            if (rule == null) return;
-
-            // Apri la nuova finestra FXML e recupera il controller
-            SleepingStateController ssc =
-                    openNewWindow("SleepingStateView.fxml", "Set Sleep Duration");
-
-            if (ssc != null) {
-                // Recupera la durata di sleep calcolata in java.time.Duration
-                java.time.Duration sleepDuration = ssc.getSleepDuration();
-
-                if (sleepDuration != null) {
-                    // Converte java.time.Duration in millisecondi (long)
-                    long durationMillis = sleepDuration.toMillis();
-
-                    // Aggiorna la Rule
-                    rule.setSleepDuration(durationMillis);
-
-                    // Forza l'aggiornamento della cella
-                    updateItem(rule, false);
-                }
-            }
-        } // <--- FINE AGGIORNAMENTO LOGICA SLEEP
     }
 
     // ======================================================
-    // UTILITIES
+    // SLEEP WINDOW
     // ======================================================
-    private void deleteSpecificRule(Rule rule) {
-        Alert a = new Alert(Alert.AlertType.CONFIRMATION,
-                "Delete rule " + rule.getName() + "?",
-                ButtonType.OK, ButtonType.CANCEL);
-        a.showAndWait().ifPresent(r -> {
-            if (r == ButtonType.OK) {
-                ruleEngine.deleteRule(rule);
-                ruleObservableList.remove(rule);
-            }
-        });
-    }
-
-    private <T> T openNewWindow(String fxml, String title) {
+    private SleepingStateController openSleepWindow() {
         try {
-            FXMLLoader l = new FXMLLoader(getClass().getResource(fxml));
-            Parent p = l.load();
-            Stage s = new Stage();
-            s.initModality(Modality.APPLICATION_MODAL);
-            s.setTitle(title);
-            s.setScene(new Scene(p));
-            s.showAndWait();
-            return l.getController();
+            FXMLLoader loader =
+                    new FXMLLoader(getClass().getResource(
+                            "/flowmate_team5/SleepingStateView.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Set Sleep Duration");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            return loader.getController();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
 
+    // ======================================================
+    // UTIL
+    // ======================================================
     private void showAlert(String title, String msg, Alert.AlertType type) {
         Alert a = new Alert(type, msg, ButtonType.OK);
         a.setTitle(title);
