@@ -2,27 +2,30 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.geometry.Insets?>
 
+<?import javafx.scene.image.Image?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="flowmate_team5.MainPageController">
+            fx:controller="flowmate_team5.MainPageController"
+            stylesheets="@mainpage.css">
 
     <!-- TOP BAR -->
     <top>
         <HBox alignment="CENTER_LEFT"
               spacing="10"
-              style="-fx-padding:10; -fx-background-color:#f4f4f4;">
+              style="-fx-padding:10;">
             <Button text="⋮"
                     onAction="#toggleSidebar"
-                    style="-fx-font-size:18;" />
+                    styleClass="menu-button"/>
         </HBox>
     </top>
 
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR (INVARIATA) -->
     <left>
         <AnchorPane fx:id="sidebar"
                     prefWidth="320"
-                    style="-fx-background-color:#ffffff;">
+                    styleClass="sidebar">
             <ListView fx:id="RuleList"
                       AnchorPane.topAnchor="0"
                       AnchorPane.bottomAnchor="0"
@@ -33,34 +36,63 @@
 
     <!-- CENTRO -->
     <center>
-        <VBox spacing="12"
-              alignment="TOP_CENTER"
-              style="-fx-padding:20;">
+        <VBox spacing="25"
+              alignment="CENTER"
+              styleClass="main-container">
 
-            <Label fx:id="Title"
-                   text="FlowMate"
-                   style="-fx-font-size:24; -fx-font-weight:bold;" />
+            <!-- TITOLO -->
+            <Label text="FlowMate"
+                   styleClass="app-title"/>
 
-            <Label fx:id="Introduction"
-                   text="Create your automation rules below."
-                   wrapText="true" />
+            <!-- LOGO -->
+            <ImageView fitWidth="300"
+                       fitHeight="300"
+                       preserveRatio="true">
+                <image>
+                    <Image url="@images/AppIcon.png"/>
+                </image>
+            </ImageView>
 
-            <TextField fx:id="RuleNameTextArea"
-                       promptText="Rule name"
-                       maxWidth="300"/>
 
-            <ComboBox fx:id="triggerDropDownMenu"
-                      promptText="Select Trigger"
-                      maxWidth="300"/>
+            <!-- TRIGGER → ACTION -->
+            <HBox spacing="20"
+                  alignment="CENTER">
 
-            <ComboBox fx:id="actionDropDownMenu"
-                      promptText="Select Action"
-                      maxWidth="300"/>
+                <VBox spacing="6" alignment="CENTER">
+                    <Label text="Select a Trigger" styleClass="section-label"/>
+                    <ComboBox fx:id="triggerDropDownMenu"
+                              prefWidth="220"/>
+                </VBox>
 
+                <ImageView fitHeight="40"
+                           preserveRatio="true">
+                    <image>
+                        <Image url="@images/arrowImage.png"/>
+                    </image>
+                </ImageView>
+
+
+                <VBox spacing="6" alignment="CENTER">
+                    <Label text="Select an Action" styleClass="section-label"/>
+                    <ComboBox fx:id="actionDropDownMenu"
+                              prefWidth="220"/>
+                </VBox>
+            </HBox>
+
+            <!-- RULE NAME -->
+            <VBox spacing="6" alignment="CENTER">
+                <Label text="Rule name" styleClass="section-label"/>
+                <TextField fx:id="RuleNameTextArea"
+                           prefWidth="300"
+                           promptText="Enter rule name"/>
+            </VBox>
+
+            <!-- CREATE -->
             <Button fx:id="createRuleButton"
                     text="Create Rule"
                     onAction="#confirmButtonPushed"
-                    maxWidth="200"/>
+                    styleClass="create-button"/>
+
         </VBox>
     </center>
 
