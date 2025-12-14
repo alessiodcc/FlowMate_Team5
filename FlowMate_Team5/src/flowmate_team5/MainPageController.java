@@ -2,7 +2,6 @@ package flowmate_team5;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javafx.animation.TranslateTransition;
@@ -288,63 +287,33 @@ public class MainPageController implements Initializable {
             setGraphic(root);
         }
 
-        private void openSleepDialog() {
+        private void openSleepDialog() { // <--- AGGIORNAMENTO LOGICA SLEEP
             Rule rule = getItem();
             if (rule == null) return;
 
-            Dialog<Void> dialog = new Dialog<>();
-            dialog.setTitle("Sleep configuration");
-            dialog.setHeaderText("Set sleep duration");
+            // Apri la nuova finestra FXML e recupera il controller
+            SleepingStateController ssc =
+                    openNewWindow("SleepingStateView.fxml", "Set Sleep Duration");
 
-            ButtonType confirmBtn =
-                    new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
-            dialog.getDialogPane().getButtonTypes()
-                    .addAll(confirmBtn, ButtonType.CANCEL);
+            if (ssc != null) {
+                // Recupera la durata di sleep calcolata in java.time.Duration
+                java.time.Duration sleepDuration = ssc.getSleepDuration();
 
-            TextField valueField = new TextField();
-            valueField.setPromptText("Value");
+                if (sleepDuration != null) {
+                    // Converte java.time.Duration in millisecondi (long)
+                    long durationMillis = sleepDuration.toMillis();
 
-            ComboBox<String> unitBox = new ComboBox<>();
-            unitBox.getItems().addAll("Seconds", "Minutes", "Hours");
-            unitBox.setValue("Seconds");
+                    // Aggiorna la Rule
+                    rule.setSleepDuration(durationMillis);
 
-            VBox content = new VBox(10,
-                    new Label("Duration:"),
-                    valueField,
-                    unitBox
-            );
-            dialog.getDialogPane().setContent(content);
-
-            dialog.setResultConverter(btn -> {
-                if (btn == confirmBtn) {
-                    try {
-                        long value = Long.parseLong(valueField.getText());
-                        if (value < 0) return null;
-
-                        long millis;
-                        switch (unitBox.getValue()) {
-                            case "Minutes":
-                                millis = value * 60_000;
-                                break;
-                            case "Hours":
-                                millis = value * 3_600_000;
-                                break;
-                            default:
-                                millis = value * 1_000;
-                        }
-
-                        rule.setSleepDuration(millis);
-                    } catch (NumberFormatException ignored) {
-                    }
+                    // Forza l'aggiornamento della cella
+                    updateItem(rule, false);
                 }
-                return null;
-            });
-
-            dialog.showAndWait();
-        }
+            }
+        } // <--- FINE AGGIORNAMENTO LOGICA SLEEP
     }
 
-        // ======================================================
+    // ======================================================
     // UTILITIES
     // ======================================================
     private void deleteSpecificRule(Rule rule) {

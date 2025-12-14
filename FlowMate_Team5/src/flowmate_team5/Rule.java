@@ -24,14 +24,23 @@ public class Rule implements Serializable {
      */
     public void check() {
         if (this.active) {
+            // [C.1] GUARDIA DI COOLDOWN
             if (System.currentTimeMillis() < canBeFiredAfter) {
+                // AGGIUNTO LOG DI DEBUG PER VERIFICARE IL BLOCCO
+                System.out.println(
+                        "[Rule Blocked]: " + this.name +
+                                " is still in cooldown until: " +
+                                new java.util.Date(canBeFiredAfter)
+                );
                 return;
             }
+
+            // [C.2] CONTROLLO TRIGGER
             if (this.trigger != null && this.trigger.isTriggered()) {
-                if (this.action != null) {
-                    this.action.execute();
-                    System.out.println("[Rule Fired]: " + this.name);
-                }
+
+                // --- INIZIO CORREZIONE: Imposta il cooldown PRIMA di eseguire l'azione ---
+
+                // Imposta il Cooldown / One-Shot (PRIORITÀ)
                 if (this.sleepDurationMillis > 0) {
                     this.canBeFiredAfter = System.currentTimeMillis() + this.sleepDurationMillis;
                     System.out.println("[Rule Cooldown]: " + this.name + " in sleep until: " + new java.util.Date(canBeFiredAfter));
@@ -39,6 +48,12 @@ public class Rule implements Serializable {
                     // Se sleepDurationMillis è 0, la regola è in modalità one-shot
                     this.active = false;
                     System.out.println("[Rule One-Shot]: " + this.name + " disattivata dopo l'esecuzione.");
+                }
+
+                // Esegui l'Azione
+                if (this.action != null) {
+                    System.out.println("[Rule Fired]: " + this.name);
+                    this.action.execute(); // L'azione può bloccare, ma il cooldown è già impostato!
                 }
             }
         }
