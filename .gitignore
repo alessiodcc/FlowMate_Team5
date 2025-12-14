@@ -65,6 +65,7 @@ $RECYCLE.BIN/
 *.msp
 
 out/
+rules.dat
 
 # Windows shortcuts
 *.lnk
