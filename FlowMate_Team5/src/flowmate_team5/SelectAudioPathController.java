@@ -16,66 +16,65 @@ import javafx.stage.Stage;
 public class SelectAudioPathController implements Initializable {
 
     @FXML
-    private TextField pathTextField; // FXML field to display the selected audio file path
-    private PlayAudioAction finalAction;
+    private TextField pathTextField;
+
+    // Action instance received from the main controller (NOT created here)
+    private PlayAudioAction action;
+
+    public void setAction(PlayAudioAction action) {
+        this.action = action;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        pathTextField.setEditable(false); // Prevent the user from manually typing the path; selection via FileChooser is mandatory.
+        // Set path field to read-only to ensure valid file selection via the button
+        pathTextField.setEditable(false);
     }
 
-    public PlayAudioAction getFinalAction() {
-        return finalAction;
-    }
-
-    /**
-     * Handles the 'Browse' button push. Opens a native file dialog (FileChooser)
-     * for the user to select an audio file.
-     */
     @FXML
     public void selectFileButtonPushed() {
-        FileChooser fileChooser = new FileChooser();
 
+        FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Audio File (.wav)");
 
+        // Filter for supported audio formats (standard Java Sound API supports WAV, AIFF)
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Audio Files (WAV, AIFF)", "*.wav", "*.aiff", "*.aif")
+                new FileChooser.ExtensionFilter(
+                        "Audio Files (WAV, AIFF)", "*.wav", "*.aiff", "*.aif"
+                )
         );
 
         Stage stage = (Stage) pathTextField.getScene().getWindow();
         File selectedFile = fileChooser.showOpenDialog(stage);
 
         if (selectedFile != null) {
-            // Display the absolute path of the selected file in the TextField.
             pathTextField.setText(selectedFile.getAbsolutePath());
         }
     }
 
-    /**
-     * Handles the 'Confirm' button push. Validates the selected path,
-     * creates the final PlayAudioAction, and closes the modal window.
-     * * @param event The ActionEvent from the button press.
-     */
     @FXML
     public void confirmButtonPushed(ActionEvent event) {
+
         String audioPath = pathTextField.getText();
 
-        // Validation: Check if a file path was selected.
+        // Validate that a file has been selected
         if (audioPath == null || audioPath.trim().isEmpty()) {
             Alert emptyAlert = new Alert(AlertType.ERROR);
             emptyAlert.setTitle("ATTENTION!");
-
-            emptyAlert.setHeaderText("To continue, you must select the audio file path using the 'Browse' button.");
-
+            emptyAlert.setHeaderText(
+                    "To continue, you must select the audio file path using the 'Browse' button."
+            );
             emptyAlert.showAndWait();
             return;
         }
 
-        this.finalAction = new PlayAudioAction(audioPath.trim());
+        // ONLY configuration logic
+        action.setFilePath(audioPath.trim());
 
-        // Close the modal stage
-        Node source = (Node) event.getSource();
-        Stage stage = (Stage) source.getScene().getWindow();
+        // Close window
+        Stage stage = (Stage) ((Node) event.getSource())
+                .getScene()
+                .getWindow();
         stage.close();
     }
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package flowmate_team5;
 
 import java.net.URL;
@@ -21,40 +16,37 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
-/**
- * FXML Controller class
- *
- * @author Alessio
- */
 public class SelectTimeController implements Initializable {
 
     @FXML
     private TextArea Title;
+
     @FXML
     private TextArea Introduction;
+
     @FXML
     private ComboBox<Integer> HourDropDownMenu;
+
     @FXML
     private ComboBox<Integer> MinutesDropDownMenu;
+
     @FXML
     private Button confirmButton;
-    private TemporalTrigger finalTrigger;
 
-    public TemporalTrigger getFinalTrigger() {
-        return finalTrigger;
+    // Trigger instance received from the main controller (NOT created here)
+    private TemporalTrigger trigger;
+
+    public void setTrigger(TemporalTrigger trigger) {
+        this.trigger = trigger;
     }
 
-    /**
-     * Initializes the controller class.
-     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Population of the ComboBoxes using a auxiliary method
+        // Initialize dropdowns for hours (0-23) and minutes (0-59)
         populateTimeComboBoxes(HourDropDownMenu, 0, 23);
         populateTimeComboBoxes(MinutesDropDownMenu, 0, 59);
     }
 
-    // Auxiliar method to customize the ComboBoxes for both the hours and the minutes
     private void populateTimeComboBoxes(ComboBox<Integer> comboBox, int min, int max) {
         ObservableList<Integer> options = FXCollections.observableArrayList();
         for (int i = min; i <= max; i++) {
@@ -62,8 +54,8 @@ public class SelectTimeController implements Initializable {
         }
         comboBox.setItems(options);
 
-        // Applies two-digit zero-padding formatting (ex -> 5 becomes 05) to its displayed items.
-        comboBox.setCellFactory(lv -> new javafx.scene.control.ListCell<Integer>() {
+        // Set cell factory to format numbers with leading zeros (e.g., 05)
+        comboBox.setCellFactory(lv -> new javafx.scene.control.ListCell<>() {
             @Override
             protected void updateItem(Integer item, boolean empty) {
                 super.updateItem(item, empty);
@@ -71,36 +63,37 @@ public class SelectTimeController implements Initializable {
             }
         });
 
+        // Ensure the selected value button also uses the formatted view
         comboBox.setButtonCell(comboBox.getCellFactory().call(null));
     }
 
-    // Method executed when the confirm button is pushed
     @FXML
     public void confirmButtonPushed(ActionEvent event) {
+
         Integer selectedHour = HourDropDownMenu.getValue();
         Integer selectedMinutes = MinutesDropDownMenu.getValue();
 
-        // To guarantee that the user confirms only when he has selected both the hour and the minute
+        // Validate input
         if (selectedHour == null || selectedMinutes == null) {
-            Alert emptyAlert = new Alert(AlertType.ERROR);
-            emptyAlert.setTitle("ATTENTION!");
-            emptyAlert.setHeaderText("To continue, it's necessary that you select both the hour and the minute!");
-
-            emptyAlert.showAndWait();
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("ATTENTION!");
+            alert.setHeaderText(
+                    "To continue, it's necessary that you select both the hour and the minute!"
+            );
+            alert.showAndWait();
             return;
         }
 
-
         LocalTime selectedTime = LocalTime.of(selectedHour, selectedMinutes);
 
-        // Creation of the Trigger
-        this.finalTrigger = new TemporalTrigger("TemporalTrigger1", selectedTime);
+        // ONLY configuration logic
+        trigger.setTriggerName("TemporalTrigger1");
+        trigger.setTimeToTrigger(selectedTime);
 
-        Node source = (Node) event.getSource();
-
-        Stage stage = (Stage) source.getScene().getWindow();
-
+        // Close the window
+        Stage stage = (Stage) ((Node) event.getSource())
+                .getScene()
+                .getWindow();
         stage.close();
-
     }
 }
