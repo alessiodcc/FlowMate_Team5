@@ -3,8 +3,11 @@ package flowmate_team5;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.io.ObjectInputStream;
+import java.lang.ClassNotFoundException;
 
 public class FileExistsTrigger implements Trigger, Serializable {
 
@@ -61,5 +64,21 @@ public class FileExistsTrigger implements Trigger, Serializable {
     @Override
     public String toString() {
         return "File Exists Trigger";
+    }
+    /**
+     * Called AUTOMATICALLY during LoadFromFile.
+     * Reconstructs the 'folderPath' because Path objects are not saved by default.
+     */
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        // 1. Load the data
+        in.defaultReadObject();
+
+        // 2. Read the path string we saved manually
+        String pathString = (String) in.readObject();
+
+        // 3. Convert it back to a Path object
+        if (pathString != null) {
+            this.folderPath = Path.of(pathString);
+        }
     }
 }
