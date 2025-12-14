@@ -1,45 +1,33 @@
 package flowmate_team5;
 
-import java.io.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.io.FileWriter;
+import java.io.IOException;
 
+public class TextAction implements Action {
 
-public class TextAction implements Action, Serializable {
+    private String filePath;
+    private String message;
 
-    private final String filePath;
-    private final String message;
+    public TextAction() {
+        // Empty constructor
+    }
 
-    public TextAction(String filePath, String message) {
+    public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public void setMessage(String message) {
         this.message = message;
     }
 
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-
     @Override
     public void execute() {
-
-        try ( PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath, true)))) {
-
-            out.print(message);
-
-            System.out.println("[Text Action] Scrittura riuscita sul file: " + filePath);
-
+        // Open the file in append mode (true)
+        try (FileWriter writer = new FileWriter(filePath, true)) {
+            // Write the message followed by a system-dependent line separator
+            writer.write(message + System.lineSeparator());
         } catch (IOException e) {
-            System.err.println("Errore I/O durante la TextAction sul file: " + filePath);
             e.printStackTrace();
         }
-    }
-    public String getMessageToShow() {
-        return message;
     }
 }

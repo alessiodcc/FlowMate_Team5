@@ -1,39 +1,28 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package flowmate_team5;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
-/**
- *
- * @author Alessio
- */
 public class TemporalTrigger implements Trigger, Serializable {
-    private String TriggerName; // Name of the trigger
-    transient LocalTime timeToTrigger; // the time that we want the trigger to fire
-    private boolean hasTriggered = false; // indicates if the trigger has already fired
 
-    // constructor that initializes all the Trigger's fields
-    public TemporalTrigger(String TriggerName, LocalTime timeToTrigger) {
-        this.TriggerName = TriggerName;
-        this.timeToTrigger = timeToTrigger.truncatedTo(ChronoUnit.MINUTES);
+    private String triggerName;
+    // Transient field requires custom serialization logic
+    transient private LocalTime timeToTrigger;
+    private boolean hasTriggered = false;
+
+    public TemporalTrigger() {
+        // Empty constructor (required for Factory Method)
     }
 
-    // Getter and Setter methods:
     public String getTriggerName() {
-        return TriggerName;
+        return triggerName;
     }
 
-    public void setTriggerName(String TriggerName) {
-        this.TriggerName = TriggerName;
+    public void setTriggerName(String triggerName) {
+        this.triggerName = triggerName;
     }
 
     public LocalTime getTimeToTrigger() {
@@ -41,32 +30,31 @@ public class TemporalTrigger implements Trigger, Serializable {
     }
 
     public void setTimeToTrigger(LocalTime timeToTrigger) {
-        this.timeToTrigger = timeToTrigger;
+        // Truncate input to minutes to ignore seconds during comparison
+        this.timeToTrigger = timeToTrigger.truncatedTo(ChronoUnit.MINUTES);
     }
 
     private void writeObject(ObjectOutputStream oos) throws IOException {
-        // 1. Scrive i campi NON transienti (TriggerName, hasTriggered)
         oos.defaultWriteObject();
-
+        // Manually serialize the LocalTime as seconds of the day
         oos.writeLong(timeToTrigger.toSecondOfDay());
     }
 
     @Override
     public boolean isTriggered() {
+        // Get current time truncated to minutes for precise comparison
         LocalTime currentTime = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
 
         if (currentTime.equals(timeToTrigger)) {
-            // if the timer has not already triggered
+            // Check flag to ensure trigger fires only once within the minute
             if (!hasTriggered) {
                 hasTriggered = true;
                 return true;
-            } else {
-                return false;
             }
+            return false;
         } else {
-            if (hasTriggered) {
-                hasTriggered = false;
-            }
+            // Reset flag when the time no longer matches
+            hasTriggered = false;
             return false;
         }
     }

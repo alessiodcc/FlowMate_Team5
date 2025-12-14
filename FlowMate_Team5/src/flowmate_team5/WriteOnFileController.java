@@ -16,25 +16,29 @@ public class WriteOnFileController implements Initializable {
 
     @FXML
     private TextField pathTextField;
+
     @FXML
     private TextField contentTextField;
 
-    private TextAction finalAction;
+    private TextAction action;
+
+    public void setAction(TextAction action) {
+        this.action = action;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Set path field to read-only to ensure valid file selection
         pathTextField.setEditable(false);
-    }
-
-    public TextAction getFinalAction() {
-        return finalAction;
     }
 
     @FXML
     public void browseButtonPushed() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Text File");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        // Filter to allow only text files
+        fileChooser.getExtensionFilters()
+                .add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
 
         Stage stage = (Stage) pathTextField.getScene().getWindow();
         File selectedFile = fileChooser.showOpenDialog(stage);
@@ -49,6 +53,7 @@ public class WriteOnFileController implements Initializable {
         String path = pathTextField.getText();
         String content = contentTextField.getText();
 
+        // Validate that both fields are populated
         if (path == null || path.isEmpty() || content == null || content.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("Missing Information");
@@ -57,8 +62,14 @@ public class WriteOnFileController implements Initializable {
             return;
         }
 
-        this.finalAction = new TextAction(path, content);
+        // Configure the action object
+        action.setFilePath(path);
+        action.setMessage(content);
 
-        ((Stage)((Node)event.getSource()).getScene().getWindow()).close();
+        // Close the window
+        ((Stage) ((Node) event.getSource())
+                .getScene()
+                .getWindow())
+                .close();
     }
 }
