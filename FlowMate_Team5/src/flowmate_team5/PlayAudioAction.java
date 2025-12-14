@@ -6,6 +6,7 @@ package flowmate_team5;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -17,7 +18,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  *
  * @author ester
  */
-public class PlayAudioAction implements Action{
+public class PlayAudioAction implements Action, Serializable {
     private final String filePath; // The absolute path to the audio file to be played.
 
     public PlayAudioAction(String filePath) {

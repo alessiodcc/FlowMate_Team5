@@ -1,5 +1,9 @@
 package flowmate_team5;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serial;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,9 +12,10 @@ import java.nio.file.Paths;
  *
  * @author Alessio
  */
-public class FileExistsTrigger implements Trigger{
+public class FileExistsTrigger implements Trigger, Serializable {
     private String fileName; // The name of the file.
-    private Path folderPath; // the path of the folder we want to search the file in.
+    transient Path folderPath; // the path of the folder we want to search the file in.
+    private boolean hasTriggered = false; // indicates if the trigger has already fired
 
     // Constructor
     public FileExistsTrigger(String fileName, Path folderPath) {
@@ -35,6 +40,13 @@ public class FileExistsTrigger implements Trigger{
         return fileName;
     }
 
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.defaultWriteObject();
+
+        oos.writeObject(folderPath.toString());
+    }
+
+
 
     @Override
     public boolean isTriggered() {
@@ -42,9 +54,18 @@ public class FileExistsTrigger implements Trigger{
         Path filePath = folderPath.resolve(fileName);
 
         // Checking if the file exists
-        if (Files.exists(filePath))
-            return true;
-        else
+        if (Files.exists(filePath)) {
+            if (!hasTriggered) {
+                hasTriggered = true;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (hasTriggered) {
+                hasTriggered = false;
+            }
             return false;
+        }
     }
 }

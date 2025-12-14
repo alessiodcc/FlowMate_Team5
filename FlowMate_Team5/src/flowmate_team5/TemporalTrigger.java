@@ -5,6 +5,10 @@
  */
 package flowmate_team5;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
@@ -12,15 +16,15 @@ import java.time.temporal.ChronoUnit;
  *
  * @author Alessio
  */
-public class TemporalTrigger implements Trigger{
+public class TemporalTrigger implements Trigger, Serializable {
     private String TriggerName; // Name of the trigger
-    private LocalTime timeToTrigger; // the time that we want the trigger to fire
+    transient LocalTime timeToTrigger; // the time that we want the trigger to fire
     private boolean hasTriggered = false; // indicates if the trigger has already fired
 
     // constructor that initializes all the Trigger's fields
     public TemporalTrigger(String TriggerName, LocalTime timeToTrigger) {
         this.TriggerName = TriggerName;
-        this.timeToTrigger = timeToTrigger.truncatedTo(ChronoUnit.MINUTES); 
+        this.timeToTrigger = timeToTrigger.truncatedTo(ChronoUnit.MINUTES);
     }
 
     // Getter and Setter methods:
@@ -38,6 +42,13 @@ public class TemporalTrigger implements Trigger{
 
     public void setTimeToTrigger(LocalTime timeToTrigger) {
         this.timeToTrigger = timeToTrigger;
+    }
+
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        // 1. Scrive i campi NON transienti (TriggerName, hasTriggered)
+        oos.defaultWriteObject();
+
+        oos.writeLong(timeToTrigger.toSecondOfDay());
     }
 
     @Override

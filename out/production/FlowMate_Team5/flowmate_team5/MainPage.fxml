@@ -1,85 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.Insets?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.layout.HBox?>
-<AnchorPane xmlns="http://javafx.com/javafx/23.0.1"
-            xmlns:fx="http://javafx.com/fxml/1"
+<?import javafx.scene.image.Image?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="flowmate_team5.MainPageController"
-            prefWidth="750" prefHeight="460">
+            stylesheets="@mainpage.css">
 
-    <children>
+    <!-- TOP BAR -->
+    <top>
+        <HBox alignment="CENTER_LEFT"
+              spacing="10"
+              style="-fx-padding:10;">
+            <Button text="⋮"
+                    onAction="#toggleSidebar"
+                    styleClass="menu-button"/>
+        </HBox>
+    </top>
 
-        <!-- SIDEBAR RULE LIST -->
-        <VBox prefWidth="180" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
-              style="-fx-background-color: #fafafa; -fx-border-color: #ddd;">
-            <children>
-                <Label text="YOUR RULES"
-                       style="-fx-text-fill: #C0392B; -fx-font-size: 16px; -fx-font-weight: bold;">
-                    <padding>
-                        <Insets top="10" right="10" bottom="10" left="10"/>
-                    </padding>
-                </Label>
-                <ListView fx:id="RuleList" VBox.vgrow="ALWAYS" />
-            </children>
-        </VBox>
+    <!-- SIDEBAR (INVARIATA) -->
+    <left>
+        <AnchorPane fx:id="sidebar"
+                    prefWidth="320"
+                    styleClass="sidebar">
+            <ListView fx:id="RuleList"
+                      AnchorPane.topAnchor="0"
+                      AnchorPane.bottomAnchor="0"
+                      AnchorPane.leftAnchor="0"
+                      AnchorPane.rightAnchor="0"/>
+        </AnchorPane>
+    </left>
 
-        <!-- MAIN CONTENT -->
-        <VBox spacing="20" AnchorPane.leftAnchor="180" AnchorPane.rightAnchor="0"
-              AnchorPane.topAnchor="20" AnchorPane.bottomAnchor="20"
-              alignment="TOP_CENTER">
+    <!-- CENTRO -->
+    <center>
+        <VBox spacing="25"
+              alignment="CENTER"
+              styleClass="main-container">
 
-            <!-- Logo -->
-            <ImageView fitHeight="110" preserveRatio="true">
+            <!-- TITOLO -->
+            <Label text="FlowMate"
+                   styleClass="app-title"/>
+
+            <!-- LOGO -->
+            <ImageView fitWidth="300"
+                       fitHeight="300"
+                       preserveRatio="true">
                 <image>
-                    <Image url="@images/AppLogo.png" />
+                    <Image url="@images/AppIcon.png"/>
                 </image>
             </ImageView>
 
-            <!-- Title -->
-            <Label text="Create your rule"
-                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #3498db;" />
 
-            <Label text="Select a Trigger and the Action you want to associate"
-                   style="-fx-font-size: 13px; -fx-text-fill: #555;" />
-
-            <!-- Trigger + arrow + Action -->
-            <HBox spacing="25"
+            <!-- TRIGGER → ACTION -->
+            <HBox spacing="20"
                   alignment="CENTER">
-                <ComboBox fx:id="triggerDropDownMenu" prefWidth="180" promptText="Select trigger"/>
 
-                <ImageView fitWidth="50" preserveRatio="true">
+                <VBox spacing="6" alignment="CENTER">
+                    <Label text="Select a Trigger" styleClass="section-label"/>
+                    <ComboBox fx:id="triggerDropDownMenu"
+                              prefWidth="220"/>
+                </VBox>
+
+                <ImageView fitHeight="40"
+                           preserveRatio="true">
                     <image>
                         <Image url="@images/arrowImage.png"/>
                     </image>
                 </ImageView>
 
-                <ComboBox fx:id="actionDropDownMenu" prefWidth="180" promptText="Select action"/>
+
+                <VBox spacing="6" alignment="CENTER">
+                    <Label text="Select an Action" styleClass="section-label"/>
+                    <ComboBox fx:id="actionDropDownMenu"
+                              prefWidth="220"/>
+                </VBox>
             </HBox>
 
-            <!-- Rule name + button -->
-            <HBox spacing="15" alignment="CENTER">
-                <TextField fx:id="RuleNameTextArea" prefWidth="260"
-                           promptText="Insert the rule name..." />
-                <Button fx:id="createRuleButton" text="Create rule"
-                        onAction="#confirmButtonPushed"
-                        style="-fx-background-color: #3498db; -fx-text-fill: white;
-                               -fx-background-radius: 6;" />
-            </HBox>
+            <!-- RULE NAME -->
+            <VBox spacing="6" alignment="CENTER">
+                <Label text="Rule name" styleClass="section-label"/>
+                <TextField fx:id="RuleNameTextArea"
+                           prefWidth="300"
+                           promptText="Enter rule name"/>
+            </VBox>
+
+            <!-- CREATE -->
+            <Button fx:id="createRuleButton"
+                    text="Create Rule"
+                    onAction="#confirmButtonPushed"
+                    styleClass="create-button"/>
 
         </VBox>
+    </center>
 
-    </children>
-
-</AnchorPane>
+</BorderPane>

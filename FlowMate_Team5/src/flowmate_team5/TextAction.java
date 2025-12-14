@@ -1,14 +1,11 @@
 package flowmate_team5;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 
-public class TextAction implements Action {
+public class TextAction implements Action, Serializable {
 
     private final String filePath;
     private final String message;
