@@ -169,7 +169,7 @@ public class MainPageController implements Initializable {
                                 c.setAction((TextAction) chosenAction)
                 );
                 case "Copy File Action" -> openNewWindowWithInjection(
-                        "/flowmate_team5/CopyFileView.fxml",
+                        "/flowmate_team5/CopyFile.fxml",
                         "Copy File",
                         (CopyFileController c) ->
                                 c.setAction((CopyFileAction) chosenAction)
