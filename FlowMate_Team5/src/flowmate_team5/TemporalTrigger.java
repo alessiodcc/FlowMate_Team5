@@ -1,9 +1,6 @@
 package flowmate_team5;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
@@ -41,19 +38,6 @@ public class TemporalTrigger implements Trigger, Serializable {
         oos.writeLong(timeToTrigger.toSecondOfDay());
     }
 
-    /**
-     * Custom deserialization logic to handle the transient LocalTime field.
-     */
-    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-        ois.defaultReadObject();
-
-        long secondsOfDay = ois.readLong();
-
-        this.timeToTrigger = LocalTime.ofSecondOfDay(secondsOfDay);
-
-        this.timeToTrigger = this.timeToTrigger.truncatedTo(ChronoUnit.MINUTES);
-    }
-
     @Override
     public boolean isTriggered() {
         // Get current time truncated to minutes for precise comparison
@@ -71,5 +55,20 @@ public class TemporalTrigger implements Trigger, Serializable {
             hasTriggered = false;
             return false;
         }
+    }
+    /**
+     * Called AUTOMATICALLY during LoadFromFile.
+     * Reconstructs 'timeToTrigger' from the saved seconds value.
+     */
+    @Serial
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        // Load standard fields
+        in.defaultReadObject();
+
+        // Read the "seconds of day" long value we saved manually
+        long seconds = in.readLong();
+
+        // Convert it back to a LocalTime object
+        this.timeToTrigger = LocalTime.ofSecondOfDay(seconds);
     }
 }
