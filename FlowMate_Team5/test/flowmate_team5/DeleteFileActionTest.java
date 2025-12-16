@@ -20,15 +20,22 @@ public class DeleteFileActionTest {
     private Path tempFile;
     private final String TEST_FILE_NAME = "temp_test_file.txt";
 
+    private DeleteFileActionCreator creator;
+    private DeleteFileAction dfa;
+
     /**
      Executed before every test, this method creates a temporary directory and file
      in order to allow testing from every machine.
+     It also initializes a DeleteFileAction object that will be used in the test methods.
      */
     @BeforeEach
-    void directoryAndFileSetUp() throws IOException {
+    void InitialSetUp() throws IOException {
         tempDir = Files.createTempDirectory("flowmate_test");
         tempFile = tempDir.resolve(TEST_FILE_NAME);
         Files.createFile(tempFile);
+
+        this.creator = new DeleteFileActionCreator();
+        dfa = (DeleteFileAction) creator.createAction();
     }
 
     /**
@@ -47,7 +54,7 @@ public class DeleteFileActionTest {
      */
     @Test
     void fileStillExistsShouldBeFalse() {
-        DeleteFileAction dfa = new DeleteFileAction(tempFile);
+        dfa.setFilePath(tempFile);
         dfa.execute();
         assertFalse(Files.exists(tempFile));
     }
@@ -63,7 +70,7 @@ public class DeleteFileActionTest {
         Path nonExistentPath = tempDir.resolve("non_existent_file.tmp");
         // to be sure that the file created doesn't exist.
         assertFalse(Files.exists(nonExistentPath));
-        DeleteFileAction dfa = new DeleteFileAction(nonExistentPath);
+        dfa.setFilePath(tempFile);
         // Verifies that the method doesn't throw any exception blocking the execution flow.
         assertDoesNotThrow(dfa::execute, "Executing on non-existent file should not throw an exception.");
     }
