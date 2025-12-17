@@ -1,140 +1,108 @@
 package flowmate_team5;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TextActionTest {
+class TextActionTest {
 
-    private Path tempFilePath;
-    private String tempFilePathString;
-
+    private Path tempFile;
     private final java.io.ByteArrayOutputStream errContent = new java.io.ByteArrayOutputStream();
     private final java.io.PrintStream originalErr = System.err;
 
-    private CreatorAction creator;
-
     @BeforeEach
-    public void setUp() throws IOException {
-        tempFilePath = Files.createTempFile("TextActionTest", ".txt");
-        tempFilePathString = tempFilePath.toString();
-
+    void setUp() throws IOException {
+        tempFile = Files.createTempFile("TextActionTest", ".txt");
         System.setErr(new java.io.PrintStream(errContent));
-
-        // Factory Method
-        creator = new TextActionCreator();
     }
 
     @AfterEach
-    public void tearDown() throws IOException {
+    void tearDown() throws IOException {
         System.setErr(originalErr);
-        Files.deleteIfExists(tempFilePath);
+        Files.deleteIfExists(tempFile);
     }
 
-    /**
-     * Utility method to create and configure a TextAction via Factory Method.
-     */
-    private TextAction createConfiguredTextAction(String path, String message) {
-        Action action = creator.createAction();
-        assertTrue(action instanceof TextAction,
-                "Factory must create a TextAction.");
-
-        TextAction textAction = (TextAction) action;
-        textAction.setFilePath(path);
-        textAction.setMessage(message);
-
-        return textAction;
+    private TextAction createConfiguredAction(String path, String message) {
+        TextAction action = new TextAction();
+        action.setFilePath(path);
+        action.setMessage(message);
+        return action;
     }
 
-    /**
-     * Tests the basic execution: verifies content is written to the file.
-     */
     @Test
-    public void testExecute_SuccessfulWrite() throws IOException {
-        String message = "Hello, world!";
+    void testExecute_SuccessfulWrite() throws IOException {
+        String message = "Hello world";
 
-        TextAction action = createConfiguredTextAction(tempFilePathString, message);
+        TextAction action = createConfiguredAction(
+                tempFile.toString(),
+                message
+        );
+
         action.execute();
 
-        String fileContent = new String(Files.readAllBytes(tempFilePath));
-
-        assertEquals(message, fileContent,
-                "The file content should match the message.");
-        assertTrue(errContent.toString().isEmpty(),
-                "There should be no I/O errors in System.err.");
+        String content = Files.readString(tempFile);
+        assertEquals(message + System.lineSeparator(), content);
+        assertTrue(errContent.toString().isEmpty());
     }
 
-    /**
-     * Tests the append functionality.
-     */
     @Test
-    public void testExecute_AppendContent() throws IOException {
-        String message1 = "First line.\n";
-        String message2 = "Second line.\n";
+    void testExecute_AppendContent() throws IOException {
+        createConfiguredAction(tempFile.toString(), "Line 1").execute();
+        createConfiguredAction(tempFile.toString(), "Line 2").execute();
 
-        createConfiguredTextAction(tempFilePathString, message1).execute();
-        createConfiguredTextAction(tempFilePathString, message2).execute();
+        String content = Files.readString(tempFile);
 
-        String fileContent = new String(Files.readAllBytes(tempFilePath));
-        assertEquals(message1 + message2, fileContent,
-                "The file content should be the concatenation of the two messages.");
+        String expected =
+                "Line 1" + System.lineSeparator() +
+                        "Line 2" + System.lineSeparator();
+
+        assertEquals(expected, content);
     }
 
-    /**
-     * Tests file creation if the file does not exist.
-     */
     @Test
-    public void testExecute_FileCreationIfNotExist() throws IOException {
-        String tempDir = System.getProperty("java.io.tmpdir");
-        Path nonExistentPath = Paths.get(tempDir, "nonexistent", "newly_created_file.tmp");
+    void testExecute_FileCreationIfNotExist() throws IOException {
+        Path newFile = Files.createTempDirectory("textAction")
+                .resolve("created.txt");
 
-        Path parentDir = nonExistentPath.getParent();
-        if (!Files.exists(parentDir)) {
-            Files.createDirectories(parentDir);
-        }
-        Files.deleteIfExists(nonExistentPath);
+        Files.deleteIfExists(newFile);
 
-        String message = "This file was created.";
+        TextAction action = createConfiguredAction(
+                newFile.toString(),
+                "Created file"
+        );
 
-        createConfiguredTextAction(nonExistentPath.toString(), message).execute();
+        action.execute();
 
-        assertTrue(Files.exists(nonExistentPath),
-                "The file should have been created.");
+        assertTrue(Files.exists(newFile));
 
-        String createdFileContent = new String(Files.readAllBytes(nonExistentPath));
-        assertEquals(message, createdFileContent,
-                "The content of the created file should be correct.");
+        String content = Files.readString(newFile);
+        assertEquals("Created file" + System.lineSeparator(), content);
 
-        Files.deleteIfExists(nonExistentPath);
-
-        File parentFile = parentDir.toFile();
-        if (parentFile.exists() && parentFile.list() != null && parentFile.list().length == 0) {
-            Files.deleteIfExists(parentDir);
-        }
+        Files.deleteIfExists(newFile);
+        Files.deleteIfExists(newFile.getParent());
     }
 
-    /**
-     * Tests I/O error handling when the path is not writable.
-     */
     @Test
-    public void testExecute_IOErrorHandling() {
-        String directoryPath = System.getProperty("java.io.tmpdir");
-        String message = "Writing attempt failed.";
+    void testExecute_IOErrorHandling() {
+        String invalidPath = System.getProperty("java.io.tmpdir");
 
-        createConfiguredTextAction(directoryPath, message).execute();
+        TextAction action = createConfiguredAction(
+                invalidPath,
+                "Should fail"
+        );
 
-        String errOutput = errContent.toString();
-        assertFalse(errOutput.isEmpty(),
-                "System.err should not be empty in case of I/O error.");
-        assertTrue(errOutput.contains("Errore I/O"),
-                "The System.err output should contain an I/O error message.");
+        assertDoesNotThrow(action::execute);
+        assertFalse(errContent.toString().isEmpty(),
+                "Stack trace should be printed to System.err");
+    }
+
+    @Test
+    void testImplementsActionInterface() {
+        TextAction action = new TextAction();
+        assertTrue(action instanceof Action);
     }
 }
