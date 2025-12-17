@@ -13,27 +13,37 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Task 13.8: Unit Tests for MoveFileAction.
- * Verifies that files are correctly moved and edge cases (missing files) are handled.
+ * Unit Tests for MoveFileAction.
  */
 class MoveFileActionTest {
 
     private Path tempSourceFile;
     private Path tempDestDir;
 
+    // Define the Creator and the Concrete Product
+    private MoveFileActionCreator creator;
+    private MoveFileAction action;
+
     @BeforeEach
     void setUp() throws IOException {
-        // Create a temporary file and directory for safe testing
+        // Create temporary file and directory for safe testing
         tempSourceFile = Files.createTempFile("test_move_source", ".txt");
         tempDestDir = Files.createTempDirectory("test_move_dest");
 
         // Write dummy content
         Files.writeString(tempSourceFile, "Data to move");
+
+        // FACTORY INITIALIZATION
+        // Instead of "new MoveFileAction(...)", we use the creator
+        this.creator = new MoveFileActionCreator();
+
+        // Create the action and Cast it to the concrete class
+        this.action = (MoveFileAction) creator.createAction();
     }
 
     @AfterEach
     void tearDown() throws IOException {
-        // Cleanup: Delete temporary files after test
+        // Delete temporary files after test
         Files.deleteIfExists(tempSourceFile);
 
         // Recursively delete the directory
@@ -49,16 +59,14 @@ class MoveFileActionTest {
 
     @Test
     void testMoveFileSuccess() {
-        // 1. Arrange
-        MoveFileAction action = new MoveFileAction(
-                tempSourceFile.toString(),
-                tempDestDir.toString()
-        );
+        // Arrange (Configure the action using Setters)
+        action.setSourcePathString(tempSourceFile.toString());
+        action.setDestinationDirectoryString(tempDestDir.toString());
 
-        // 2. Act
+        // Act
         action.execute();
 
-        // 3. Verify
+        // Verify
         Path expectedFile = tempDestDir.resolve(tempSourceFile.getFileName());
 
         assertFalse(Files.exists(tempSourceFile), "Original file should no longer exist.");
