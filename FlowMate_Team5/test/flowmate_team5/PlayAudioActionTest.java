@@ -7,23 +7,30 @@ public class PlayAudioActionTest {
 
     @Test
     void testExecute_WithMissingFile_ShouldNotCrash() {
-        // Arrange: Define an invalid path to simulate a missing file scenario
         String invalidPath = "src/flowmate_team5/resources/missing_file.wav";
-        PlayAudioAction action = new PlayAudioAction(invalidPath);
 
-        // Act & Assert: Verify that execute() handles the error internally without crashing
+        // Use Creator to instantiate
+        PlayAudioActionCreator creator = new PlayAudioActionCreator();
+        PlayAudioAction action = (PlayAudioAction) creator.createAction();
+
+        // Configure path
+        action.setFilePath(invalidPath);
+
+        // Verify execute handles errors gracefully
         assertDoesNotThrow(() -> action.execute(), "Action must handle IOExceptions gracefully without crashing.");
     }
 
     @Test
-    void testConstructor_Initialization() {
-        // Arrange: Define a dummy path
+    void testFactory_Initialization() {
         String path = "test_audio.wav";
 
-        // Act: Create the object
-        PlayAudioAction action = new PlayAudioAction(path);
+        // Use Creator to instantiate
+        PlayAudioActionCreator creator = new PlayAudioActionCreator();
+        PlayAudioAction action = (PlayAudioAction) creator.createAction();
 
-        // Assert: Verify object creation
+        // Configure path
+        action.setFilePath(path);
+
         assertNotNull(action, "PlayAudioAction object should be successfully initialized.");
     }
 }

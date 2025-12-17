@@ -25,6 +25,15 @@ public class CopyFileAction implements Action, Serializable {
         this.destinationDir = destinationDir;
     }
 
+    // Getters required for testing verification
+    public String getSourcePath() {
+        return sourcePath;
+    }
+
+    public String getDestinationDir() {
+        return destinationDir;
+    }
+
     @Override
     public void execute() {
         try {
