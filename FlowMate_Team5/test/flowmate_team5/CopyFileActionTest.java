@@ -38,8 +38,8 @@ class CopyFileActionTest {
         CopyFileAction action = (CopyFileAction) creator.createAction();
 
         // Configure action via setters
-        action.setSourcePathString(tempSource.toString());
-        action.setDestinationDirectoryString(tempDestDir.toString());
+        action.setSourcePath(tempSource.toString());
+        action.setDestinationDir(tempDestDir.toString());
 
         assertDoesNotThrow(action::execute);
 
@@ -55,8 +55,8 @@ class CopyFileActionTest {
         CopyFileAction action = (CopyFileAction) creator.createAction();
 
         // Configure with invalid source
-        action.setSourcePathString("non_existent_file.txt");
-        action.setDestinationDirectoryString(tempDestDir.toString());
+        action.setSourcePath("non_existent_file.txt");
+        action.setDestinationDir(tempDestDir.toString());
 
         assertDoesNotThrow(action::execute, "Should handle missing source gracefully.");
     }
