@@ -1,5 +1,7 @@
 package flowmate_team5.models.actions;
 
+import flowmate_team5.models.Action;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
