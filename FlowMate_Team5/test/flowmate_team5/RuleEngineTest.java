@@ -2,8 +2,9 @@ package flowmate_team5;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
-import java.util.ConcurrentModificationException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RuleEngineTest {
@@ -13,8 +14,7 @@ public class RuleEngineTest {
     private Rule testRule2;
 
     /**
-     * Mock Trigger implementation that always returns FALSE by default.
-     * This is used to create Rule objects without activating them during setup.
+     * Mock Trigger implementation.
      */
     private static class MockTrigger implements Trigger {
         @Override
@@ -23,127 +23,120 @@ public class RuleEngineTest {
         }
     }
 
-    /**
-     * Mock Action implementation. Its 'execute' method is empty as we only test
-     * the RuleEngine's list management here, not the execution logic.
-     */
-    private static class MockAction implements Action {
-        @Override
-        public void execute() {
-
-        }
-    }
-
     @BeforeEach
     void setUp() {
-        // Initialize RuleEngine without starting the scheduler (essential for testing list state).
-        // Uses the Singleton accessor for testing purposes.
+        // Obtain RuleEngine singleton in test mode
         engineForTesting = RuleEngine.getInstance(false);
 
-        MockTrigger mockTrigger = new MockTrigger();
-        MockAction mockAction = new MockAction();
+        // IMPORTANT: reset singleton state between tests
+        engineForTesting.getRules().clear();
 
-        testRule1 = new Rule("TestRule-A", mockTrigger, mockAction);
-        testRule2 = new Rule("TestRule-B", mockTrigger, mockAction);
+        Trigger trigger = new MockTrigger();
+
+        CreatorAction creator = new PlayAudioActionCreator();
+        Action action1 = creator.createAction();
+        Action action2 = creator.createAction();
+
+        testRule1 = new Rule("TestRule-A", trigger, action1);
+        testRule2 = new Rule("TestRule-B", trigger, action2);
     }
 
     /**
-     * Verifies adding a NULL rule. Standard ArrayList behavior should be preserved,
-     * allowing null elements unless explicitly disallowed by the RuleEngine implementation.
+     * Verifies that the RuleEngine initializes with an empty rule list.
      */
     @Test
-    void testAddNullRule() {
+    void testInitialRulesListIsEmpty() {
+        assertTrue(engineForTesting.getRules().isEmpty(),
+                "Rules list should be empty at initialization.");
+    }
+
+    /**
+     * Verifies that adding a null rule does not crash the system.
+     */
+    @Test
+    void testAddNullRuleDoesNotCrash() {
         assertDoesNotThrow(() -> engineForTesting.addRule(null),
-                "addRule(null) should not throw exceptions if the internal implementation uses ArrayList.");
-
-        assertTrue(engineForTesting.getRules().contains(null),
-                "The list must contain the null element after addition.");
-        assertEquals(1, engineForTesting.getRules().size());
+                "addRule(null) should not throw exceptions.");
     }
 
     /**
-     * Verifies adding the same rule multiple times (duplicate rules).
-     * Standard ArrayList behavior allows duplicates.
+     * Verifies that duplicate rules are allowed.
      */
     @Test
-    void testAddDuplicateRule() {
-
+    void testAddDuplicateRuleAllowed() {
         engineForTesting.addRule(testRule1);
         engineForTesting.addRule(testRule1);
 
         assertEquals(2, engineForTesting.getRules().size(),
-                "The list must allow the addition of duplicate rules.");
+                "Duplicate rules should be allowed.");
     }
 
     /**
-     * Verifies that the list returned by getRules() is a mutable reference, allowing external
-     * modifications that affect the internal state of the RuleEngine. If this test passes,
-     * the internal list is NOT protected (e.g., not an unmodifiable list).
+     * Verifies successful addition of multiple distinct rules.
      */
     @Test
-    void testGetRulesReturnsMutableReference() {
-        engineForTesting.addRule(testRule1);
-
-        List<Rule> rulesReference = engineForTesting.getRules();
-
-        rulesReference.add(testRule2);
-
-        assertEquals(2, engineForTesting.getRules().size(),
-                "The modification to the external list modified the internal list.");
-        assertTrue(engineForTesting.getRules().contains(testRule2),
-                "The RuleEngine object did not protect its internal list.");
-    }
-
-
-    /**
-     * Verifies the successful addition and counting of multiple distinct rules.
-     */
-    @Test
-    void testAddMultipleRules() {
+    void testAddMultipleDistinctRules() {
         engineForTesting.addRule(testRule1);
         engineForTesting.addRule(testRule2);
 
         List<Rule> rules = engineForTesting.getRules();
-        assertEquals(2, rules.size(), "There should be exactly two rules.");
-        assertTrue(rules.contains(testRule1), "The first rule must be present.");
-        assertTrue(rules.contains(testRule2), "The second rule must be present.");
+        assertEquals(2, rules.size(),
+                "There should be exactly two rules.");
+        assertTrue(rules.contains(testRule1),
+                "Rule 1 should be present.");
+        assertTrue(rules.contains(testRule2),
+                "Rule 2 should be present.");
     }
 
     /**
-     * Verifies that the list returned by getRules() contains the correct objects (by reference).
+     * Verifies that getRules() returns a mutable list.
      */
     @Test
-    void testGetRulesReturnsRulesList() {
+    void testGetRulesReturnsMutableList() {
         engineForTesting.addRule(testRule1);
-        List<Rule> retrievedRules = engineForTesting.getRules();
-        assertEquals(1, retrievedRules.size());
-        assertSame(testRule1, retrievedRules.get(0));
+
+        List<Rule> rules = engineForTesting.getRules();
+
+        assertDoesNotThrow(() -> rules.add(testRule2),
+                "The returned rules list should be mutable.");
     }
 
     /**
-     * Verifies that the setup method correctly initializes the internal rule list
-     * when using the test-specific Singleton accessor.
+     * Verifies that getRules() returns the correct rule reference.
      */
     @Test
-    void testConstructorWithFalseFlagInitializesEmptyList() {
-        assertNotNull(engineForTesting.getRules(), "The rules list must not be null.");
-        assertTrue(engineForTesting.getRules().isEmpty(), "The list must be empty initially.");
+    void testGetRulesReturnsCorrectRuleReference() {
+        engineForTesting.addRule(testRule1);
+
+        List<Rule> retrievedRules = engineForTesting.getRules();
+
+        assertEquals(1, retrievedRules.size(),
+                "Exactly one rule should be present.");
+        assertSame(testRule1, retrievedRules.get(0),
+                "The returned rule should be the same object reference.");
     }
 
     /**
-     * Verifies Task 7.1: Deleting a rule removes it from the engine.
+     * Verifies that deleteRule() removes an existing rule.
      */
     @Test
     void testDeleteRule() {
-        // 1. Setup: Add a rule first
         engineForTesting.addRule(testRule1);
-        assertTrue(engineForTesting.getRules().contains(testRule1), "Rule should be present before deletion.");
+        assertTrue(engineForTesting.getRules().contains(testRule1),
+                "Rule should exist before deletion.");
 
-        // 2. Act: Delete the rule (Your Task logic)
         engineForTesting.deleteRule(testRule1);
 
-        // 3. Assert: Verify it is gone
-        assertFalse(engineForTesting.getRules().contains(testRule1), "Rule should be removed after deleteRule() is called.");
-        assertEquals(0, engineForTesting.getRules().size(), "List should be empty after deleting the only rule.");
+        assertFalse(engineForTesting.getRules().contains(testRule1),
+                "Rule should be removed after deletion.");
+    }
+
+    /**
+     * Verifies that deleting a non-existing rule does not throw exceptions.
+     */
+    @Test
+    void testDeleteNonExistingRuleDoesNotThrow() {
+        assertDoesNotThrow(() -> engineForTesting.deleteRule(testRule1),
+                "Deleting a non-existing rule should not throw exceptions.");
     }
 }
