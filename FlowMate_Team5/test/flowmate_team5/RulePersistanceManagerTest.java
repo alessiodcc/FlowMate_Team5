@@ -3,7 +3,8 @@ package flowmate_team5;
 import org.junit.jupiter.api.*;
 
 import java.io.File;
-import java.io.Serializable;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,28 +14,9 @@ class RulePersistenceManagerTest {
 
     private static final String FILE_NAME = "rules.dat";
 
-    static class SerializableTrigger implements Trigger, Serializable {
-        private final boolean triggered;
-
-        SerializableTrigger(boolean triggered) {
-            this.triggered = triggered;
-        }
-
-        @Override
-        public boolean isTriggered() {
-            return triggered;
-        }
-    }
-
-    static class SerializableAction implements Action, Serializable {
-        @Override
-        public void execute() {
-            // no operation
-        }
-    }
-
     @AfterEach
     void cleanUp() {
+        // Delete the test file so it doesn't mess up your real app data
         File file = new File(FILE_NAME);
         if (file.exists()) {
             file.delete();
@@ -43,18 +25,61 @@ class RulePersistenceManagerTest {
 
     @Test
     void saveAndLoadRules_shouldWorkCorrectly() {
-        List<Rule> rules = new ArrayList<>();
-        rules.add(new Rule(
-                "Rule Test",
-                new SerializableTrigger(true),
-                new SerializableAction()
-        ));
 
-        RulePersistenceManager.saveRules(rules);
+        // Create the Trigger via Factory
+        CreatorTrigger triggerFactory = new FileExistsTriggerCreator();
+        Trigger myTrigger = triggerFactory.createTrigger();
 
-        List<Rule> loaded = RulePersistenceManager.loadRules();
+        // Configure it
+        if (myTrigger instanceof FileExistsTrigger) {
+            ((FileExistsTrigger) myTrigger).setFileName("test_save.txt");
+            // Note: We use a string path that can be reconstructed
+            ((FileExistsTrigger) myTrigger).setFolderPath(Path.of("C:/Temp"));
+        }
 
-        assertEquals(1, loaded.size());
-        assertEquals("Rule Test", loaded.get(0).getName());
+        // Create the Action via Factory
+        CreatorAction actionFactory = new MoveFileActionCreator();
+        Action myAction = actionFactory.createAction();
+
+        // Configure it
+        if (myAction instanceof MoveFileAction) {
+            ((MoveFileAction) myAction).setSourcePathString("C:/Temp/source.txt");
+            ((MoveFileAction) myAction).setDestinationDirectoryString("C:/Temp/Dest");
+        }
+
+        // Create the Rule
+        Rule originalRule = new Rule("Factory Test Rule", myTrigger, myAction);
+
+        // Add to list
+        List<Rule> rulesToSave = new ArrayList<>();
+        rulesToSave.add(originalRule);
+
+        // ACT: Save and Load
+
+        RulePersistenceManager.saveRules(rulesToSave);
+
+        // Load back
+        List<Rule> loadedRules = RulePersistenceManager.loadRules();
+
+        // ASSERT: Verify Data
+
+        assertNotNull(loadedRules, "Loaded rules list should not be null");
+        assertEquals(1, loadedRules.size(), "Should verify exactly 1 rule was loaded");
+
+        Rule loadedRule = loadedRules.get(0);
+        assertEquals("Factory Test Rule", loadedRule.getName());
+
+        // Verify that the Trigger type was preserved
+        assertTrue(loadedRule.getTrigger() instanceof FileExistsTrigger,
+                "The loaded trigger should be a FileExistsTrigger");
+
+        // Verify that the Action type was preserved
+        assertTrue(loadedRule.getAction() instanceof MoveFileAction,
+                "The loaded action should be a MoveFileAction");
+
+        // Verify specific data inside was saved
+        FileExistsTrigger loadedTrigger = (FileExistsTrigger) loadedRule.getTrigger();
+        assertEquals("test_save.txt", loadedTrigger.getFileName(),
+                "Trigger filename should be preserved after loading");
     }
 }
