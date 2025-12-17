@@ -2,6 +2,7 @@ package flowmate_team5;
 
 import flowmate_team5.factory.creators.ExternalProgramActionCreator;
 import flowmate_team5.models.actions.ExternalProgramAction;
+import flowmate_team5.models.Action;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
