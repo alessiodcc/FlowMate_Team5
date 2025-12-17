@@ -1,5 +1,8 @@
 package flowmate_team5;
 
+import flowmate_team5.core.Rule;
+import flowmate_team5.models.Action;
+import flowmate_team5.models.Trigger;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

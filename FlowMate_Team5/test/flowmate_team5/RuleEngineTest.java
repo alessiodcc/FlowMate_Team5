@@ -1,5 +1,11 @@
 package flowmate_team5;
 
+import flowmate_team5.core.Rule;
+import flowmate_team5.core.RuleEngine;
+import flowmate_team5.factory.CreatorAction;
+import flowmate_team5.factory.creators.PlayAudioActionCreator;
+import flowmate_team5.models.Action;
+import flowmate_team5.models.Trigger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

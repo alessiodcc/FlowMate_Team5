@@ -1,10 +1,11 @@
 package flowmate_team5;
 
+import flowmate_team5.factory.creators.FileExistsTriggerCreator;
+import flowmate_team5.models.triggers.FileExistsTrigger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="450.0" prefWidth="600.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="flowmate_team5.controllers.WriteOnFileController">
+    <children>
+        <VBox alignment="TOP_CENTER" spacing="25.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="30.0" left="40.0" right="40.0" top="30.0" />
+            </padding>
+            <children>
+                <ImageView fitHeight="80.0" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/AppLogo.png" />
+                    </image>
+                </ImageView>
+
+                <Label style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Append Text to File" />
+
+                <VBox alignment="CENTER_LEFT" maxWidth="500.0" spacing="8.0">
+                    <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #34495e;" text="1. Select the text file (.txt):" />
+                    <HBox spacing="10.0">
+                        <TextField fx:id="pathTextField" editable="false" promptText="No file selected..." style="-fx-background-radius: 6; -fx-border-color: #bdc3c7; -fx-border-radius: 6; -fx-padding: 8;" HBox.hgrow="ALWAYS" />
+                        <Button onAction="#browseButtonPushed" style="-fx-background-color: #ecf0f1; -fx-text-fill: #2c3e50; -fx-background-radius: 6; -fx-cursor: hand;" text="Browse" />
+                    </HBox>
+                </VBox>
+
+                <VBox alignment="CENTER_LEFT" maxWidth="500.0" spacing="8.0">
+                    <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #34495e;" text="2. Enter text to append:" />
+                    <TextField fx:id="contentTextField" promptText="Type your message here..." style="-fx-background-radius: 6; -fx-border-color: #bdc3c7; -fx-border-radius: 6; -fx-padding: 10;" />
+                </VBox>
+
+                <Button onAction="#confirmButtonPushed" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 10 30; -fx-background-radius: 8; -fx-cursor: hand;" text="CONFIRM ACTION">
+                    <VBox.margin>
+                        <Insets top="10.0" />
+                    </VBox.margin>
+                </Button>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

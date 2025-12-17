@@ -5,6 +5,8 @@
 package flowmate_team5;
 
 
+import flowmate_team5.core.RuleEngine;
+import flowmate_team5.core.RulePersistenceManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,7 +25,7 @@ public class FlowMate_Team5 extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("MainPage.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("view/MainPage.fxml"));
         Scene scene = new Scene(root);
         java.io.InputStream logoStream = getClass().getResourceAsStream("images/AppIcon.png");
         primaryStage.getIcons().add(new Image(logoStream));

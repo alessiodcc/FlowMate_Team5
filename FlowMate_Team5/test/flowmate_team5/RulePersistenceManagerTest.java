@@ -1,9 +1,18 @@
 package flowmate_team5;
 
+import flowmate_team5.core.Rule;
+import flowmate_team5.core.RulePersistenceManager;
+import flowmate_team5.factory.CreatorAction;
+import flowmate_team5.factory.CreatorTrigger;
+import flowmate_team5.factory.creators.FileExistsTriggerCreator;
+import flowmate_team5.factory.creators.MoveFileActionCreator;
+import flowmate_team5.models.Action;
+import flowmate_team5.models.Trigger;
+import flowmate_team5.models.actions.MoveFileAction;
+import flowmate_team5.models.triggers.FileExistsTrigger;
 import org.junit.jupiter.api.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;

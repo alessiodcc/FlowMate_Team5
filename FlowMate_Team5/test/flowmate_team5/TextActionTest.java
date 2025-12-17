@@ -1,5 +1,7 @@
 package flowmate_team5;
 
+import flowmate_team5.models.Action;
+import flowmate_team5.models.actions.TextAction;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;

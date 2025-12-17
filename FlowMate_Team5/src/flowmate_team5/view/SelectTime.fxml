@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="450" prefWidth="700" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="flowmate_team5.controllers.SelectTimeController">
+
+    <children>
+
+        <!-- Background -->
+        <StackPane style="-fx-background-color:#f4f6f7;" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+
+            <children>
+
+                <!-- Main content card -->
+                <VBox alignment="TOP_CENTER" prefWidth="500" spacing="30" style="-fx-background-color:white;              -fx-background-radius:12;              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 12, 0, 0, 3);              -fx-padding: 30;">
+
+
+                <!-- Logo -->
+                    <ImageView fitHeight="120" preserveRatio="true">
+                        <image><Image url="@../images/AppLogo.png" /></image>
+                    </ImageView>
+
+                    <!-- Title -->
+                    <Label style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#2c3e50;" text="Select Trigger Time" />
+
+                    <Label style="-fx-font-size:12px; -fx-text-fill:#7f8c8d;" text="Choose the hour and minute at which this rule will activate." />
+
+                    <!-- Hour selector -->
+                    <HBox alignment="CENTER_LEFT" spacing="20">
+                        <Label prefHeight="20.0" prefWidth="58.0" style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#34495e;" text="Hour:" />
+                        <ComboBox fx:id="HourDropDownMenu" prefHeight="38.0" prefWidth="143.0" promptText="Hour" stylesheets="@../MaterialComboBox.css" />
+                    </HBox>
+
+                    <!-- Minute selector -->
+                    <HBox alignment="CENTER_LEFT" spacing="20">
+                        <Label style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#34495e;" text="Minutes:" />
+                        <ComboBox fx:id="MinutesDropDownMenu" prefHeight="38.0" prefWidth="143.0" promptText="Minutes" stylesheets="@../MaterialComboBox.css" />
+                    </HBox>
+
+                    <!-- Button -->
+                    <Button fx:id="confirmButton" onAction="#confirmButtonPushed" style="-fx-background-color:#3498db;                                    -fx-text-fill:white;                                    -fx-font-size:14px;                                    -fx-padding:10 20 10 20;                                    -fx-background-radius:8;" text="Confirm" />
+
+                </VBox>
+
+            </children>
+
+        </StackPane>
+
+    </children>
+
+</AnchorPane>
