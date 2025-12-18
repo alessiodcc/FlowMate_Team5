@@ -25,6 +25,16 @@ public class RuleFactoryManager {
                 new FileExistsTriggerCreator()
         );
 
+        // [YOUR TASK] Registering DayOfTheYear and ExternalProgram Triggers
+        triggerFactories.put(
+                "Day of Year Trigger",
+                new DayOfTheYearTriggerCreator()
+        );
+        triggerFactories.put(
+                "External Program Trigger",
+                new ExternalProgramTriggerCreator()
+        );
+
         // -------- REGISTER ACTIONS --------
         actionFactories.put(
                 "Message Action",
@@ -50,6 +60,13 @@ public class RuleFactoryManager {
                 "Delete File Action",
                 new DeleteFileActionCreator()
         );
+
+        actionFactories.put(
+                "External Program Action",
+                new ExternalProgramActionCreator()
+        );
+
+
     }
 
     // -------- PUBLIC API --------

@@ -14,6 +14,12 @@ import flowmate_team5.models.Trigger;
 import flowmate_team5.models.actions.*;
 import flowmate_team5.models.triggers.FileExistsTrigger;
 import flowmate_team5.models.triggers.TemporalTrigger;
+
+// Imports added for your tasks
+import flowmate_team5.models.actions.ExternalProgramAction;
+import flowmate_team5.controllers.SelectExternalProgramController;
+import flowmate_team5.controllers.SelectTwoCounterController;
+
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -58,7 +64,9 @@ public class MainPageController implements Initializable {
         // Note: These strings must match the keys in RuleFactoryManager exactly
         triggerDropDownMenu.setItems(FXCollections.observableArrayList(
                 "Temporal Trigger",
-                "File Exists Trigger"
+                "File Exists Trigger",
+                "Day of Year Trigger",       // Added for US17
+                "External Program Trigger"   // Added for US25
         ));
 
         actionDropDownMenu.setItems(FXCollections.observableArrayList(
@@ -67,7 +75,9 @@ public class MainPageController implements Initializable {
                 "Write to Text File Action",
                 "Copy File Action",
                 "Move File Action",
-                "Delete File Action"
+                "Delete File Action",
+                "External Program Action",    // Added for US14
+                "Counter Operation Action"    // Added for US21
         ));
 
         ruleEngine = RuleEngine.getInstance();
@@ -132,13 +142,10 @@ public class MainPageController implements Initializable {
         }
 
         try {
-            //
-
             // 1. CREATE TRIGGER via Factory Manager
             chosenTrigger = RuleFactoryManager.createTrigger(triggerType);
 
             // 2. CONFIGURE TRIGGER (Open specific UI)
-            // We use the switch here to map the Trigger Type to its specific Configuration View
             switch (triggerType) {
                 case "Temporal Trigger" -> openNewWindowWithInjection(
                         "/flowmate_team5/view/SelectTime.fxml",
@@ -152,6 +159,8 @@ public class MainPageController implements Initializable {
                         (FileExistsController c) ->
                                 c.setTrigger((FileExistsTrigger) chosenTrigger)
                 );
+                // Note: DayOfTheYearTrigger and ExternalProgramTrigger are created via Factory,
+                // but their Views are not yet connected here as they depend on Teammate 1/3 implementation.
             }
 
             // 3. CREATE ACTION via Factory Manager
@@ -194,6 +203,23 @@ public class MainPageController implements Initializable {
                         "Delete File",
                         (DeleteFileController c) ->
                                 c.setAction((DeleteFileAction) chosenAction)
+                );
+                // Added for US14
+                case "External Program Action" -> openNewWindowWithInjection(
+                        "/flowmate_team5/view/SelectExternalProgramView.fxml",
+                        "Run Program",
+                        (SelectExternalProgramController c) -> {
+                            // Assuming the controller has a method to accept the action
+                            // c.setAction((ExternalProgramAction) chosenAction);
+                        }
+                );
+                // Added for US21
+                case "Counter Operation Action" -> openNewWindowWithInjection(
+                        "/flowmate_team5/view/SelectTwoCounterView.fxml",
+                        "Counter Operations",
+                        (SelectTwoCounterController c) -> {
+                            // Logic to pass action to controller
+                        }
                 );
             }
 
