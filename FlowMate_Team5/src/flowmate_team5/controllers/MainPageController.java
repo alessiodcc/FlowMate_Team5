@@ -12,13 +12,14 @@ import flowmate_team5.factory.RuleFactoryManager;
 import flowmate_team5.models.Action;
 import flowmate_team5.models.Trigger;
 import flowmate_team5.models.actions.*;
+import flowmate_team5.models.triggers.DayOfTheMonthTrigger;
 import flowmate_team5.models.triggers.FileExistsTrigger;
 import flowmate_team5.models.triggers.TemporalTrigger;
 
 // Imports added for your tasks
 import flowmate_team5.models.actions.ExternalProgramAction;
 import flowmate_team5.controllers.SelectExternalProgramController;
-import flowmate_team5.controllers.SelectTwoCounterController;
+//import flowmate_team5.controllers.SelectTwoCounterController;
 
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -65,6 +66,7 @@ public class MainPageController implements Initializable {
         triggerDropDownMenu.setItems(FXCollections.observableArrayList(
                 "Temporal Trigger",
                 "File Exists Trigger",
+                "Day of Month Trigger",      // Added for US16
                 "Day of Year Trigger",       // Added for US17
                 "External Program Trigger"   // Added for US25
         ));
@@ -159,6 +161,12 @@ public class MainPageController implements Initializable {
                         (FileExistsController c) ->
                                 c.setTrigger((FileExistsTrigger) chosenTrigger)
                 );
+                case "Day of Month Trigger" -> openNewWindowWithInjection(
+                        "/flowmate_team5/view/SelectDayOfTheMonthView.fxml",
+                        "Configure Day of the Month Trigger",
+                        (SelectDayOfTheMonthController c) ->
+                                c.setTrigger((DayOfTheMonthTrigger) chosenTrigger)
+                );
                 // Note: DayOfTheYearTrigger and ExternalProgramTrigger are created via Factory,
                 // but their Views are not yet connected here as they depend on Teammate 1/3 implementation.
             }
@@ -214,13 +222,13 @@ public class MainPageController implements Initializable {
                         }
                 );
                 // Added for US21
-                case "Counter Operation Action" -> openNewWindowWithInjection(
+                /*case "Counter Operation Action" -> openNewWindowWithInjection(
                         "/flowmate_team5/view/SelectTwoCounterView.fxml",
                         "Counter Operations",
                         (SelectTwoCounterController c) -> {
                             // Logic to pass action to controller
                         }
-                );
+                );*/
             }
 
             // 5. ASSEMBLE RULE

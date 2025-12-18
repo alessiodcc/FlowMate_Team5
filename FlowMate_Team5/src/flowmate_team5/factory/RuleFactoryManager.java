@@ -25,6 +25,11 @@ public class RuleFactoryManager {
                 new FileExistsTriggerCreator()
         );
 
+        triggerFactories.put(
+                "Day of Month Trigger",
+                new DayOfTheMonthTriggerCreator()
+        );
+
         // [YOUR TASK] Registering DayOfTheYear and ExternalProgram Triggers
         triggerFactories.put(
                 "Day of Year Trigger",
