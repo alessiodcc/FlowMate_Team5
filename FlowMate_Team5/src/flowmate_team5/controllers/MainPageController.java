@@ -10,6 +10,7 @@ import flowmate_team5.core.RuleEngine;
 import flowmate_team5.core.RulePersistenceManager;
 import flowmate_team5.factory.RuleFactoryManager;
 import flowmate_team5.models.Action;
+import flowmate_team5.models.Counter;
 import flowmate_team5.models.Trigger;
 import flowmate_team5.models.actions.*;
 import flowmate_team5.models.triggers.DayOfTheMonthTrigger;
@@ -17,6 +18,7 @@ import flowmate_team5.models.triggers.FileExistsTrigger;
 import flowmate_team5.models.triggers.TemporalTrigger;
 import flowmate_team5.models.actions.ExternalProgramAction;
 import flowmate_team5.models.triggers.ExternalProgramTrigger;
+import flowmate_team5.models.triggers.CounterIntegerComparisonTrigger;
 
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -43,11 +45,13 @@ public class MainPageController implements Initializable {
     @FXML private TextField RuleNameTextArea;
     @FXML private ListView<Rule> RuleList;
     @FXML private AnchorPane sidebar;
+    @FXML private ListView<Counter> CounterListView;
 
     private RuleEngine ruleEngine;
     private ObservableList<Rule> ruleObservableList;
     private Trigger chosenTrigger;
     private Action chosenAction;
+    private ObservableList<Counter> availableCounters = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -57,7 +61,8 @@ public class MainPageController implements Initializable {
                 "File Exists Trigger",
                 "Day of Month Trigger",
                 "Day of Year Trigger",
-                "External Program Trigger"
+                "External Program Trigger",
+                "Counter Comparison Trigger"
         ));
 
         actionDropDownMenu.setItems(FXCollections.observableArrayList(
@@ -78,9 +83,34 @@ public class MainPageController implements Initializable {
         RuleList.setItems(ruleObservableList);
         RuleList.setCellFactory(lv -> new RuleCell());
 
+        CounterListView.setItems(availableCounters);
+
         sidebar.setVisible(false);
         sidebar.setManaged(false);
         sidebar.setTranslateX(-320);
+    }
+
+    @FXML
+    private void handleCreateCounter() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/flowmate_team5/view/CreateCounterView.fxml"));
+            Parent root = loader.load();
+
+            CreateCounterController controller = loader.getController();
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Create Counter");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            Counter c = controller.getCounter();
+            if (c != null) {
+                availableCounters.add(c);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -225,6 +255,7 @@ public class MainPageController implements Initializable {
         private final Circle statusDot = new Circle(6);
         private final Label nameLabel = new Label();
         private final Label descriptionLabel = new Label();
+        private final Label counterInfoLabel = new Label();
         private final Button toggleActiveBtn = new Button();
         private final Button sleepBtn = new Button("Sleep");
         private final Button deleteBtn = new Button("Delete");
@@ -233,12 +264,14 @@ public class MainPageController implements Initializable {
 
         RuleCell() {
             root.setPadding(new Insets(10));
-            nameLabel.setStyle("-fx-font-weight: bold;");
+            nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+            counterInfoLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #3498db; -fx-font-weight: bold;");
+
             HBox header = new HBox(8, statusDot, nameLabel);
             header.setAlignment(Pos.CENTER_LEFT);
             deleteBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
 
-            detailsBox.getChildren().addAll(descriptionLabel, toggleActiveBtn, sleepBtn, deleteBtn);
+            detailsBox.getChildren().addAll(descriptionLabel, counterInfoLabel, toggleActiveBtn, sleepBtn, deleteBtn);
             detailsBox.setVisible(false);
             detailsBox.setManaged(false);
             root.getChildren().addAll(header, detailsBox);
@@ -294,6 +327,19 @@ public class MainPageController implements Initializable {
             nameLabel.setText(rule.getName());
             descriptionLabel.setText(rule.getTrigger().getClass().getSimpleName()
                     + " → " + rule.getAction().getClass().getSimpleName());
+
+            if (rule.getTrigger() instanceof CounterIntegerComparisonTrigger) {
+                CounterIntegerComparisonTrigger trigger = (CounterIntegerComparisonTrigger) rule.getTrigger();
+                if (trigger.getCounter() != null) {
+                    counterInfoLabel.setText("Counter: " + trigger.getCounter().getName() +
+                            " [Value: " + trigger.getCounter().getValue() + "]");
+                    counterInfoLabel.setVisible(true);
+                    counterInfoLabel.setManaged(true);
+                }
+            } else {
+                counterInfoLabel.setVisible(false);
+                counterInfoLabel.setManaged(false);
+            }
 
             if (!rule.isActive()) statusDot.setFill(Color.RED);
             else if (rule.getSleepDurationMillis() > 0) statusDot.setFill(Color.GOLD);
