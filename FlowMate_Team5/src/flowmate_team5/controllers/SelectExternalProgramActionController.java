@@ -1,7 +1,6 @@
 package flowmate_team5.controllers;
 
 import flowmate_team5.models.actions.ExternalProgramAction;
-import flowmate_team5.models.triggers.ExternalProgramTrigger;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
@@ -11,43 +10,26 @@ import javafx.stage.Stage;
 
 import java.io.File;
 
-public class SelectExternalProgramController {
+public class SelectExternalProgramActionController {
 
     @FXML private TextField programField;
     @FXML private TextField argsField;
     @FXML private TextField workDirField;
 
-    // References to the object currently being configured (only one will be active)
-    private ExternalProgramAction currentAction;
-    private ExternalProgramTrigger currentTrigger;
+    private ExternalProgramAction pendingAction;
 
     /**
-     * Injects the Action object to be configured.
-     * Called by MainPageController for US14.
+     * Initializes the controller with the specific action instance.
+     * Pre-fills fields if the action was already configured.
      */
     public void setAction(ExternalProgramAction action) {
-        this.currentAction = action;
-        this.currentTrigger = null;
+        this.pendingAction = action;
 
-        // Pre-fill fields if editing an existing action
         if (action.getCommandLine() != null) {
             programField.setText(action.getCommandLine());
         }
         if (action.getWorkingDirectory() != null) {
             workDirField.setText(action.getWorkingDirectory());
-        }
-    }
-
-    /**
-     * Injects the Trigger object to be configured.
-     * Called by MainPageController for US25.
-     */
-    public void setTrigger(ExternalProgramTrigger trigger) {
-        this.currentTrigger = trigger;
-        this.currentAction = null;
-
-        if (trigger.getCommandLine() != null) {
-            programField.setText(trigger.getCommandLine());
         }
     }
 
@@ -95,23 +77,21 @@ public class SelectExternalProgramController {
             return;
         }
 
-        // Construct full command string
+        // Combine program and arguments
         String fullCommand = program;
         if (args != null && !args.trim().isEmpty()) {
             fullCommand += " " + args.trim();
         }
 
-        // Save data to the active object (Action OR Trigger)
-        if (currentAction != null) {
-            currentAction.setCommandLine(fullCommand);
+        // Save configuration to the action model
+        if (pendingAction != null) {
+            pendingAction.setCommandLine(fullCommand);
             if (workDir != null && !workDir.trim().isEmpty()) {
-                currentAction.setWorkingDirectory(workDir);
+                pendingAction.setWorkingDirectory(workDir);
             }
         }
-        else if (currentTrigger != null) {
-            currentTrigger.setCommandLine(fullCommand);
-        }
 
+        // Close the window
         Stage stage = (Stage) programField.getScene().getWindow();
         stage.close();
     }

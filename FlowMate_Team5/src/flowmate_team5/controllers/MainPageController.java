@@ -17,7 +17,6 @@ import flowmate_team5.models.triggers.FileExistsTrigger;
 import flowmate_team5.models.triggers.TemporalTrigger;
 import flowmate_team5.models.actions.ExternalProgramAction;
 import flowmate_team5.models.triggers.ExternalProgramTrigger;
-import flowmate_team5.controllers.SelectExternalProgramController;
 
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -140,9 +139,10 @@ public class MainPageController implements Initializable {
                         (SelectDayOfTheMonthController c) -> c.setTrigger((DayOfTheMonthTrigger) chosenTrigger)
                 );
                 case "External Program Trigger" -> openNewWindowWithInjection(
-                        "/flowmate_team5/view/SelectExternalProgramView.fxml",
+                        "/flowmate_team5/view/SelectExternalProgramTriggerView.fxml",
                         "Configure Program Trigger",
-                        (SelectExternalProgramController c) -> c.setTrigger((ExternalProgramTrigger) chosenTrigger)
+                        (SelectExternalProgramTriggerController c) ->
+                                c.setTrigger((ExternalProgramTrigger) chosenTrigger)
                 );
             }
 
@@ -180,9 +180,10 @@ public class MainPageController implements Initializable {
                         (DeleteFileController c) -> c.setAction((DeleteFileAction) chosenAction)
                 );
                 case "External Program Action" -> openNewWindowWithInjection(
-                        "/flowmate_team5/view/SelectExternalProgramView.fxml",
+                        "/flowmate_team5/view/SelectExternalProgramActionView.fxml",
                         "Run Program",
-                        (SelectExternalProgramController c) -> c.setAction((ExternalProgramAction) chosenAction)
+                        (SelectExternalProgramActionController c) ->
+                                c.setAction((ExternalProgramAction) chosenAction)
                 );
             }
 
