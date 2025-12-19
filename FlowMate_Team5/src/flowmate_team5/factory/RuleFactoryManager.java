@@ -39,7 +39,10 @@ public class RuleFactoryManager {
                 "External Program Trigger",
                 new ExternalProgramTriggerCreator()
         );
-
+        triggerFactories.put(
+                "Counter Comparison Trigger",
+                new flowmate_team5.factory.creators.CounterIntegerComparisonTriggerCreator()
+        );
         // -------- REGISTER ACTIONS --------
         actionFactories.put(
                 "Message Action",
