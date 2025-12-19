@@ -18,13 +18,13 @@
             </padding>
             <children>
                 <Label style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"
-                       text="Configure Program Trigger" />
+                       text="Configure Process Monitor" />
 
                 <VBox alignment="CENTER_LEFT" maxWidth="500.0" spacing="8.0">
                     <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #34495e;"
-                           text="1. Select Program to Check:" />
+                           text="1. Select Application to Watch:" />
                     <HBox spacing="10.0">
-                        <TextField fx:id="programField" promptText="e.g. check_status.bat"
+                        <TextField fx:id="programField" promptText="e.g. notepad.exe"
                                    style="-fx-background-radius: 6; -fx-border-color: #bdc3c7; -fx-border-radius: 6; -fx-padding: 8;"
                                    HBox.hgrow="ALWAYS" />
                         <Button onAction="#handleBrowseProgram"
@@ -33,15 +33,8 @@
                     </HBox>
                 </VBox>
 
-                <VBox alignment="CENTER_LEFT" maxWidth="500.0" spacing="8.0">
-                    <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #34495e;"
-                           text="2. Arguments (Optional):" />
-                    <TextField fx:id="argsField" promptText="e.g. --silent"
-                               style="-fx-background-radius: 6; -fx-border-color: #bdc3c7; -fx-border-radius: 6; -fx-padding: 8;" />
-                </VBox>
-
                 <Label style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d; -fx-font-style: italic;"
-                       text="The rule will trigger if this program executes successfully (Exit Code 0)." />
+                       text="The rule will trigger when YOU open this application." />
 
                 <Button onAction="#handleConfirm"
                         style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 10 30; -fx-background-radius: 8; -fx-cursor: hand;"
