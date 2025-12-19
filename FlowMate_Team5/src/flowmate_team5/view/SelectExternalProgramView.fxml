@@ -38,7 +38,7 @@
                     </HBox>
                 </VBox>
 
-                <Button onAction="#handleConfirm" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 10 30; -fx-background-radius: 8; -fx-cursor: hand;" text="CONFIRM ACTION">
+                <Button onAction="#handleConfirm" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 10 30; -fx-background-radius: 8; -fx-cursor: hand;" text="CONFIRM">
                     <VBox.margin>
                         <Insets top="10.0" />
                     </VBox.margin>

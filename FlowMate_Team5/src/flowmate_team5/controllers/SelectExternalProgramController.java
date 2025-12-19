@@ -1,6 +1,7 @@
 package flowmate_team5.controllers;
 
 import flowmate_team5.models.actions.ExternalProgramAction;
+import flowmate_team5.models.triggers.ExternalProgramTrigger;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
@@ -16,14 +17,44 @@ public class SelectExternalProgramController {
     @FXML private TextField argsField;
     @FXML private TextField workDirField;
 
-    private ExternalProgramAction pendingAction;
+    // References to the object currently being configured (only one will be active)
+    private ExternalProgramAction currentAction;
+    private ExternalProgramTrigger currentTrigger;
 
-    // Triggered by "Browse File" button
+    /**
+     * Injects the Action object to be configured.
+     * Called by MainPageController for US14.
+     */
+    public void setAction(ExternalProgramAction action) {
+        this.currentAction = action;
+        this.currentTrigger = null;
+
+        // Pre-fill fields if editing an existing action
+        if (action.getCommandLine() != null) {
+            programField.setText(action.getCommandLine());
+        }
+        if (action.getWorkingDirectory() != null) {
+            workDirField.setText(action.getWorkingDirectory());
+        }
+    }
+
+    /**
+     * Injects the Trigger object to be configured.
+     * Called by MainPageController for US25.
+     */
+    public void setTrigger(ExternalProgramTrigger trigger) {
+        this.currentTrigger = trigger;
+        this.currentAction = null;
+
+        if (trigger.getCommandLine() != null) {
+            programField.setText(trigger.getCommandLine());
+        }
+    }
+
     @FXML
     private void handleBrowseProgram() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Executable");
-        // Filter for common executables (Windows/Mac/Linux)
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Executables", "*.exe", "*.bat", "*.cmd", "*.sh", "*.app"),
                 new FileChooser.ExtensionFilter("All Files", "*.*")
@@ -37,7 +68,6 @@ public class SelectExternalProgramController {
         }
     }
 
-    // Triggered by "Browse Folder" button
     @FXML
     private void handleBrowseDir() {
         DirectoryChooser dirChooser = new DirectoryChooser();
@@ -65,25 +95,24 @@ public class SelectExternalProgramController {
             return;
         }
 
-        // Combine program and args if necessary, or set them individually
-        // Here we construct the command line string expected by the model
+        // Construct full command string
         String fullCommand = program;
         if (args != null && !args.trim().isEmpty()) {
             fullCommand += " " + args.trim();
         }
 
-        this.pendingAction = new ExternalProgramAction();
-        this.pendingAction.setCommandLine(fullCommand);
-
-        if (workDir != null && !workDir.trim().isEmpty()) {
-            this.pendingAction.setWorkingDirectory(workDir);
+        // Save data to the active object (Action OR Trigger)
+        if (currentAction != null) {
+            currentAction.setCommandLine(fullCommand);
+            if (workDir != null && !workDir.trim().isEmpty()) {
+                currentAction.setWorkingDirectory(workDir);
+            }
+        }
+        else if (currentTrigger != null) {
+            currentTrigger.setCommandLine(fullCommand);
         }
 
         Stage stage = (Stage) programField.getScene().getWindow();
         stage.close();
-    }
-
-    public ExternalProgramAction getAction() {
-        return this.pendingAction;
     }
 }
