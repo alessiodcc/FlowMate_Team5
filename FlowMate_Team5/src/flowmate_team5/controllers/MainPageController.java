@@ -13,6 +13,7 @@ import flowmate_team5.models.Action;
 import flowmate_team5.models.Counter;
 import flowmate_team5.models.Trigger;
 import flowmate_team5.models.actions.*;
+import flowmate_team5.models.actions.AddCounterToCounterAction;
 import flowmate_team5.models.triggers.DayOfTheMonthTrigger;
 import flowmate_team5.models.triggers.FileExistsTrigger;
 import flowmate_team5.models.triggers.TemporalTrigger;
@@ -51,7 +52,7 @@ public class MainPageController implements Initializable {
     private ObservableList<Rule> ruleObservableList;
     private Trigger chosenTrigger;
     private Action chosenAction;
-    private ObservableList<Counter> availableCounters = FXCollections.observableArrayList();
+    private final ObservableList<Counter> availableCounters = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -73,7 +74,8 @@ public class MainPageController implements Initializable {
                 "Move File Action",
                 "Delete File Action",
                 "External Program Action",
-                "Counter Operation Action"
+                "Counter Operation Action",
+                "Add Counter to Counter Action"
         ));
 
         ruleEngine = RuleEngine.getInstance();
@@ -174,6 +176,12 @@ public class MainPageController implements Initializable {
                         (SelectExternalProgramTriggerController c) ->
                                 c.setTrigger((ExternalProgramTrigger) chosenTrigger)
                 );
+                case "Counter Comparison Trigger" -> openNewWindowWithInjection(
+                        "/flowmate_team5/view/CompareCounterIntegerView.fxml",
+                        "Compare Counter",
+                        (flowmate_team5.controllers.CompareCounterIntegerController c) ->
+                                c.setTrigger((CounterIntegerComparisonTrigger) chosenTrigger)
+                );
             }
 
             chosenAction = RuleFactoryManager.createAction(actionType);
@@ -214,6 +222,12 @@ public class MainPageController implements Initializable {
                         "Run Program",
                         (SelectExternalProgramActionController c) ->
                                 c.setAction((ExternalProgramAction) chosenAction)
+                );
+                case "Add Counter to Counter Action" -> openNewWindowWithInjection(
+                        "/flowmate_team5/view/SelectTwoCountersView.fxml",
+                        "Configure Counters",
+                        (flowmate_team5.controllers.SelectTwoCountersController c) ->
+                                c.setAction((AddCounterToCounterAction) chosenAction)
                 );
             }
 
