@@ -6,56 +6,85 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+/**
+ * Controller responsible for editing an existing Counter.
+ * It allows the user to modify the counter name and value.
+ */
 public class EditACounterController {
 
     @FXML private TextField nameField;
+
     @FXML private TextField valueField;
 
     private Counter counter;
 
-    // 🔑 chiamato dalla MainPageController
+    /**
+     * Injects the Counter from the MainPageController
+     * and initializes the UI fields with its current values.
+     *
+     * @param counter the counter to be edited
+     */
     public void setCounter(Counter counter) {
         this.counter = counter;
 
-        // Pre-carica i dati
         nameField.setText(counter.getName());
         valueField.setText(String.valueOf(counter.getValue()));
     }
 
-    // 🔑 QUESTO METODO MANCAVA
+    /**
+     * Called when the user presses the confirm button.
+     * Validates input and updates the existing counter.
+     */
     @FXML
     private void confirmButtonPushed() {
 
-        String newName = nameField.getText();
+        if (counter == null) {
+            throw new IllegalStateException("Counter not injected");
+        }
+
+        String name = nameField.getText();
         String valueText = valueField.getText();
 
-        if (newName == null || newName.isBlank()) {
+        // Validate counter name
+        if (name == null || name.isBlank()) {
             showError("Counter name cannot be empty");
             return;
         }
 
-        double newValue;
+        // Validate and parse counter value
+        int value;
         try {
-            newValue = Double.parseDouble(valueText);
+            value = Integer.parseInt(valueText);
         } catch (NumberFormatException e) {
-            showError("Counter value must be a number");
+            showError("Counter value must be an integer number");
             return;
         }
 
-        // Aggiorna il counter ESISTENTE
-        counter.setName(newName.trim());
-        counter.setValue(newValue);
+        // Update the existing counter
+        counter.setName(name);
+        counter.setValue(value);
 
-        // Chiudi finestra
+        // Close the window after successful update
+        closeWindow();
+    }
+
+    /**
+     * Utility method to close the current window.
+     */
+    private void closeWindow() {
         Stage stage = (Stage) nameField.getScene().getWindow();
         stage.close();
     }
 
+    /**
+     * Displays a validation error message in an alert dialog.
+     *
+     * @param msg the error message to be shown
+     */
     private void showError(String msg) {
-        Alert a = new Alert(Alert.AlertType.ERROR);
-        a.setTitle("Invalid Input");
-        a.setHeaderText(null);
-        a.setContentText(msg);
-        a.showAndWait();
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Validation Error");
+        alert.setContentText(msg);
+        alert.showAndWait();
     }
 }
