@@ -21,7 +21,6 @@ public class CooldownState implements RuleState {
 
     @Override
     public boolean isActive() {
-        // Considered active but sleeping
-        return true;
+        return false;
     }
 }
