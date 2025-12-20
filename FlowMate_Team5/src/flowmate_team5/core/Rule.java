@@ -42,6 +42,10 @@ public class Rule implements Serializable {
         this.currentState = newState;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public boolean isActive() {
         return currentState != null && currentState.isActive();
     }
