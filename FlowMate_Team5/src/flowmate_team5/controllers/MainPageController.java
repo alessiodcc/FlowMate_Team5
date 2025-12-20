@@ -14,12 +14,8 @@ import flowmate_team5.models.Counter;
 import flowmate_team5.models.Trigger;
 import flowmate_team5.models.actions.*;
 import flowmate_team5.models.actions.AddCounterToCounterAction;
-import flowmate_team5.models.triggers.DayOfTheMonthTrigger;
-import flowmate_team5.models.triggers.FileExistsTrigger;
-import flowmate_team5.models.triggers.TemporalTrigger;
+import flowmate_team5.models.triggers.*;
 import flowmate_team5.models.actions.ExternalProgramAction;
-import flowmate_team5.models.triggers.ExternalProgramTrigger;
-import flowmate_team5.models.triggers.CounterIntegerComparisonTrigger;
 
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -80,17 +76,44 @@ public class MainPageController implements Initializable {
 
         ruleEngine = RuleEngine.getInstance();
         ruleEngine.getRules().addAll(RulePersistenceManager.loadRules());
-        ruleObservableList = FXCollections.observableArrayList(ruleEngine.getRules());
 
+        ruleObservableList = FXCollections.observableArrayList(ruleEngine.getRules());
         RuleList.setItems(ruleObservableList);
         RuleList.setCellFactory(lv -> new RuleCell());
 
+        // ================= COUNTERS =================
         CounterListView.setItems(availableCounters);
 
+        CounterListView.setCellFactory(lv -> {
+
+            ListCell<Counter> cell = new ListCell<>() {
+                @Override
+                protected void updateItem(Counter item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? null : item.toString());
+                }
+            };
+
+            // Tooltip VISIBILE
+            cell.setTooltip(new Tooltip("Double click to edit this counter"));
+
+            // Double click FUNZIONANTE
+            cell.setOnMouseClicked(event -> {
+                if (!cell.isEmpty() && event.getClickCount() == 2) {
+                    CounterListView.getSelectionModel().select(cell.getItem());
+                    handleEditCounter();
+                }
+            });
+
+            return cell;
+        });
+
+        // ================= SIDEBAR =================
         sidebar.setVisible(false);
         sidebar.setManaged(false);
         sidebar.setTranslateX(-320);
     }
+
 
     @FXML
     private void handleCreateCounter() {
@@ -114,6 +137,45 @@ public class MainPageController implements Initializable {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    private void handleEditCounter() {
+
+        Counter selected =
+                CounterListView.getSelectionModel().getSelectedItem();
+
+        if (selected == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No Counter Selected");
+            alert.setContentText("Please select a counter to edit.");
+            alert.showAndWait();
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/flowmate_team5/view/EditACounterView.fxml")
+            );
+            Parent root = loader.load();
+
+            EditACounterController controller = loader.getController();
+            controller.setCounter(selected); // 🔑 injection
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Edit Counter");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            // Forza refresh grafico
+            CounterListView.refresh();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     @FXML
     private void toggleSidebar() {
@@ -170,6 +232,11 @@ public class MainPageController implements Initializable {
                         "Configure Day of the Month Trigger",
                         (SelectDayOfTheMonthController c) -> c.setTrigger((DayOfTheMonthTrigger) chosenTrigger)
                 );
+                case "Day of Year Trigger" -> openNewWindowWithInjection(
+                        "/flowmate_team5/view/SelectDayOfAYear.fxml",
+                        "Configure Day of the Year Trigger",
+                        (SelectDayOfTheYearController c) -> c.setTrigger((DayOfTheYearTrigger) chosenTrigger)
+                );
                 case "External Program Trigger" -> openNewWindowWithInjection(
                         "/flowmate_team5/view/SelectExternalProgramTriggerView.fxml",
                         "Configure Program Trigger",
@@ -223,12 +290,12 @@ public class MainPageController implements Initializable {
                         (SelectExternalProgramActionController c) ->
                                 c.setAction((ExternalProgramAction) chosenAction)
                 );
-                case "Add Counter to Counter Action" -> openNewWindowWithInjection(
+                /*case "Add Counter to Counter Action" -> openNewWindowWithInjection(
                         "/flowmate_team5/view/SelectTwoCountersView.fxml",
                         "Configure Counters",
                         (flowmate_team5.controllers.SelectTwoCountersController c) ->
                                 c.setAction((AddCounterToCounterAction) chosenAction)
-                );
+                );*/
             }
 
             Rule rule = new Rule(ruleName, chosenTrigger, chosenAction);
