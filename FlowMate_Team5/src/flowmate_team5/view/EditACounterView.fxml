@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0"
+            style="-fx-background-color: white;"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="flowmate_team5.controllers.EditACounterController">
+
+    <children>
+        <VBox alignment="TOP_CENTER" spacing="25"
+              AnchorPane.topAnchor="0"
+              AnchorPane.bottomAnchor="0"
+              AnchorPane.leftAnchor="0"
+              AnchorPane.rightAnchor="0">
+
+            <padding>
+                <Insets top="30" bottom="30" left="40" right="40"/>
+            </padding>
+
+            <!-- LOGO -->
+            <ImageView fitHeight="80" preserveRatio="true">
+                <image>
+                    <Image url="@../images/AppLogo.png"/>
+                </image>
+            </ImageView>
+
+            <!-- TITLE -->
+            <Label text="Edit Counter"
+                   style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+            <!-- COUNTER NAME -->
+            <VBox alignment="CENTER_LEFT" spacing="6" maxWidth="300">
+                <Label text="Counter Name"
+                       style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                <TextField fx:id="nameField"
+                           promptText="Enter counter name"
+                           prefWidth="300"/>
+            </VBox>
+
+            <!-- COUNTER VALUE -->
+            <VBox alignment="CENTER_LEFT" spacing="6" maxWidth="300">
+                <Label text="Counter Value"
+                       style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                <TextField fx:id="valueField"
+                           promptText="Enter numeric value"
+                           prefWidth="300"/>
+            </VBox>
+
+            <!-- CONFIRM -->
+            <Button text="Confirm"
+                    onAction="#confirmButtonPushed"
+                    style="-fx-background-color: #3498db;
+                           -fx-text-fill: white;
+                           -fx-font-size: 14px;
+                           -fx-font-weight: bold;
+                           -fx-padding: 10 30;
+                           -fx-background-radius: 8;
+                           -fx-cursor: hand;">
+                <VBox.margin>
+                    <Insets top="15"/>
+                </VBox.margin>
+            </Button>
+
+        </VBox>
+    </children>
+</AnchorPane>
