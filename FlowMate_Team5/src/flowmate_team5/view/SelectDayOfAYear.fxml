@@ -1,89 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0"
-            prefWidth="600.0"
-            style="-fx-background-color: white;"
-            xmlns="http://javafx.com/javafx/23.0.1"
+<AnchorPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="flowmate_team5.controllers.SelectDayOfTheYearController">
 
     <children>
-        <VBox alignment="TOP_CENTER"
-              spacing="25.0"
-              AnchorPane.topAnchor="0.0"
-              AnchorPane.bottomAnchor="0.0"
-              AnchorPane.leftAnchor="0.0"
-              AnchorPane.rightAnchor="0.0">
+        <VBox spacing="15" alignment="CENTER"
+              AnchorPane.topAnchor="0"
+              AnchorPane.bottomAnchor="0"
+              AnchorPane.leftAnchor="0"
+              AnchorPane.rightAnchor="0">
 
             <padding>
-                <Insets top="30.0" right="40.0" bottom="30.0" left="40.0"/>
+                <Insets top="20" right="20" bottom="20" left="20"/>
             </padding>
 
-            <children>
+            <Label text="Select Day of the Year"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
-                <!-- Logo -->
-                <ImageView fitHeight="80.0" preserveRatio="true">
-                    <image>
-                        <Image url="@../images/AppLogo.png"/>
-                    </image>
-                </ImageView>
+            <ComboBox fx:id="monthComboBox"
+                      prefWidth="200"
+                      promptText="Select month"/>
 
-                <!-- Title -->
-                <Label text="Day of the Year Configuration"
-                       style="-fx-font-size: 22px;
-                              -fx-font-weight: bold;
-                              -fx-text-fill: #2c3e50;"/>
+            <Spinner fx:id="daySpinner"
+                     prefWidth="200"/>
 
-                <!-- Date selection -->
-                <VBox alignment="CENTER_LEFT"
-                      maxWidth="400.0"
-                      spacing="8.0">
+            <HBox spacing="10" alignment="CENTER">
+                <Button text="Confirm"
+                        onAction="#confirmButtonPushed"/>
+                <Button text="Cancel"
+                        onAction="#cancelButtonPushed"/>
+            </HBox>
 
-                    <Label text="Select a day of the year:"
-                           style="-fx-font-size: 14px;
-                                  -fx-font-weight: bold;
-                                  -fx-text-fill: #34495e;"/>
-
-                    <DatePicker fx:id="datePicker"
-                                style="-fx-background-radius: 6;
-                                       -fx-border-color: #bdc3c7;
-                                       -fx-border-radius: 6;
-                                       -fx-padding: 6;"/>
-                </VBox>
-
-                <!-- Buttons -->
-                <HBox spacing="15.0" alignment="CENTER">
-                    <Button text="Confirm"
-                            onAction="#confirmButtonPushed"
-                            style="-fx-background-color: #3498db;
-                                   -fx-text-fill: white;
-                                   -fx-font-size: 14px;
-                                   -fx-font-weight: bold;
-                                   -fx-padding: 10 30;
-                                   -fx-background-radius: 8;
-                                   -fx-cursor: hand;"/>
-
-                    <Button text="Cancel"
-                            onAction="#cancelButtonPushed"
-                            style="-fx-background-color: #ecf0f1;
-                                   -fx-text-fill: #2c3e50;
-                                   -fx-font-size: 14px;
-                                   -fx-padding: 10 25;
-                                   -fx-background-radius: 8;
-                                   -fx-cursor: hand;"/>
-                </HBox>
-
-            </children>
         </VBox>
     </children>
 </AnchorPane>
