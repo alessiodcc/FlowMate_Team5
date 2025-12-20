@@ -134,6 +134,7 @@ public class MainPageController implements Initializable {
             Counter c = controller.getCounter();
             if (c != null) {
                 availableCounters.add(c);
+                ruleEngine.addCounter(c);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -336,6 +337,8 @@ public class MainPageController implements Initializable {
                 ruleEngine.addRule(rule);
                 ruleObservableList.add(rule);
             }
+
+            RulePersistenceManager.saveRules(ruleEngine.getRules());
 
             RuleNameTextArea.clear();
             triggerDropDownMenu.getSelectionModel().clearSelection();

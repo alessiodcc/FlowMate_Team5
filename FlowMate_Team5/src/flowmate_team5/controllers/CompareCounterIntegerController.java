@@ -31,7 +31,7 @@ public class CompareCounterIntegerController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // 1. Setup Operators
         operatorComboBox.setItems(FXCollections.observableArrayList(
-                ">", "<", ">=", "<=", "==", "!="
+                ">", "<", "="
         ));
 
         // 2. Setup Counters (Using the list you added to RuleEngine)
