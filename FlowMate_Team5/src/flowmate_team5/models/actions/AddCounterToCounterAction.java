@@ -33,11 +33,11 @@ public class AddCounterToCounterAction implements Action, Serializable {
             return;
         }
 
-        double amountToAdd = sourceCounter.getValue();
-        double oldTargetValue = targetCounter.getValue();
+        int amountToAdd = sourceCounter.getValue();
+        int oldTargetValue = targetCounter.getValue();
 
         // LOGIC: Since Counter.java doesn't have an 'add' method, we calculate manually
-        double newTargetValue = oldTargetValue + amountToAdd;
+        int newTargetValue = oldTargetValue + amountToAdd;
         targetCounter.setValue(newTargetValue);
 
         System.out.println("[AddCounterAction] Added " + amountToAdd +
