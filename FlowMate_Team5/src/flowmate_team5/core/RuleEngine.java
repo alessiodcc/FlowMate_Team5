@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import flowmate_team5.models.Counter;
 
 /**
  * The core engine responsible for managing and evaluating all rules.
@@ -15,6 +16,9 @@ public class RuleEngine {
     private static RuleEngine instance;
 
     private final List<Rule> rules = new ArrayList<>();
+
+    // List to hold all Counter objects created in the system
+    private final List<Counter> counters = new ArrayList<>();
 
     // Scheduler to run the checkAllRules method on a fixed schedule in a background thread.
     private final ScheduledExecutorService scheduler =
@@ -62,6 +66,21 @@ public class RuleEngine {
      */
     public List<Rule> getRules() {
         return rules;
+    }
+
+    /**
+     * Retrieves the list of all available counters.
+     * @return A list of Counter objects.
+     */
+    public List<Counter> getCounters() { return counters; }
+
+    /**
+     * Adds a new counter to the Rule Engine.
+     * @param c The Counter object to add.
+     */
+    public void addCounter(Counter c) {
+        if (c != null) { counters.add(c);
+            System.out.println("[RuleEngine] Counter added: " + c.getName());}
     }
 
     /**
