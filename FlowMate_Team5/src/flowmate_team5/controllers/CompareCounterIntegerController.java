@@ -28,13 +28,14 @@ public class CompareCounterIntegerController implements Initializable {
     }
 
     @Override
+    @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // 1. Setup Operators
+        // Setup Operators
         operatorComboBox.setItems(FXCollections.observableArrayList(
-                ">", "<", ">=", "<=", "==", "!="
+                ">", "<", "="
         ));
 
-        // 2. Setup Counters (Using the list you added to RuleEngine)
+        // Setup Counters
         if (RuleEngine.getInstance().getCounters() != null) {
             counterComboBox.setItems(FXCollections.observableArrayList(
                     RuleEngine.getInstance().getCounters()
