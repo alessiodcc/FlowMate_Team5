@@ -6,20 +6,29 @@ public class ActiveState implements RuleState {
 
     @Override
     public void check(Rule context) {
-        if (context.getTrigger() != null && context.getTrigger().isTriggered()) {
 
-            context.execute();
+        // Se il trigger non scatta → non fare nulla
+        if (context.getTrigger() == null || !context.getTrigger().isTriggered()) {
+            return;
+        }
 
-            long sleepDuration = context.getSleepDurationMillis();
+        // 🔥 ESECUZIONE
+        context.execute();
+        System.out.println("[Rule Fired]: " + context.getName());
 
-            if (context.isRepeatable()) {
-                if (sleepDuration > 0) {
-                    long wakeUpTime = System.currentTimeMillis() + sleepDuration;
-                    context.setState(new CooldownState(wakeUpTime));
-                }
-            } else {
-                context.setState(new InactiveState());
-            }
+        long sleep = context.getSleepDurationMillis();
+
+        // 💤 PRIORITÀ ASSOLUTA: SLEEP
+        if (sleep > 0) {
+            long wakeUp = System.currentTimeMillis() + sleep;
+            context.setState(new CooldownState(wakeUp));
+            System.out.println("SLEEP: The rule " + context.getName() + " is sleeping");
+            return;
+        }
+
+        // ❌ Se non è repeatable → spegni
+        if (!context.isRepeatable()) {
+            context.setState(new InactiveState());
         }
     }
 

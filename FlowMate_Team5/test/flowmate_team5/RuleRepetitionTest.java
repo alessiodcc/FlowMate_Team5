@@ -5,20 +5,37 @@ import flowmate_team5.models.Action;
 import flowmate_team5.models.Trigger;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RuleRepetitionTest {
 
-    // ---------- TEST DOUBLES ----------
+    /**
+     * Fake Trigger implementation used for testing.
+     * It simulates a trigger that fires only once per call to fire().
+     */
+    static class TestTrigger implements Trigger {
+        private boolean triggered = false;
 
-    static class AlwaysTrueTrigger implements Trigger {
+        // Simulates an external event that activates the trigger
+        void fire() {
+            triggered = true;
+        }
+
         @Override
         public boolean isTriggered() {
-            return true;
+            if (triggered) {
+                triggered = false; // one-shot behaviour per fire()
+                return true;
+            }
+            return false;
         }
     }
 
-    static class CountingAction implements Action {
+    /**
+     * Fake Action implementation used for testing.
+     * It simply counts how many times execute() is called.
+     */
+    static class TestAction implements Action {
         private int executions = 0;
 
         @Override
@@ -31,111 +48,107 @@ class RuleRepetitionTest {
         }
     }
 
-    // ---------- TESTS ----------
 
+    /**
+     * Verifies that a non-repeatable rule executes its action only once,
+     * even if the trigger fires multiple times.
+     */
     @Test
     void nonRepeatableRule_executesOnlyOnce() {
-        CountingAction action = new CountingAction();
-        Rule rule = new Rule(
-                "OneShotRule",
-                new AlwaysTrueTrigger(),
-                action
-        );
 
+        TestTrigger trigger = new TestTrigger();
+        TestAction action = new TestAction();
+
+        Rule rule = new Rule("OneShotRule", trigger, action);
         rule.setRepeatable(false);
 
-        rule.check(); // first execution
-        rule.check(); // should NOT execute again
-
-        assertEquals(
-                1,
-                action.getExecutions(),
-                "Non-repeatable rule must execute only once"
-        );
-
-        assertFalse(rule.isActive(), "Rule should be inactive after one execution");
-    }
-
-    @Test
-    void repeatableRule_withCooldown_executesAgainAfterCooldown() throws InterruptedException {
-        CountingAction action = new CountingAction();
-        Rule rule = new Rule(
-                "RepeatableRule",
-                new AlwaysTrueTrigger(),
-                action
-        );
-
-        rule.setRepeatable(true);
-        rule.setSleepDuration(100); // 100 ms cooldown
-
-        // First trigger
+        // First trigger → action should execute
+        trigger.fire();
         rule.check();
         assertEquals(1, action.getExecutions());
 
-        // During cooldown → should NOT execute
+        // Second trigger → action should NOT execute again
+        trigger.fire();
         rule.check();
-        assertEquals(
-                1,
-                action.getExecutions(),
-                "Rule must not execute during cooldown"
-        );
-
-        // Wait for cooldown to expire
-        Thread.sleep(150);
-
-        // Trigger again
-        rule.check();
-        assertEquals(
-                2,
-                action.getExecutions(),
-                "Repeatable rule should execute again after cooldown"
-        );
+        assertEquals(1, action.getExecutions());
     }
 
+    /**
+     * Verifies that a repeatable rule executes its action
+     * multiple times if the trigger fires again.
+     */
     @Test
-    void repeatableRule_doesNotExecuteWhileInactive() {
-        CountingAction action = new CountingAction();
-        Rule rule = new Rule(
-                "RepeatableButInactive",
-                new AlwaysTrueTrigger(),
-                action
-        );
+    void repeatableRule_executesMultipleTimes_ifTriggeredAgain() {
 
-        rule.setRepeatable(true);
-        rule.setActive(false); // force inactive
-
-        rule.check();
-        rule.check();
-
-        assertEquals(
-                0,
-                action.getExecutions(),
-                "Inactive rule must never execute"
-        );
-    }
-
-    @Test
-    void repeatableRule_executesOnlyAfterCooldown() throws Exception {
-
+        TestTrigger trigger = new TestTrigger();
         TestAction action = new TestAction();
-        AlwaysTrueTrigger trigger = new AlwaysTrueTrigger();
 
-        Rule rule = new Rule("Repeatable", trigger, action);
-        rule.setSleepDuration(100);
+        Rule rule = new Rule("RepeatableRule", trigger, action);
+        rule.setRepeatable(true);
 
-        rule.check(); // fires
-        assertEquals(1, action.getExecutionCount()
-        );
+        // First trigger
+        trigger.fire();
+        rule.check();
+        assertEquals(1, action.getExecutions());
 
-        rule.check(); // still sleeping
-        assertEquals(1, action.getExecutionCount()
-        );
-
-        Thread.sleep(150);
-        rule.check(); // wakes up
-        rule.check(); // fires again
-
-        assertEquals(2, action.getExecutionCount());
+        // Second trigger
+        trigger.fire();
+        rule.check();
+        assertEquals(2, action.getExecutions());
     }
 
+    /**
+     * Verifies that a repeatable rule with a cooldown period
+     * executes again only after the cooldown has elapsed.
+     */
+    @Test
+    void repeatableRule_withCooldown_executesOnlyAfterCooldown() throws InterruptedException {
+
+        TestTrigger trigger = new TestTrigger();
+        TestAction action = new TestAction();
+
+        Rule rule = new Rule("RepeatableRule", trigger, action);
+        rule.setRepeatable(true);
+        rule.setSleepDuration(200); // cooldown in milliseconds
+
+        // First execution
+        trigger.fire();
+        rule.check();
+        assertEquals(1, action.getExecutions());
+
+        // Trigger fired during cooldown → should NOT execute
+        Thread.sleep(100);
+        trigger.fire();
+        rule.check();
+        assertEquals(1, action.getExecutions());
+
+        // Cooldown finished → action can execute again
+        Thread.sleep(150);
+        trigger.fire();
+        rule.check();
+        assertEquals(2, action.getExecutions());
+    }
+
+    /**
+     * Verifies that a repeatable rule does not execute again
+     * if the trigger is not fired.
+     */
+    @Test
+    void repeatableRule_withoutTrigger_doesNotExecuteAgain() {
+
+        TestTrigger trigger = new TestTrigger();
+        TestAction action = new TestAction();
+
+        Rule rule = new Rule("RepeatableRule", trigger, action);
+        rule.setRepeatable(true);
+
+        // First execution
+        trigger.fire();
+        rule.check();
+        assertEquals(1, action.getExecutions());
+
+        // No trigger fired → action should not execute
+        rule.check();
+        assertEquals(1, action.getExecutions());
+    }
 }

@@ -12,14 +12,15 @@ public class CooldownState implements RuleState {
 
     @Override
     public void check(Rule context) {
-        System.out.println("SLEEP: The rule: " + context.getName() + " is sleeping");
-        // Check if sleep period is over
         if (System.currentTimeMillis() >= wakeUpTime) {
             context.setState(new ActiveState());
-            context.setSleepDuration(0);
-            System.out.println("[Rule State]: Cooldown finished. Rule is active again.");
+
+            // 🔁 IMPORTANTISSIMO:
+            // riesegue subito il check ora che è attiva
+            context.check();
         }
     }
+
 
     @Override
     public boolean isActive() {
