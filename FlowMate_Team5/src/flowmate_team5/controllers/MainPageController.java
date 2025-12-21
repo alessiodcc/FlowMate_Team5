@@ -58,6 +58,7 @@ public class MainPageController implements Initializable {
         triggerDropDownMenu.setItems(FXCollections.observableArrayList(
                 "Temporal Trigger",
                 "File Exists Trigger",
+                "File Exceeds Trigger",
                 "Day of Week Trigger",
                 "Day of Month Trigger",
                 "Day of Year Trigger",
@@ -239,6 +240,7 @@ public class MainPageController implements Initializable {
             if (ruleBeingEdited != null) {
                 if (chosenTrigger instanceof TemporalTrigger) tType = "Temporal Trigger";
                 else if (chosenTrigger instanceof FileExistsTrigger) tType = "File Exists Trigger";
+                else if (chosenTrigger instanceof FileExceedsTrigger) tType = "File Exceeds Trigger";
                 else if (chosenTrigger instanceof DayOfTheMonthTrigger) tType = "Day of Month Trigger";
                 else if (chosenTrigger instanceof DayOfTheYearTrigger) tType = "Day of Year Trigger";
                 else if (chosenTrigger instanceof ExternalProgramTrigger) tType = "External Program Trigger";
@@ -255,9 +257,16 @@ public class MainPageController implements Initializable {
                 );
                 case "File Exists Trigger" -> openNewWindowWithInjection(
                         "/flowmate_team5/view/FileExistsView.fxml",
-                        "Configure File Trigger",
+                        "Configure File Exists Trigger",
                         (FileExistsController c) -> c.setTrigger((FileExistsTrigger) chosenTrigger)
                 );
+
+                case "File Exceeds Trigger" -> openNewWindowWithInjection(
+                        "/flowmate_team5/view/FileExceedsView.fxml",
+                        "Configure File Exceeds Trigger",
+                        (FileExceedsTriggerController c) -> c.setTrigger((FileExceedsTrigger) chosenTrigger)
+                );
+
                 case "Day of Week Trigger" -> openNewWindowWithInjection(
                         "/flowmate_team5/view/SelectDayOfTheWeekView.fxml", // Use correct FXML name
                         "Select Days",

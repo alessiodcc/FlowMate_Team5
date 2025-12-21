@@ -26,6 +26,10 @@ public class RuleFactoryManager {
                 new FileExistsTriggerCreator()
         );
         triggerFactories.put(
+                "File Exceeds Trigger",
+                new FileExceedsTriggerCreator()
+        );
+        triggerFactories.put(
                 "Day of Week Trigger",
                 new flowmate_team5.factory.creators.DayOfTheWeekTriggerCreator()
         );
