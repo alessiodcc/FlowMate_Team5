@@ -7,13 +7,14 @@ import flowmate_team5.models.Trigger;
 import java.util.HashMap;
 import java.util.Map;
 
-// Registry class to manage Factory Method creators
+/* Registry class responsible for managing Factory Method creators for triggers and actions. */
 public class RuleFactoryManager {
 
-    // Maps to store instances of the specific creators associated with their display names
+    // Maps associating display names with their specific creator instances
     private static final Map<String, CreatorTrigger> triggerFactories = new HashMap<>();
     private static final Map<String, CreatorAction> actionFactories = new HashMap<>();
 
+    /* Static initialization block to register all available component creators. */
     static {
         // -------- REGISTER TRIGGERS --------
         triggerFactories.put(
@@ -75,30 +76,26 @@ public class RuleFactoryManager {
                 "External Program Action",
                 new ExternalProgramActionCreator()
         );
-
-
     }
 
     // -------- PUBLIC API --------
 
-    /**
-     * Retrieves the specific creator for the given trigger type string
-     * and returns a new Trigger instance.
-     */
+    /* Instantiates a specific Trigger based on the provided type string. */
     public static Trigger createTrigger(String type) {
         CreatorTrigger creator = triggerFactories.get(type);
+
+        // Validate that the requested trigger type exists in the registry
         if (creator == null) {
             throw new IllegalArgumentException("Unknown trigger: " + type);
         }
         return creator.createTrigger();
     }
 
-    /**
-     * Retrieves the specific creator for the given action type string
-     * and returns a new Action instance.
-     */
+    /* Instantiates a specific Action based on the provided type string. */
     public static Action createAction(String type) {
         CreatorAction creator = actionFactories.get(type);
+
+        // Validate that the requested action type exists in the registry
         if (creator == null) {
             throw new IllegalArgumentException("Unknown action: " + type);
         }
