@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
 import java.util.ResourceBundle;
@@ -49,12 +50,10 @@ public class SelectDayOfTheYearController implements Initializable {
         );
 
         // Year (current year ± 20, very reasonable UX)
-        int currentYear = Year.now().getValue();
+        int currentYear = LocalDate.now().getYear();
         yearSpinner.setValueFactory(
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(
-                        currentYear - 20,
-                        currentYear + 20,
-                        currentYear
+                        currentYear, currentYear + 10, currentYear
                 )
         );
     }
@@ -101,7 +100,6 @@ public class SelectDayOfTheYearController implements Initializable {
         closeWindow();
     }
 
-    // -------------------- UTILITIES --------------------
 
     private boolean isValidDate(int year, Month month, int day) {
         try {
