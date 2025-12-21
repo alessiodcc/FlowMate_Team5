@@ -40,6 +40,7 @@ public class MainPageController implements Initializable {
     @FXML private ComboBox<String> triggerDropDownMenu;
     @FXML private ComboBox<String> actionDropDownMenu;
     @FXML private TextField RuleNameTextArea;
+    @FXML private CheckBox repeatableCheckBox; // <--- AGGIUNTO: Collegamento alla UI
     @FXML private ListView<Rule> RuleList;
     @FXML private AnchorPane sidebar;
     @FXML private ListView<Counter> CounterListView;
@@ -102,10 +103,8 @@ public class MainPageController implements Initializable {
                 }
             };
 
-            // Tooltip VISIBILE
             cell.setTooltip(new Tooltip("Double click to edit this counter"));
 
-            // Double click FUNZIONANTE
             cell.setOnMouseClicked(event -> {
                 if (!cell.isEmpty() && event.getClickCount() == 2) {
                     CounterListView.getSelectionModel().select(cell.getItem());
@@ -176,7 +175,7 @@ public class MainPageController implements Initializable {
             Parent root = loader.load();
 
             EditACounterController controller = loader.getController();
-            controller.setCounter(selected); // 🔑 injection
+            controller.setCounter(selected);
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -184,7 +183,6 @@ public class MainPageController implements Initializable {
             stage.setScene(new Scene(root));
             stage.showAndWait();
 
-            // Forza refresh grafico
             CounterListView.refresh();
 
         } catch (IOException e) {
@@ -276,9 +274,9 @@ public class MainPageController implements Initializable {
                 );
 
                 case "Day of Week Trigger" -> openNewWindowWithInjection(
-                        "/flowmate_team5/view/SelectDayOfTheWeekView.fxml", // Use correct FXML name
+                        "/flowmate_team5/view/SelectDayOfTheWeekView.fxml",
                         "Select Days",
-                        (flowmate_team5.controllers.SelectDayOfTheWeekController c) -> // Use correct Controller name
+                        (flowmate_team5.controllers.SelectDayOfTheWeekController c) ->
                                 c.setTrigger((DayOfTheWeekTrigger) chosenTrigger)
                 );
                 case "Day of Month Trigger" -> openNewWindowWithInjection(
@@ -359,10 +357,14 @@ public class MainPageController implements Initializable {
 
             if (ruleBeingEdited != null) {
                 ruleBeingEdited.setName(ruleName);
+                // AGGIUNTO: permette di cambiare ripetibilità in fase di edit
+                ruleBeingEdited.setRepeatable(repeatableCheckBox.isSelected());
                 ruleBeingEdited = null;
+                createRuleButton.setText("Create Rule");
             } else {
                 Rule rule = new Rule(ruleName, chosenTrigger, chosenAction);
-                rule.setRepeatable(true);
+                // MODIFICATO: ora usa lo stato della checkbox invece del 'true' fisso
+                rule.setRepeatable(repeatableCheckBox.isSelected());
                 ruleEngine.addRule(rule);
                 ruleObservableList.add(rule);
             }
@@ -370,6 +372,7 @@ public class MainPageController implements Initializable {
             RulePersistenceManager.saveRules(ruleEngine.getRules());
 
             RuleNameTextArea.clear();
+            repeatableCheckBox.setSelected(false); // Reset checkbox
             triggerDropDownMenu.getSelectionModel().clearSelection();
             actionDropDownMenu.getSelectionModel().clearSelection();
             RuleList.refresh();
@@ -540,8 +543,9 @@ public class MainPageController implements Initializable {
     private void handleEditRule(Rule rule) {
         this.ruleBeingEdited = rule;
         RuleNameTextArea.setText(rule.getName());
+        // AGGIUNTO: riflette lo stato corrente della regola nella checkbox
+        repeatableCheckBox.setSelected(rule.isRepeatable());
         createRuleButton.setText("Save Changes");
-        confirmButtonPushed();
     }
 
     private void showAlert(String title, String msg, Alert.AlertType type) {
