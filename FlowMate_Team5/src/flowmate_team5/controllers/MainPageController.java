@@ -2,6 +2,7 @@ package flowmate_team5.controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
@@ -77,7 +78,11 @@ public class MainPageController implements Initializable {
         ));
 
         ruleEngine = RuleEngine.getInstance();
-        ruleEngine.getRules().addAll(RulePersistenceManager.loadRules());
+        ruleEngine.getRules().clear();
+
+        List<Rule> loadedRules = RulePersistenceManager.loadRules();
+        ruleEngine.getRules().addAll(loadedRules);
+
 
         ruleObservableList = FXCollections.observableArrayList(ruleEngine.getRules());
         RuleList.setItems(ruleObservableList);
@@ -340,6 +345,7 @@ public class MainPageController implements Initializable {
                 ruleBeingEdited = null;
             } else {
                 Rule rule = new Rule(ruleName, chosenTrigger, chosenAction);
+                rule.setRepeatable(true);
                 ruleEngine.addRule(rule);
                 ruleObservableList.add(rule);
             }
@@ -436,7 +442,18 @@ public class MainPageController implements Initializable {
                 if (r == null) return;
                 SleepingStateController controller = openSleepWindow();
                 if (controller != null && controller.getSleepDuration() != null) {
-                    r.setSleepDuration(controller.getSleepDuration().toMillis());
+                    long durationMillis = controller.getSleepDuration().toMillis();
+
+                    r.setSleepDuration(durationMillis);
+                    r.setRepeatable(true);
+
+
+                    long wakeUpTime = System.currentTimeMillis() + durationMillis;
+
+                    r.setState(new flowmate_team5.state.CooldownState(wakeUpTime));
+
+                    flowmate_team5.core.RulePersistenceManager.saveRules(ruleEngine.getRules());
+
                     updateItem(r, false);
                 }
                 e.consume();
@@ -474,12 +491,22 @@ public class MainPageController implements Initializable {
                 counterInfoLabel.setManaged(false);
             }
 
-            if (!rule.isActive()) statusDot.setFill(Color.RED);
-            else if (rule.getSleepDurationMillis() > 0) statusDot.setFill(Color.GOLD);
-            else statusDot.setFill(Color.LIMEGREEN);
+            if (rule.isActive() && !rule.isSleeping()) {
+                statusDot.setFill(Color.LIMEGREEN);
+            } else {
+                statusDot.setFill(Color.RED);
+            }
 
             toggleActiveBtn.setText(rule.isActive() ? "Deactivate" : "Activate");
             setGraphic(root);
+
+            javafx.animation.Timeline autoRefresh = new javafx.animation.Timeline(
+                    new javafx.animation.KeyFrame(javafx.util.Duration.seconds(1), e -> {
+                        RuleList.refresh();
+                    })
+            );
+            autoRefresh.setCycleCount(javafx.animation.Animation.INDEFINITE);
+            autoRefresh.play();
         }
     }
 

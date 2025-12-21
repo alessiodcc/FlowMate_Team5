@@ -49,7 +49,7 @@ public class Rule implements Serializable {
     public boolean isActive() {
         return currentState != null && currentState.isActive();
     }
-
+    public boolean isSleeping() { return currentState instanceof flowmate_team5.state.CooldownState; }
     // Used by UI toggle
     public void setActive(boolean active) {
         if (active) {
