@@ -35,12 +35,15 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/* * Controller for the main application dashboard.
+ * Orchestrates rule creation, visualization, management, and global counter handling.
+ */
 public class MainPageController implements Initializable {
 
     @FXML private ComboBox<String> triggerDropDownMenu;
     @FXML private ComboBox<String> actionDropDownMenu;
     @FXML private TextField RuleNameTextArea;
-    @FXML private CheckBox repeatableCheckBox; // <--- AGGIUNTO: Collegamento alla UI
+    @FXML private CheckBox repeatableCheckBox;
     @FXML private ListView<Rule> RuleList;
     @FXML private AnchorPane sidebar;
     @FXML private ListView<Counter> CounterListView;
@@ -48,14 +51,18 @@ public class MainPageController implements Initializable {
 
     private RuleEngine ruleEngine;
     private ObservableList<Rule> ruleObservableList;
+
+    // Temporary storage for components during creation/editing
     private Trigger chosenTrigger;
     private Action chosenAction;
     private final ObservableList<Counter> availableCounters = FXCollections.observableArrayList();
     private Rule ruleBeingEdited;
 
+    /* Initializes the UI components, loads existing data, and starts the refresh timer. */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        // Populate dropdowns with available Factory types
         triggerDropDownMenu.setItems(FXCollections.observableArrayList(
                 "Temporal Trigger",
                 "File Exists Trigger",
@@ -79,13 +86,15 @@ public class MainPageController implements Initializable {
                 "Add Counter to Counter Action"
         ));
 
+        // Initialize the Singleton RuleEngine
         ruleEngine = RuleEngine.getInstance();
         ruleEngine.getRules().clear();
 
+        // Load persisted rules from disk
         List<Rule> loadedRules = RulePersistenceManager.loadRules();
         ruleEngine.getRules().addAll(loadedRules);
 
-
+        // Bind the engine's rule list to the JavaFX ListView
         ruleObservableList = FXCollections.observableArrayList(ruleEngine.getRules());
         RuleList.setItems(ruleObservableList);
         RuleList.setCellFactory(lv -> new RuleCell());
@@ -93,8 +102,8 @@ public class MainPageController implements Initializable {
         // ================= COUNTERS =================
         CounterListView.setItems(availableCounters);
 
+        // Custom cell factory for Counter list to handle double-click editing
         CounterListView.setCellFactory(lv -> {
-
             ListCell<Counter> cell = new ListCell<>() {
                 @Override
                 protected void updateItem(Counter item, boolean empty) {
@@ -118,8 +127,9 @@ public class MainPageController implements Initializable {
         // ================= SIDEBAR =================
         sidebar.setVisible(false);
         sidebar.setManaged(false);
-        sidebar.setTranslateX(-320);
+        sidebar.setTranslateX(-320); // Start hidden off-screen
 
+        // Periodic timer to refresh the rule list UI (e.g., to update status dots)
         javafx.animation.Timeline autoRefresh = new javafx.animation.Timeline(
                 new javafx.animation.KeyFrame(javafx.util.Duration.seconds(1), e -> {
                     RuleList.refresh();
@@ -129,7 +139,7 @@ public class MainPageController implements Initializable {
         autoRefresh.play();
     }
 
-
+    /* Opens a modal window to create a new global counter. */
     @FXML
     private void handleCreateCounter() {
         try {
@@ -144,6 +154,7 @@ public class MainPageController implements Initializable {
             stage.setScene(new Scene(root));
             stage.showAndWait();
 
+            // Add the new counter to the engine if created successfully
             Counter c = controller.getCounter();
             if (c != null) {
                 availableCounters.add(c);
@@ -154,11 +165,10 @@ public class MainPageController implements Initializable {
         }
     }
 
+    /* Opens a modal window to edit the selected counter. */
     @FXML
     private void handleEditCounter() {
-
-        Counter selected =
-                CounterListView.getSelectionModel().getSelectedItem();
+        Counter selected = CounterListView.getSelectionModel().getSelectedItem();
 
         if (selected == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -190,8 +200,7 @@ public class MainPageController implements Initializable {
         }
     }
 
-
-
+    /* Toggles the visibility of the side menu with a sliding animation. */
     @FXML
     private void toggleSidebar() {
         TranslateTransition tt = new TranslateTransition(Duration.millis(250), sidebar);
@@ -211,6 +220,9 @@ public class MainPageController implements Initializable {
         tt.play();
     }
 
+    /* * Handles the creation or update of a rule.
+     * Uses the Factory pattern to instantiate components and opens specific configuration windows.
+     */
     @FXML
     public void confirmButtonPushed() {
 
@@ -220,6 +232,7 @@ public class MainPageController implements Initializable {
             return;
         }
 
+        // Determine if we are editing an existing rule or creating a new one
         if (ruleBeingEdited != null) {
             chosenTrigger = ruleBeingEdited.getTrigger();
             chosenAction = ruleBeingEdited.getAction();
@@ -233,6 +246,7 @@ public class MainPageController implements Initializable {
             }
 
             try {
+                // Use Factory Manager to create instances based on string selection
                 chosenTrigger = RuleFactoryManager.createTrigger(triggerType);
                 chosenAction = RuleFactoryManager.createAction(actionType);
             } catch (IllegalArgumentException e) {
@@ -242,8 +256,10 @@ public class MainPageController implements Initializable {
         }
 
         try {
+            // Identify the Trigger type to open the correct configuration view
             String tType = "";
             if (ruleBeingEdited != null) {
+                // Map class type back to string identifier for switch-case compatibility
                 if (chosenTrigger instanceof TemporalTrigger) tType = "Temporal Trigger";
                 else if (chosenTrigger instanceof FileExistsTrigger) tType = "File Exists Trigger";
                 else if (chosenTrigger instanceof FileExceedsTrigger) tType = "File Exceeds Trigger";
@@ -255,9 +271,10 @@ public class MainPageController implements Initializable {
                 tType = triggerDropDownMenu.getValue();
             }
 
+            // Open configuration window for the specific trigger
             switch (tType) {
                 case "Temporal Trigger" -> openNewWindowWithInjection(
-                        "/flowmate_team5/view/SelectTime.fxml",
+                        "/flowmate_team5/view/SelectTimeView.fxml",
                         "Select Time",
                         (SelectTimeController c) -> c.setTrigger((TemporalTrigger) chosenTrigger)
                 );
@@ -266,13 +283,11 @@ public class MainPageController implements Initializable {
                         "Configure File Exists Trigger",
                         (FileExistsController c) -> c.setTrigger((FileExistsTrigger) chosenTrigger)
                 );
-
                 case "File Exceeds Trigger" -> openNewWindowWithInjection(
                         "/flowmate_team5/view/FileExceedsView.fxml",
                         "Configure File Exceeds Trigger",
                         (FileExceedsTriggerController c) -> c.setTrigger((FileExceedsTrigger) chosenTrigger)
                 );
-
                 case "Day of Week Trigger" -> openNewWindowWithInjection(
                         "/flowmate_team5/view/SelectDayOfTheWeekView.fxml",
                         "Select Days",
@@ -285,7 +300,7 @@ public class MainPageController implements Initializable {
                         (SelectDayOfTheMonthController c) -> c.setTrigger((DayOfTheMonthTrigger) chosenTrigger)
                 );
                 case "Day of Year Trigger" -> openNewWindowWithInjection(
-                        "/flowmate_team5/view/SelectDayOfAYear.fxml",
+                        "/flowmate_team5/view/SelectDayOfAYearView.fxml",
                         "Configure Day of the Year Trigger",
                         (SelectDayOfTheYearController c) -> c.setTrigger((DayOfTheYearTrigger) chosenTrigger)
                 );
@@ -303,6 +318,7 @@ public class MainPageController implements Initializable {
                 );
             }
 
+            // Identify the Action type to open the correct configuration view
             String aType = "";
             if (ruleBeingEdited != null) {
                 if (chosenAction instanceof MessageAction) aType = "Message Action";
@@ -316,24 +332,25 @@ public class MainPageController implements Initializable {
                 aType = actionDropDownMenu.getValue();
             }
 
+            // Open configuration window for the specific action
             switch (aType) {
                 case "Message Action" -> openNewWindowWithInjection(
-                        "/flowmate_team5/view/WriteAMessage.fxml",
+                        "/flowmate_team5/view/WriteAMessageView.fxml",
                         "Message",
                         (WriteAMessageController c) -> c.setAction((MessageAction) chosenAction)
                 );
                 case "Play Audio Action" -> openNewWindowWithInjection(
-                        "/flowmate_team5/view/SelectAudioPath.fxml",
+                        "/flowmate_team5/view/SelectAudioPathView.fxml",
                         "Audio",
                         (SelectAudioPathController c) -> c.setAction((PlayAudioAction) chosenAction)
                 );
                 case "Write to Text File Action" -> openNewWindowWithInjection(
-                        "/flowmate_team5/view/WriteOnFile.fxml",
+                        "/flowmate_team5/view/WriteOnFileView.fxml",
                         "Write to File",
                         (WriteOnFileController c) -> c.setAction((TextAction) chosenAction)
                 );
                 case "Copy File Action" -> openNewWindowWithInjection(
-                        "/flowmate_team5/view/CopyFile.fxml",
+                        "/flowmate_team5/view/CopyFileView.fxml",
                         "Copy File",
                         (CopyFileController c) -> c.setAction((CopyFileAction) chosenAction)
                 );
@@ -355,24 +372,27 @@ public class MainPageController implements Initializable {
                 );
             }
 
+            // Finalize Rule Creation or Update
             if (ruleBeingEdited != null) {
                 ruleBeingEdited.setName(ruleName);
-                // AGGIUNTO: permette di cambiare ripetibilità in fase di edit
+                // Update repeatability based on checkbox state
                 ruleBeingEdited.setRepeatable(repeatableCheckBox.isSelected());
-                ruleBeingEdited = null;
+                ruleBeingEdited = null; // Exit edit mode
                 createRuleButton.setText("Create Rule");
             } else {
                 Rule rule = new Rule(ruleName, chosenTrigger, chosenAction);
-                // MODIFICATO: ora usa lo stato della checkbox invece del 'true' fisso
+                // Set repeatability based on checkbox state
                 rule.setRepeatable(repeatableCheckBox.isSelected());
                 ruleEngine.addRule(rule);
                 ruleObservableList.add(rule);
             }
 
+            // Persist changes to disk
             RulePersistenceManager.saveRules(ruleEngine.getRules());
 
+            // Reset UI form
             RuleNameTextArea.clear();
-            repeatableCheckBox.setSelected(false); // Reset checkbox
+            repeatableCheckBox.setSelected(false);
             triggerDropDownMenu.getSelectionModel().clearSelection();
             actionDropDownMenu.getSelectionModel().clearSelection();
             RuleList.refresh();
@@ -383,6 +403,7 @@ public class MainPageController implements Initializable {
         }
     }
 
+    /* Generic helper to load an FXML view and inject dependencies into its controller. */
     private <T> void openNewWindowWithInjection(String fxmlPath, String title, Consumer<T> injector) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
@@ -400,6 +421,7 @@ public class MainPageController implements Initializable {
         }
     }
 
+    /* Custom ListCell implementation to display rule details and action buttons directly in the list. */
     private class RuleCell extends ListCell<Rule> {
         private final VBox root = new VBox(8);
         private final Circle statusDot = new Circle(6);
@@ -428,12 +450,14 @@ public class MainPageController implements Initializable {
             detailsBox.setManaged(false);
             root.getChildren().addAll(header, detailsBox);
 
+            // Toggle expansion of details on click
             root.setOnMouseClicked(e -> {
                 expanded = !expanded;
                 detailsBox.setVisible(expanded);
                 detailsBox.setManaged(expanded);
             });
 
+            // Button Action: Toggle Rule Activation
             toggleActiveBtn.setOnAction(e -> {
                 Rule r = getItem();
                 if (r != null) {
@@ -443,6 +467,7 @@ public class MainPageController implements Initializable {
                 e.consume();
             });
 
+            // Button Action: Delete Rule
             deleteBtn.setOnAction(e -> {
                 Rule r = getItem();
                 if (r == null) return;
@@ -457,6 +482,7 @@ public class MainPageController implements Initializable {
                 e.consume();
             });
 
+            // Button Action: Put Rule to Sleep (Cooldown State)
             sleepBtn.setOnAction(e -> {
                 Rule r = getItem();
                 if (r == null) return;
@@ -467,17 +493,19 @@ public class MainPageController implements Initializable {
                     r.setSleepDuration(durationMillis);
                     r.setRepeatable(true);
 
-
+                    // Transition to CooldownState based on calculated wake-up time
                     long wakeUpTime = System.currentTimeMillis() + durationMillis;
-
                     r.setState(new flowmate_team5.state.CooldownState(wakeUpTime));
 
+                    // Persist state change
                     flowmate_team5.core.RulePersistenceManager.saveRules(ruleEngine.getRules());
 
                     updateItem(r, false);
                 }
                 e.consume();
             });
+
+            // Button Action: Edit Rule
             editBtn.setOnAction(e -> {
                 Rule r = getItem();
                 if (r != null) {
@@ -498,6 +526,7 @@ public class MainPageController implements Initializable {
             descriptionLabel.setText(rule.getTrigger().getClass().getSimpleName()
                     + " → " + rule.getAction().getClass().getSimpleName());
 
+            // Display specific info if the trigger uses a counter
             if (rule.getTrigger() instanceof CounterIntegerComparisonTrigger) {
                 CounterIntegerComparisonTrigger trigger = (CounterIntegerComparisonTrigger) rule.getTrigger();
                 if (trigger.getCounter() != null) {
@@ -511,6 +540,7 @@ public class MainPageController implements Initializable {
                 counterInfoLabel.setManaged(false);
             }
 
+            // Update status dot color based on activity state
             if (rule.isActive() && !rule.isSleeping()) {
                 statusDot.setFill(Color.LIMEGREEN);
             } else {
@@ -519,8 +549,6 @@ public class MainPageController implements Initializable {
 
             toggleActiveBtn.setText(rule.isActive() ? "Deactivate" : "Activate");
             setGraphic(root);
-
-
         }
     }
 
@@ -543,7 +571,7 @@ public class MainPageController implements Initializable {
     private void handleEditRule(Rule rule) {
         this.ruleBeingEdited = rule;
         RuleNameTextArea.setText(rule.getName());
-        // AGGIUNTO: riflette lo stato corrente della regola nella checkbox
+        // Populate checkbox with the rule's current repeatability status
         repeatableCheckBox.setSelected(rule.isRepeatable());
         createRuleButton.setText("Save Changes");
     }
