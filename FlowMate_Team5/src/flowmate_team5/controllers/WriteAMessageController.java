@@ -15,8 +15,14 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+/**
+ * Controller responsible for configuring a MessageAction.
+ * It allows the user to write a custom message that will be
+ * displayed when the action is executed.
+ */
 public class WriteAMessageController implements Initializable {
 
+    // UI elements defined in the FXML file
     @FXML
     private TextArea Title;
 
@@ -29,24 +35,38 @@ public class WriteAMessageController implements Initializable {
     @FXML
     private TextField inputText;
 
-    // Action instance received from the main controller (NOT created here)
+    // Action instance injected from the main controller
     private MessageAction action;
 
+    /**
+     * Injects the MessageAction to be configured.
+     *
+     * @param action the MessageAction instance
+     */
     public void setAction(MessageAction action) {
         this.action = action;
     }
 
+    /**
+     * Initializes the controller after the FXML has been loaded.
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Initialization logic
     }
 
+    /**
+     * Called when the confirm button is pressed.
+     * Validates user input and configures the MessageAction.
+     *
+     * @param event the action event triggered by the button
+     */
     @FXML
     public void confirmButtonPushed(ActionEvent event) {
 
+        // Retrieve the message written by the user
         String writtenMessage = inputText.getText();
 
-        // Validate message content
+        // Validate message content using MessageAction utility method
         if (!MessageAction.isValidMessage(writtenMessage)) {
             Alert emptyAlert = new Alert(AlertType.ERROR);
             emptyAlert.setTitle("ATTENTION!");
@@ -57,11 +77,11 @@ public class WriteAMessageController implements Initializable {
             return;
         }
 
-        // ONLY configuration logic
+        // Configure the action
         action.setName("MessageAction1");
         action.setMessageToShow(writtenMessage);
 
-        // Close window
+        // Close the window after confirmation
         Stage stage = (Stage) ((Node) event.getSource())
                 .getScene()
                 .getWindow();
