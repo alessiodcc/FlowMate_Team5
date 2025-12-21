@@ -1,8 +1,10 @@
 package flowmate_team5.controllers;
 
+import flowmate_team5.core.RuleEngine;
 import flowmate_team5.models.Action;
 import flowmate_team5.models.Counter;
 import javafx.fxml.FXML;
+import flowmate_team5.models.actions.AddCounterToCounterAction;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
@@ -20,8 +22,11 @@ public class SelectTwoCountersController {
 
     @FXML
     public void initialize() {
-        // TODO: Populate lists with counters from RuleEngine
-        // Example: sourceComboBox.getItems().addAll(RuleEngine.getInstance().getCounters());
+        // Check if RuleEngine has data, then load it into the dropdowns
+        if (RuleEngine.getInstance().getCounters() != null) {
+            sourceComboBox.getItems().addAll(RuleEngine.getInstance().getCounters());
+            targetComboBox.getItems().addAll(RuleEngine.getInstance().getCounters());
+        }
     }
 
     public void setAction(Action action) {
@@ -40,9 +45,14 @@ public class SelectTwoCountersController {
             return;
         }
 
-        // TODO: Cast currentAction to AddCounterToCounterAction and save data
-        // if (currentAction instanceof AddCounterToCounterAction) { ... }
+        if (currentAction instanceof AddCounterToCounterAction) {
+            AddCounterToCounterAction specificAction = (AddCounterToCounterAction) currentAction;
 
+            specificAction.setSourceCounter(source);
+            specificAction.setTargetCounter(target);
+
+            System.out.println("Success: Saved " + source.getName() + " -> " + target.getName());
+        }
         Stage stage = (Stage) sourceComboBox.getScene().getWindow();
         stage.close();
     }

@@ -7,27 +7,21 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="300.0" prefWidth="400.0"
-            xmlns="http://javafx.com/javafx/19"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="flowmate_team5.controllers.SelectTwoCountersController">
-
+<AnchorPane prefHeight="300.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="flowmate_team5.controllers.SelectTwoCountersController">
     <children>
-        <VBox alignment="CENTER" layoutX="50.0" layoutY="25.0" prefHeight="250.0" prefWidth="300.0" spacing="15.0">
+        <VBox alignment="CENTER_LEFT" layoutX="50.0" layoutY="30.0" prefHeight="240.0" prefWidth="200.0" spacing="15.0">
             <children>
-                <Label text="Add Counter to Counter">
-                    <font>
-                        <Font name="System Bold" size="16.0" />
-                    </font>
+                <Label text="Configure Counters">
+                    <font><Font name="System Bold" size="16.0" /></font>
                 </Label>
 
-                <Label text="1. Select Source Counter (Value to Add):" />
-                <ComboBox fx:id="sourceComboBox" prefWidth="250.0" promptText="Choose source..." />
+                <Label text="Select Source Counter:" />
+                <ComboBox fx:id="sourceComboBox" prefWidth="200.0" promptText="Choose Source..." />
 
-                <Label text="2. Select Target Counter (To be updated):" />
-                <ComboBox fx:id="targetComboBox" prefWidth="250.0" promptText="Choose target..." />
+                <Label text="Select Target Counter:" />
+                <ComboBox fx:id="targetComboBox" prefWidth="200.0" promptText="Choose Target..." />
 
-                <Button mnemonicParsing="false" onAction="#handleConfirm" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Confirm Action" />
+                <Label /> <Button mnemonicParsing="false" onAction="#handleConfirm" prefWidth="200.0" style="-fx-background-color: #2196F3; -fx-text-fill: white;" text="Confirm &amp; Save" />
             </children>
         </VBox>
     </children>

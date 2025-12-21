@@ -77,8 +77,7 @@ public class RuleFactoryManager {
         );
         actionFactories.put(
                 "Add Counter to Counter Action",
-                new flowmate_team5.factory.creators.AddCounterToCounterActionCreator()
-        );
+                new flowmate_team5.factory.creators.AddCounterToCounterActionCreator());
 
     }
 

@@ -74,7 +74,6 @@ public class MainPageController implements Initializable {
                 "Move File Action",
                 "Delete File Action",
                 "External Program Action",
-                "Counter Operation Action",
                 "Add Counter to Counter Action"
         ));
 
@@ -338,7 +337,7 @@ public class MainPageController implements Initializable {
                 case "Add Counter to Counter Action" -> openNewWindowWithInjection(
                         "/flowmate_team5/view/SelectTwoCountersView.fxml",
                         "Configure Counters",
-                        (flowmate_team5.controllers.SelectTwoCountersController c) ->
+                        (SelectTwoCountersController c) ->
                                 c.setAction(chosenAction)
                 );
             }

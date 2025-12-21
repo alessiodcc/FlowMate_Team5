@@ -6,48 +6,41 @@ import java.io.Serializable;
 
 public class AddCounterToCounterAction implements Action, Serializable {
 
+    private final String name = "Add Counter to Counter Action";
     private Counter sourceCounter;
     private Counter targetCounter;
 
-    public AddCounterToCounterAction() {
-        // Empty constructor for Factory
+    // --- Getters & Setters ---
+    public void setSourceCounter(Counter source) {
+        this.sourceCounter = source;
+    }
+    public Counter getSourceCounter() {
+        return sourceCounter;
     }
 
-    // --- Setters ---
-    public void setSourceCounter(Counter sourceCounter) {
-        this.sourceCounter = sourceCounter;
+    public void setTargetCounter(Counter target) {
+        this.targetCounter = target;
+    }
+    public Counter getTargetCounter() {
+        return targetCounter;
     }
 
-    public void setTargetCounter(Counter targetCounter) {
-        this.targetCounter = targetCounter;
-    }
-
-    // --- Getters ---
-    public Counter getSourceCounter() { return sourceCounter; }
-    public Counter getTargetCounter() { return targetCounter; }
-
+    // --- Execution Logic ---
     @Override
     public void execute() {
-        if (sourceCounter == null || targetCounter == null) {
-            System.err.println("[AddCounterAction] Error: Counters are not configured.");
-            return;
+        if (sourceCounter != null && targetCounter != null) {
+            // Logic: Target Value = Target Value + Source Value
+            int newValue = targetCounter.getValue() + sourceCounter.getValue();
+            targetCounter.setValue(newValue);
+
+            System.out.println("Executed: Added " + sourceCounter.getValue()
+                    + " to " + targetCounter.getName()
+                    + " (Total: " + newValue + ")");
         }
-
-        int amountToAdd = sourceCounter.getValue();
-        int oldTargetValue = targetCounter.getValue();
-
-        // LOGIC: Since Counter.java doesn't have an 'add' method, we calculate manually
-        int newTargetValue = oldTargetValue + amountToAdd;
-        targetCounter.setValue(newTargetValue);
-
-        System.out.println("[AddCounterAction] Added " + amountToAdd +
-                " from '" + sourceCounter.getName() +
-                "' to '" + targetCounter.getName() + "'");
-        System.out.println(" -> New Value of " + targetCounter.getName() + ": " + newTargetValue);
     }
 
     @Override
     public String toString() {
-        return "Add Counter Action";
+        return name;
     }
 }
