@@ -13,39 +13,44 @@ import static org.junit.jupiter.api.Assertions.*;
 class DayOfTheMonthTriggerTest {
 
     /**
-     * Verifica che il trigger sia attivo nel giorno corrente.
+     * Verifies that the trigger is active on the current day of the month.
      */
     @Test
     void testIsTriggered_Today() {
         int today = LocalDate.now().getDayOfMonth();
 
+        // Create the trigger using the Factory Method
         CreatorTrigger creator = new DayOfTheMonthTriggerCreator();
         Trigger trigger = creator.createTrigger();
 
+        // Configure the trigger with today's day
         DayOfTheMonthTrigger dayTrigger = (DayOfTheMonthTrigger) trigger;
         dayTrigger.setDayOfMonth(today);
 
+        // The trigger should be active today
         assertTrue(trigger.isTriggered(),
                 "Trigger should be active on the configured day of the month");
     }
 
     /**
-     * Verifica che il trigger NON sia attivo in un giorno diverso.
+     * Verifies that the trigger is NOT active on a different day.
      */
     @Test
     void testIsNotTriggered_DifferentDay() {
         int today = LocalDate.now().getDayOfMonth();
         int differentDay = (today == 1) ? 2 : 1;
 
+        // Create and configure the trigger with a different day
         DayOfTheMonthTrigger trigger = new DayOfTheMonthTrigger();
         trigger.setDayOfMonth(differentDay);
 
+        // The trigger should not be active today
         assertFalse(trigger.isTriggered(),
                 "Trigger should not be active on a different day");
     }
 
     /**
-     * Verifica che valori non validi lancino eccezione.
+     * Verifies that invalid low values throw an exception.
      */
     @Test
     void testSetDayOfMonth_InvalidLowValue() {
@@ -55,6 +60,9 @@ class DayOfTheMonthTriggerTest {
                 () -> trigger.setDayOfMonth(0));
     }
 
+    /**
+     * Verifies that invalid high values throw an exception.
+     */
     @Test
     void testSetDayOfMonth_InvalidHighValue() {
         DayOfTheMonthTrigger trigger = new DayOfTheMonthTrigger();
@@ -64,7 +72,7 @@ class DayOfTheMonthTriggerTest {
     }
 
     /**
-     * Verifica che il trigger implementi correttamente l'interfaccia Trigger.
+     * Verifies that the trigger correctly implements the Trigger interface.
      */
     @Test
     void testImplementsTriggerInterface() {
