@@ -2,20 +2,33 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="250.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="flowmate_team5.controllers.FileExistsController">
+<?import javafx.scene.image.Image?>
+<AnchorPane prefHeight="550.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="flowmate_team5.controllers.FileExistsController">
     <children>
-        <VBox alignment="CENTER_LEFT" layoutX="25.0" layoutY="25.0" spacing="15.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
+        <VBox alignment="TOP_LEFT" layoutX="25.0" layoutY="25.0" spacing="12.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
             <children>
+                <StackPane prefHeight="100.0" prefWidth="450.0" style="-fx-background-color: #ecf0f1; -fx-background-radius: 10;">
+                    <children>
+                        <ImageView fitHeight="120" preserveRatio="true">
+                            <image><Image url="@../images/AppLogo.png"/></image>
+                        </ImageView>
+                    </children>
+                </StackPane>
+
                 <Label text="Configure File Trigger" textFill="#2c3e50">
                     <font>
-                        <Font name="System Bold" size="18.0" />
+                        <Font name="System Bold" size="20.0" />
                     </font>
                 </Label>
 
@@ -30,12 +43,34 @@
                 <Label text="Enter File Name to Check (e.g. report.pdf):" />
                 <TextField fx:id="fileNameField" promptText="example.txt" />
 
+                <Separator prefHeight="20.0" prefWidth="450.0" />
+
+                <Label text="Select activation time for this trigger:" textFill="#34495e">
+                    <font>
+                        <Font name="System Bold Italic" size="14.0" />
+                    </font>
+                </Label>
+
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <children>
+                        <Label prefWidth="65.0" style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#34495e;" text="Hour:" />
+                        <ComboBox fx:id="HourDropDownMenu" prefHeight="38.0" prefWidth="143.0" promptText="Hour" stylesheets="@../MaterialComboBox.css" />
+                    </children>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <children>
+                        <Label prefWidth="65.0" style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#34495e;" text="Minutes:" />
+                        <ComboBox fx:id="MinutesDropDownMenu" prefHeight="38.0" prefWidth="143.0" promptText="Minutes" stylesheets="@../MaterialComboBox.css" />
+                    </children>
+                </HBox>
+
                 <HBox alignment="CENTER_RIGHT" spacing="10.0">
                     <children>
-                        <Button mnemonicParsing="false" onAction="#handleConfirm" style="-fx-background-color: #2980b9; -fx-text-fill: white; -fx-font-weight: bold;" text="Set Trigger" />
+                        <Button mnemonicParsing="false" onAction="#handleConfirm" prefHeight="35.0" prefWidth="110.0" style="-fx-background-color: #2980b9; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="Set Trigger" />
                     </children>
                     <VBox.margin>
-                        <Insets top="10.0" />
+                        <Insets top="15.0" />
                     </VBox.margin>
                 </HBox>
             </children>

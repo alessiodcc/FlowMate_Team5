@@ -9,12 +9,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.ObjectInputStream;
 import java.lang.ClassNotFoundException;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 
 public class FileExistsTrigger implements Trigger, Serializable {
 
     private String fileName;
-    // Path is not Serializable, so it is marked transient
+    // Path and LocalTime are not Serializable, so they are marked transient
     transient private Path folderPath;
+    transient private LocalTime timeToTrigger;
     private boolean hasTriggered = false;
 
     public FileExistsTrigger() {
@@ -37,18 +40,28 @@ public class FileExistsTrigger implements Trigger, Serializable {
         return fileName;
     }
 
+    public LocalTime getTimeToTrigger() {
+        return timeToTrigger;
+    }
+
+    public void setTimeToTrigger(LocalTime timeToTrigger) {
+        // Truncate input to minutes to ignore seconds during comparison
+        this.timeToTrigger = timeToTrigger.truncatedTo(ChronoUnit.MINUTES);
+    }
+
     private void writeObject(ObjectOutputStream oos) throws IOException {
         oos.defaultWriteObject();
-        // Manually serialize the Path as a String
-        oos.writeObject(folderPath.toString());
+        oos.writeObject(folderPath != null ? folderPath.toString() : null);
+        oos.writeObject(timeToTrigger != null ? timeToTrigger.toString() : null);
     }
 
     @Override
     public boolean isTriggered() {
 
         Path filePath = folderPath.resolve(fileName);
+        LocalTime currentTime = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
 
-        if (Files.exists(filePath)) {
+        if (Files.exists(filePath) && currentTime.equals(timeToTrigger)) {
             // Check flag to ensure trigger fires only once when the file is detected
             if (!hasTriggered) {
                 hasTriggered = true;
@@ -68,18 +81,15 @@ public class FileExistsTrigger implements Trigger, Serializable {
     }
     /**
      * Called AUTOMATICALLY during LoadFromFile.
-     * Reconstructs the 'folderPath' because Path objects are not saved by default.
+     * Reconstructs the 'folderPath' and the time because they are not saved by default.
      */
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        // 1. Load the data
         in.defaultReadObject();
 
-        // 2. Read the path string we saved manually
         String pathString = (String) in.readObject();
+        if (pathString != null) this.folderPath = Path.of(pathString);
 
-        // 3. Convert it back to a Path object
-        if (pathString != null) {
-            this.folderPath = Path.of(pathString);
-        }
+        String timeString = (String) in.readObject();
+        if (timeString != null) this.timeToTrigger = LocalTime.parse(timeString);
     }
 }
