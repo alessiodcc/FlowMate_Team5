@@ -14,12 +14,8 @@ import flowmate_team5.models.Counter;
 import flowmate_team5.models.Trigger;
 import flowmate_team5.models.actions.*;
 import flowmate_team5.models.actions.AddCounterToCounterAction;
-import flowmate_team5.models.triggers.DayOfTheMonthTrigger;
-import flowmate_team5.models.triggers.FileExistsTrigger;
-import flowmate_team5.models.triggers.TemporalTrigger;
+import flowmate_team5.models.triggers.*;
 import flowmate_team5.models.actions.ExternalProgramAction;
-import flowmate_team5.models.triggers.ExternalProgramTrigger;
-import flowmate_team5.models.triggers.CounterIntegerComparisonTrigger;
 
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -164,6 +160,12 @@ public class MainPageController implements Initializable {
                         "/flowmate_team5/view/FileExistsView.fxml",
                         "Configure File Trigger",
                         (FileExistsController c) -> c.setTrigger((FileExistsTrigger) chosenTrigger)
+                );
+                case "Day of Week Trigger" -> openNewWindowWithInjection(
+                        "/flowmate_team5/view/SelectDayOfWeekView.fxml", // Check if inside /view/ folder!
+                        "Select Days",
+                        (flowmate_team5.controllers.SelectDayOfWeekController c) ->
+                                c.setTrigger((DayOfTheWeekTrigger) chosenTrigger)
                 );
                 case "Day of Month Trigger" -> openNewWindowWithInjection(
                         "/flowmate_team5/view/SelectDayOfTheMonthView.fxml",
