@@ -24,13 +24,14 @@ public class RuleFactoryManager {
                 "File Exists Trigger",
                 new FileExistsTriggerCreator()
         );
-
+        triggerFactories.put(
+                "Day of Week Trigger",
+                new flowmate_team5.factory.creators.DayOfTheWeekTriggerCreator()
+        );
         triggerFactories.put(
                 "Day of Month Trigger",
                 new DayOfTheMonthTriggerCreator()
         );
-
-        // [YOUR TASK] Registering DayOfTheYear and ExternalProgram Triggers
         triggerFactories.put(
                 "Day of Year Trigger",
                 new DayOfTheYearTriggerCreator()
@@ -41,8 +42,9 @@ public class RuleFactoryManager {
         );
         triggerFactories.put(
                 "Counter Comparison Trigger",
-                new flowmate_team5.factory.creators.CounterIntegerComparisonTriggerCreator()
+                new CounterIntegerComparisonTriggerCreator()
         );
+
         // -------- REGISTER ACTIONS --------
         actionFactories.put(
                 "Message Action",
