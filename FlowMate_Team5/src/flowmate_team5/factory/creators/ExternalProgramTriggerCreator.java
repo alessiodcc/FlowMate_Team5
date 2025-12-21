@@ -4,21 +4,16 @@ import flowmate_team5.factory.CreatorTrigger;
 import flowmate_team5.models.Trigger;
 import flowmate_team5.models.triggers.ExternalProgramTrigger;
 
+/* Factory class responsible for instantiating External Program Triggers. */
 public class ExternalProgramTriggerCreator implements CreatorTrigger {
 
-    /**
-     * This method is required by the CreatorTrigger interface.
-     * Creates a trigger with an empty command to satisfy the compiler.
-     */
+    /* Implements the factory interface to create a default trigger instance. */
     @Override
     public Trigger createTrigger() {
         return new ExternalProgramTrigger("");
     }
 
-    /**
-     * Specific method to create the trigger with a command.
-     * Used by the Controller.
-     */
+    /* Creates a specific trigger instance with the provided command line argument. */
     public Trigger createTrigger(String commandLine) {
         return new ExternalProgramTrigger(commandLine);
     }
