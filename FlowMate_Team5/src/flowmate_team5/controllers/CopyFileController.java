@@ -15,6 +15,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+/* Controller responsible for the Copy File Action UI logic. */
 public class CopyFileController implements Initializable {
 
     @FXML
@@ -23,20 +24,23 @@ public class CopyFileController implements Initializable {
     @FXML
     private TextField destDirField;
 
-    // Action instance received from the main controller (NOT created here)
+    // The action instance to be configured
     private CopyFileAction action;
 
+    /* Injects the CopyFileAction instance to be modified. */
     public void setAction(CopyFileAction action) {
         this.action = action;
     }
 
+    /* Initializes the view and sets fields to read-only. */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Set fields to read-only to ensure valid paths are selected via buttons
+        // Prevent manual editing to ensure valid paths
         sourcePathField.setEditable(false);
         destDirField.setEditable(false);
     }
 
+    /* Opens a FileChooser to select the source file. */
     @FXML
     public void browseSource() {
         FileChooser fc = new FileChooser();
@@ -47,6 +51,7 @@ public class CopyFileController implements Initializable {
         }
     }
 
+    /* Opens a DirectoryChooser to select the destination folder. */
     @FXML
     public void browseDest() {
         DirectoryChooser dc = new DirectoryChooser();
@@ -57,10 +62,11 @@ public class CopyFileController implements Initializable {
         }
     }
 
+    /* Validates input and saves the configuration to the action. */
     @FXML
     public void confirm(ActionEvent event) {
 
-        // Validate that both fields are populated
+        // Check if both paths are selected
         if (sourcePathField.getText().isEmpty() ||
                 destDirField.getText().isEmpty()) {
 
@@ -73,11 +79,11 @@ public class CopyFileController implements Initializable {
             return;
         }
 
-        // ONLY configuration logic
+        // Save the paths to the action model
         action.setSourcePath(sourcePathField.getText());
         action.setDestinationDir(destDirField.getText());
 
-        // Close the window
+        // Close the current window
         Stage stage = (Stage) ((Node) event.getSource())
                 .getScene()
                 .getWindow();
