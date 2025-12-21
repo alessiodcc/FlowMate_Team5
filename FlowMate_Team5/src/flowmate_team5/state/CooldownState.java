@@ -2,6 +2,7 @@ package flowmate_team5.state;
 
 import flowmate_team5.core.Rule;
 
+
 public class CooldownState implements RuleState {
 
     private final long wakeUpTime;
@@ -11,11 +12,10 @@ public class CooldownState implements RuleState {
     }
 
     @Override
-    public void check(Rule context) {
-        // Check if sleep period is over
+    public void check(Rule rule) {
         if (System.currentTimeMillis() >= wakeUpTime) {
-            context.setState(new ActiveState());
-            System.out.println("[Rule State]: Cooldown finished. Rule is active again.");
+            rule.setState(new ActiveState());
+            System.out.println("[Rule State]: Cooldown finished → Active");
         }
     }
 
