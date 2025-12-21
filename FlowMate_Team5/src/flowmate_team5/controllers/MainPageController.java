@@ -15,6 +15,7 @@ import flowmate_team5.models.Trigger;
 import flowmate_team5.models.actions.*;
 import flowmate_team5.models.triggers.*;
 import flowmate_team5.models.actions.ExternalProgramAction;
+import flowmate_team5.models.actions.AddCounterToCounterAction;
 
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -332,6 +333,12 @@ public class MainPageController implements Initializable {
                         "Run Program",
                         (SelectExternalProgramActionController c) ->
                                 c.setAction((ExternalProgramAction) chosenAction)
+                );
+                case "Add Counter to Counter Action" -> openNewWindowWithInjection(
+                        "/flowmate_team5/view/SelectTwoCountersView.fxml",
+                        "Configure Counters",
+                        (flowmate_team5.controllers.SelectTwoCountersController c) ->
+                                c.setAction((AddCounterToCounterAction) chosenAction)
                 );
             }
 
