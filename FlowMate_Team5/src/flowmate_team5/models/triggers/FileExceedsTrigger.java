@@ -54,6 +54,8 @@ public class FileExceedsTrigger implements Trigger, Serializable {
         oos.defaultWriteObject();
         // Manually save the path as a string
         oos.writeObject(folderPath != null ? folderPath.toString() : null);
+        // Manually save the time as a string
+        oos.writeObject(timeToTrigger != null ? timeToTrigger.toString() : null);
     }
 
     @Serial
@@ -63,6 +65,11 @@ public class FileExceedsTrigger implements Trigger, Serializable {
         String pathString = (String) in.readObject();
         if (pathString != null) {
             this.folderPath = Path.of(pathString);
+        }
+        // Manually read the string and rebuild the localTime
+        String timeString = (String) in.readObject();
+        if (timeString != null) {
+            this.timeToTrigger = LocalTime.parse(timeString);
         }
     }
 
