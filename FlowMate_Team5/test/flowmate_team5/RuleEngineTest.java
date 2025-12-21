@@ -34,7 +34,7 @@ public class RuleEngineTest {
         // Obtain RuleEngine singleton in test mode
         engineForTesting = RuleEngine.getInstance(false);
 
-        // IMPORTANT: reset singleton state between tests
+        //Reset singleton state between tests
         engineForTesting.getRules().clear();
 
         Trigger trigger = new MockTrigger();

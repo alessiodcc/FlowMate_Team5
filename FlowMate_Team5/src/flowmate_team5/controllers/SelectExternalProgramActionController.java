@@ -10,18 +10,17 @@ import javafx.stage.Stage;
 
 import java.io.File;
 
+/* Controller responsible for configuring the External Program Action. */
 public class SelectExternalProgramActionController {
 
     @FXML private TextField programField;
     @FXML private TextField argsField;
     @FXML private TextField workDirField;
 
+    // The action instance currently being configured
     private ExternalProgramAction pendingAction;
 
-    /**
-     * Initializes the controller with the specific action instance.
-     * Pre-fills fields if the action was already configured.
-     */
+    /* Injects the action instance and pre-fills the UI if data exists. */
     public void setAction(ExternalProgramAction action) {
         this.pendingAction = action;
 
@@ -33,6 +32,7 @@ public class SelectExternalProgramActionController {
         }
     }
 
+    /* Opens a FileChooser to allow the user to select an executable file. */
     @FXML
     private void handleBrowseProgram() {
         FileChooser fileChooser = new FileChooser();
@@ -50,6 +50,7 @@ public class SelectExternalProgramActionController {
         }
     }
 
+    /* Opens a DirectoryChooser to select the working directory for the process. */
     @FXML
     private void handleBrowseDir() {
         DirectoryChooser dirChooser = new DirectoryChooser();
@@ -63,12 +64,14 @@ public class SelectExternalProgramActionController {
         }
     }
 
+    /* Validates input, constructs the command, and saves it to the action model. */
     @FXML
     private void handleConfirm() {
         String program = programField.getText();
         String args = argsField.getText();
         String workDir = workDirField.getText();
 
+        // Ensure a program has been selected
         if (program == null || program.trim().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Validation Error");
@@ -77,13 +80,13 @@ public class SelectExternalProgramActionController {
             return;
         }
 
-        // Combine program and arguments
+        // Construct the full command string by appending arguments if present
         String fullCommand = program;
         if (args != null && !args.trim().isEmpty()) {
             fullCommand += " " + args.trim();
         }
 
-        // Save configuration to the action model
+        // Update the action model with the new configuration
         if (pendingAction != null) {
             pendingAction.setCommandLine(fullCommand);
             if (workDir != null && !workDir.trim().isEmpty()) {
@@ -91,7 +94,7 @@ public class SelectExternalProgramActionController {
             }
         }
 
-        // Close the window
+        // Close the configuration window
         Stage stage = (Stage) programField.getScene().getWindow();
         stage.close();
     }

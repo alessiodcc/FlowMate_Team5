@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -48,25 +51,27 @@ public class FileExistsTriggerTest {
 
     /**
      This method tests if the method isTriggered
-     can correctly identify a file within a specific directory,
+     can correctly identify a file within a specific directory at the right time,
      returning true when it exists.
      */
     @Test
     void isTriggeredTestShouldBeTrue(){
         fett.setFileName(TEST_FILE_NAME);
         fett.setFolderPath(tempDir);
+        fett.setTimeToTrigger(LocalTime.now().truncatedTo(ChronoUnit.MINUTES));
         assertTrue(fett.isTriggered());
     }
 
     /**
      This method tests if the method isTriggered
-     can correctly identify a file within a specific directory,
+     can correctly identify a file within a specific directory at the right time,
      returning false when it doesn't exist.
      */
     @Test
     void isTriggeredTestShouldBeFalse(){
         fett.setFileName("NON-EXISTENT-FILE-NAME");
         fett.setFolderPath(tempDir);
+        fett.setTimeToTrigger(LocalTime.now().truncatedTo(ChronoUnit.HOURS).plusHours(2));
         assertFalse(fett.isTriggered());
     }
 }

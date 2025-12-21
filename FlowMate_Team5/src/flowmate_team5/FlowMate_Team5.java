@@ -25,7 +25,7 @@ public class FlowMate_Team5 extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("view/MainPage.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("view/MainPageView.fxml"));
         Scene scene = new Scene(root);
         java.io.InputStream logoStream = getClass().getResourceAsStream("images/AppIcon.png");
         primaryStage.getIcons().add(new Image(logoStream));

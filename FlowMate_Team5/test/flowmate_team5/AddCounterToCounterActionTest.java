@@ -16,13 +16,13 @@ class AddCounterToCounterActionTest {
 
     @BeforeEach
     void setUp() {
-        // Initialize logic via Factory
+        // 1. Initialize logic via Factory
         AddCounterToCounterActionCreator creator = new AddCounterToCounterActionCreator();
         action = (AddCounterToCounterAction) creator.createAction();
 
-        // Initialize dummy counters using real Counter class
-        source = new Counter("Source", 10);
-        target = new Counter("Target", 50);
+        // 2. Initialize dummy counters using Sara's real Counter class
+        source = new Counter("Source", 10.0);
+        target = new Counter("Target", 50.0);
 
         // 3. Configure action
         action.setSourceCounter(source);
@@ -31,25 +31,24 @@ class AddCounterToCounterActionTest {
 
     @Test
     void testExecuteAddsValueCorrectly() {
-        // Arrange: Target is 50, Source is 10
+        // Arrange: Target is 50.0, Source is 10.0
         // Act: Execute action
         action.execute();
 
-        // Assert: Target should be 60 (50 + 10)
-        assertEquals(60, target.getValue(), "Target value should increase by source value");
+        // Assert: Target should be 60.0 (50 + 10)
+        assertEquals(60.0, target.getValue(), 0.001, "Target value should increase by source value");
 
-        // Source
-        assertEquals(10, source.getValue(), "Source value should not change");
+        // Source should remain unchanged
+        assertEquals(10.0, source.getValue(), 0.001, "Source value should not change");
     }
 
     @Test
     void testExecuteWithZeroValue() {
         // If source is 0, target should not change
-        source.setValue(0);
+        source.setValue(0.0);
         action.execute();
-        assertEquals(50, target.getValue(), "Adding 0 should change nothing");
+        assertEquals(50.0, target.getValue(), 0.001, "Adding 0 should change nothing");
     }
-
     @Test
     void testConfigurationStoresCountersCorrectly() {
         assertEquals(source, action.getSourceCounter(), "Source counter should be retrieved correctly");

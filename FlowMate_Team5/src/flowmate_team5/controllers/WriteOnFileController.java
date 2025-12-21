@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+/* Controller responsible for handling the configuration of the Write to File Action. */
 public class WriteOnFileController implements Initializable {
 
     @FXML
@@ -22,23 +23,27 @@ public class WriteOnFileController implements Initializable {
     @FXML
     private TextField contentTextField;
 
+    // The action instance to be configured
     private TextAction action;
 
+    /* Injects the specific TextAction instance to be modified. */
     public void setAction(TextAction action) {
         this.action = action;
     }
 
+    /* Initializes the view and sets specific properties for UI components. */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Set path field to read-only to ensure valid file selection
+        // Set path field to read-only to ensure valid file selection via the browse button
         pathTextField.setEditable(false);
     }
 
+    /* Opens a FileChooser dialog to select the target text file. */
     @FXML
     public void browseButtonPushed() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Text File");
-        // Filter to allow only text files
+        // Limit selection to text files to ensure compatibility
         fileChooser.getExtensionFilters()
                 .add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
 
@@ -50,12 +55,13 @@ public class WriteOnFileController implements Initializable {
         }
     }
 
+    /* Validates inputs, saves the configuration, and closes the window. */
     @FXML
     public void confirmButtonPushed(ActionEvent event) {
         String path = pathTextField.getText();
         String content = contentTextField.getText();
 
-        // Validate that both fields are populated
+        // Ensure that both the file path and the content message are provided
         if (path == null || path.isEmpty() || content == null || content.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("Missing Information");
@@ -64,11 +70,11 @@ public class WriteOnFileController implements Initializable {
             return;
         }
 
-        // Configure the action object
+        // Update the action model with the user's input
         action.setFilePath(path);
         action.setMessage(content);
 
-        // Close the window
+        // Close the configuration window
         ((Stage) ((Node) event.getSource())
                 .getScene()
                 .getWindow())

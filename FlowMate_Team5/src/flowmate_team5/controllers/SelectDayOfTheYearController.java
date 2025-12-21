@@ -8,18 +8,20 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.Month;
+import java.time.Year;
 import java.util.ResourceBundle;
 
 /**
  * Controller responsible for handling the UI that allows the user
- * to select a specific day of the year (month + day).
+ * to select a specific date (year + month + day).
  */
 public class SelectDayOfTheYearController implements Initializable {
 
     @FXML private ComboBox<Month> monthComboBox;
-
     @FXML private Spinner<Integer> daySpinner;
+    @FXML private Spinner<Integer> yearSpinner;
 
     private DayOfTheYearTrigger trigger;
 
@@ -37,14 +39,23 @@ public class SelectDayOfTheYearController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
+        // Months
         monthComboBox.setItems(
                 FXCollections.observableArrayList(Month.values())
         );
 
-        SpinnerValueFactory<Integer> dayFactory =
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 31, 1);
+        // Day (1–31, validated logically later)
+        daySpinner.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 31, 1)
+        );
 
-        daySpinner.setValueFactory(dayFactory);
+        // Year (current year ± 20, very reasonable UX)
+        int currentYear = LocalDate.now().getYear();
+        yearSpinner.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                        currentYear, currentYear + 10, currentYear
+                )
+        );
     }
 
     /**
@@ -60,16 +71,21 @@ public class SelectDayOfTheYearController implements Initializable {
 
         Month selectedMonth = monthComboBox.getValue();
         Integer day = daySpinner.getValue();
+        Integer year = yearSpinner.getValue();
 
-        // Validate that both month and day are selected
-        if (selectedMonth == null || day == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Validation Error");
-            alert.setContentText("Please select both month and day.");
-            alert.showAndWait();
+        if (selectedMonth == null || day == null || year == null) {
+            showError("Please select year, month and day.");
             return;
         }
 
+        // Basic validation (avoid Feb 30 etc.)
+        if (!isValidDate(year, selectedMonth, day)) {
+            showError("The selected date is not valid.");
+            return;
+        }
+
+        // Apply configuration to trigger
+        trigger.setYear(year);
         trigger.setMonth(selectedMonth);
         trigger.setDayOfMonth(day);
 
@@ -78,17 +94,30 @@ public class SelectDayOfTheYearController implements Initializable {
 
     /**
      * Called when the user presses the cancel button.
-     * Simply closes the window without applying changes.
      */
     @FXML
     private void cancelButtonPushed() {
-        Stage stage = (Stage) monthComboBox.getScene().getWindow();
-        stage.close();
+        closeWindow();
     }
 
-    /**
-     * Utility method to close the current window.
-     */
+
+    private boolean isValidDate(int year, Month month, int day) {
+        try {
+            java.time.LocalDate.of(year, month, day);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Validation Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
     private void closeWindow() {
         Stage stage = (Stage) monthComboBox.getScene().getWindow();
         stage.close();

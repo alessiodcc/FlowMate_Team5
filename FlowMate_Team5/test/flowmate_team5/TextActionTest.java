@@ -10,24 +10,49 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the TextAction class.
+ * These tests verify correct file writing, appending behaviour,
+ * file creation, and error handling.
+ */
 class TextActionTest {
 
+    // Temporary file used for testing file output
     private Path tempFile;
-    private final java.io.ByteArrayOutputStream errContent = new java.io.ByteArrayOutputStream();
+
+    // Used to capture System.err output for error handling tests
+    private final java.io.ByteArrayOutputStream errContent =
+            new java.io.ByteArrayOutputStream();
+
     private final java.io.PrintStream originalErr = System.err;
 
+    /**
+     * Creates a temporary file and redirects System.err
+     * before each test.
+     */
     @BeforeEach
     void setUp() throws IOException {
         tempFile = Files.createTempFile("TextActionTest", ".txt");
         System.setErr(new java.io.PrintStream(errContent));
     }
 
+    /**
+     * Restores System.err and deletes temporary files
+     * after each test.
+     */
     @AfterEach
     void tearDown() throws IOException {
         System.setErr(originalErr);
         Files.deleteIfExists(tempFile);
     }
 
+    /**
+     * Utility method to create and configure a TextAction.
+     *
+     * @param path the file path
+     * @param message the message to write
+     * @return a configured TextAction instance
+     */
     private TextAction createConfiguredAction(String path, String message) {
         TextAction action = new TextAction();
         action.setFilePath(path);
@@ -35,6 +60,10 @@ class TextActionTest {
         return action;
     }
 
+    /**
+     * Verifies that execute() successfully writes a message to the file
+     * and does not produce any error output.
+     */
     @Test
     void testExecute_SuccessfulWrite() throws IOException {
         String message = "Hello world";
@@ -51,6 +80,10 @@ class TextActionTest {
         assertTrue(errContent.toString().isEmpty());
     }
 
+    /**
+     * Verifies that multiple executions append content
+     * instead of overwriting the file.
+     */
     @Test
     void testExecute_AppendContent() throws IOException {
         createConfiguredAction(tempFile.toString(), "Line 1").execute();
@@ -65,6 +98,10 @@ class TextActionTest {
         assertEquals(expected, content);
     }
 
+    /**
+     * Verifies that the file is automatically created
+     * if it does not already exist.
+     */
     @Test
     void testExecute_FileCreationIfNotExist() throws IOException {
         Path newFile = Files.createTempDirectory("textAction")
@@ -88,6 +125,10 @@ class TextActionTest {
         Files.deleteIfExists(newFile.getParent());
     }
 
+    /**
+     * Verifies that I/O errors are handled gracefully
+     * and do not cause the application to crash.
+     */
     @Test
     void testExecute_IOErrorHandling() {
         String invalidPath = System.getProperty("java.io.tmpdir");
@@ -98,10 +139,16 @@ class TextActionTest {
         );
 
         assertDoesNotThrow(action::execute);
-        assertFalse(errContent.toString().isEmpty(),
-                "Stack trace should be printed to System.err");
+        assertFalse(
+                errContent.toString().isEmpty(),
+                "Stack trace should be printed to System.err"
+        );
     }
 
+    /**
+     * Verifies that TextAction correctly implements
+     * the Action interface.
+     */
     @Test
     void testImplementsActionInterface() {
         TextAction action = new TextAction();

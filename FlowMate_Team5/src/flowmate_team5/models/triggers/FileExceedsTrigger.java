@@ -5,6 +5,8 @@ import flowmate_team5.models.Trigger;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 
 public class FileExceedsTrigger implements Trigger, Serializable {
 
@@ -12,6 +14,7 @@ public class FileExceedsTrigger implements Trigger, Serializable {
     // Transient because Path is not Serializable (we save it manually)
     transient private Path folderPath;
     private long maxSizeInBytes;
+    transient private LocalTime timeToTrigger;
 
     private boolean hasTriggered = false;
 
@@ -31,6 +34,14 @@ public class FileExceedsTrigger implements Trigger, Serializable {
     public void setMaxSizeInBytes(long size) {
         this.maxSizeInBytes = size;
     }
+    public LocalTime getTimeToTrigger() {
+        return timeToTrigger;
+    }
+
+    public void setTimeToTrigger(LocalTime timeToTrigger) {
+        // Truncate input to minutes to ignore seconds during comparison
+        this.timeToTrigger = timeToTrigger.truncatedTo(ChronoUnit.MINUTES);
+    }
 
     // --- Getters ---
     public Path getFolderPath() { return folderPath; }
@@ -43,6 +54,8 @@ public class FileExceedsTrigger implements Trigger, Serializable {
         oos.defaultWriteObject();
         // Manually save the path as a string
         oos.writeObject(folderPath != null ? folderPath.toString() : null);
+        // Manually save the time as a string
+        oos.writeObject(timeToTrigger != null ? timeToTrigger.toString() : null);
     }
 
     @Serial
@@ -53,6 +66,11 @@ public class FileExceedsTrigger implements Trigger, Serializable {
         if (pathString != null) {
             this.folderPath = Path.of(pathString);
         }
+        // Manually read the string and rebuild the localTime
+        String timeString = (String) in.readObject();
+        if (timeString != null) {
+            this.timeToTrigger = LocalTime.parse(timeString);
+        }
     }
 
     @Override
@@ -60,8 +78,9 @@ public class FileExceedsTrigger implements Trigger, Serializable {
         if (folderPath == null || fileName == null) return false;
 
         Path fullPath = folderPath.resolve(fileName);
+        LocalTime currentTime = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
 
-        if (Files.exists(fullPath)) {
+        if (Files.exists(fullPath) && currentTime.equals(timeToTrigger)) {
             try {
                 long currentSize = Files.size(fullPath);
 
