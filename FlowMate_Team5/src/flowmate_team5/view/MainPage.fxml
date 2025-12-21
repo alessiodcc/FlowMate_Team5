@@ -71,7 +71,7 @@
             <!-- REPEAT OPTIONS -->
             <VBox spacing="10" alignment="CENTER">
 
-                <CheckBox fx:id="repeatCheckBox"
+                <CheckBox fx:id="repeatableCheckBox"
                           text="Repeat rule"
                           styleClass="section-label"/>
 
