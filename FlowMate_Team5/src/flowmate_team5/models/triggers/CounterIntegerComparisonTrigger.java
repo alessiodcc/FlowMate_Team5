@@ -48,6 +48,8 @@ public class CounterIntegerComparisonTrigger implements Trigger, Serializable {
      */
     @Override
     public boolean isTriggered() {
+        System.out.println("DEBUG: Trigger [" + counter.getName() + "] valore attuale: "
+                + counter.getValue() + " confronto: " + comparator + " " + intValue);
         switch (comparator) {
             case("<"):
                 return (counter.getValue() < intValue);

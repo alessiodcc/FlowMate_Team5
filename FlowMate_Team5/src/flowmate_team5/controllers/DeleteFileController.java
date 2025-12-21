@@ -39,6 +39,10 @@ public class DeleteFileController implements Initializable {
         confirmButton.setDisable(false);
     }
 
+    /**
+     * When the browse button is pushed, a file chooser is opened
+     * that allows the user to select the file he wants to delete.
+     */
     @FXML
     private void browseFilePushed(ActionEvent event) {
 
@@ -53,6 +57,11 @@ public class DeleteFileController implements Initializable {
         }
     }
 
+    /**
+     * When the confirm button is pushed, this method checks if
+     * the user effectively selected a file to delete. If he did,
+     * the file path is saved.
+     */
     @FXML
     private void confirmButtonPushed(ActionEvent event) {
 

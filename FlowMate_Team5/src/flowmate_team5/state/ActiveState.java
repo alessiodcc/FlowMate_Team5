@@ -6,27 +6,25 @@ public class ActiveState implements RuleState {
 
     @Override
     public void check(Rule context) {
-        // Evaluate trigger
+
         if (context.getTrigger() != null && context.getTrigger().isTriggered()) {
 
-            // Execute action
-            if (context.getAction() != null) {
-                context.getAction().execute();
-                System.out.println("[Rule Fired]: " + context.getName());
+            context.execute();
+            System.out.println("[Rule Fired]: " + context.getName());
+
+            long sleepDuration = context.getSleepDurationMillis();
+
+            if (context.isRepeatable()) {
+
+                if (sleepDuration > 0) {
+                    long wakeUpTime = System.currentTimeMillis() + sleepDuration;
+                    context.setState(new CooldownState(wakeUpTime));
+                }
+
+            } else {
+                context.setState(new InactiveState());
             }
 
-            // Handle transition based on sleep duration configuration
-            long sleepDuration = context.getSleepDurationMillis();
-            if (sleepDuration > 0) {
-                // Transition to Cooldown
-                long wakeUpTime = System.currentTimeMillis() + sleepDuration;
-                context.setState(new CooldownState(wakeUpTime));
-                System.out.println("[Rule State]: Transitioning to Cooldown.");
-            } else {
-                // One-shot rule: transition to Inactive
-                context.setState(new InactiveState());
-                System.out.println("[Rule State]: One-shot rule deactivated.");
-            }
         }
     }
 

@@ -33,7 +33,7 @@ public class SelectDayOfTheMonthController {
             alert.setTitle("Error");
             alert.setHeaderText("Missing Information / Incorrect Information");
             alert.setContentText(
-                    "In order to go on, you must insert in the apposit text area a day of the month"
+                    "In order to go on, you must insert in the apposit text area" + "\n" +  "a day of the month"
             );
             alert.showAndWait();
         }

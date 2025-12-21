@@ -42,7 +42,7 @@ public class RuleFactoryManager {
         );
         triggerFactories.put(
                 "Counter Comparison Trigger",
-                new flowmate_team5.factory.creators.CounterIntegerComparisonTriggerCreator()
+                new CounterIntegerComparisonTriggerCreator()
         );
 
         // -------- REGISTER ACTIONS --------

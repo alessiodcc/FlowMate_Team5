@@ -43,12 +43,14 @@ public class MainPageController implements Initializable {
     @FXML private ListView<Rule> RuleList;
     @FXML private AnchorPane sidebar;
     @FXML private ListView<Counter> CounterListView;
+    @FXML private Button createRuleButton;
 
     private RuleEngine ruleEngine;
     private ObservableList<Rule> ruleObservableList;
     private Trigger chosenTrigger;
     private Action chosenAction;
     private final ObservableList<Counter> availableCounters = FXCollections.observableArrayList();
+    private Rule ruleBeingEdited;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -76,17 +78,44 @@ public class MainPageController implements Initializable {
 
         ruleEngine = RuleEngine.getInstance();
         ruleEngine.getRules().addAll(RulePersistenceManager.loadRules());
-        ruleObservableList = FXCollections.observableArrayList(ruleEngine.getRules());
 
+        ruleObservableList = FXCollections.observableArrayList(ruleEngine.getRules());
         RuleList.setItems(ruleObservableList);
         RuleList.setCellFactory(lv -> new RuleCell());
 
+        // ================= COUNTERS =================
         CounterListView.setItems(availableCounters);
 
+        CounterListView.setCellFactory(lv -> {
+
+            ListCell<Counter> cell = new ListCell<>() {
+                @Override
+                protected void updateItem(Counter item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? null : item.toString());
+                }
+            };
+
+            // Tooltip VISIBILE
+            cell.setTooltip(new Tooltip("Double click to edit this counter"));
+
+            // Double click FUNZIONANTE
+            cell.setOnMouseClicked(event -> {
+                if (!cell.isEmpty() && event.getClickCount() == 2) {
+                    CounterListView.getSelectionModel().select(cell.getItem());
+                    handleEditCounter();
+                }
+            });
+
+            return cell;
+        });
+
+        // ================= SIDEBAR =================
         sidebar.setVisible(false);
         sidebar.setManaged(false);
         sidebar.setTranslateX(-320);
     }
+
 
     @FXML
     private void handleCreateCounter() {
@@ -105,11 +134,51 @@ public class MainPageController implements Initializable {
             Counter c = controller.getCounter();
             if (c != null) {
                 availableCounters.add(c);
+                ruleEngine.addCounter(c);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    private void handleEditCounter() {
+
+        Counter selected =
+                CounterListView.getSelectionModel().getSelectedItem();
+
+        if (selected == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No Counter Selected");
+            alert.setContentText("Please select a counter to edit.");
+            alert.showAndWait();
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/flowmate_team5/view/EditACounterView.fxml")
+            );
+            Parent root = loader.load();
+
+            EditACounterController controller = loader.getController();
+            controller.setCounter(selected); // 🔑 injection
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Edit Counter");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            // Forza refresh grafico
+            CounterListView.refresh();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     @FXML
     private void toggleSidebar() {
@@ -139,18 +208,41 @@ public class MainPageController implements Initializable {
             return;
         }
 
-        String triggerType = triggerDropDownMenu.getValue();
-        String actionType = actionDropDownMenu.getValue();
+        if (ruleBeingEdited != null) {
+            chosenTrigger = ruleBeingEdited.getTrigger();
+            chosenAction = ruleBeingEdited.getAction();
+        } else {
+            String triggerType = triggerDropDownMenu.getValue();
+            String actionType = actionDropDownMenu.getValue();
 
-        if (triggerType == null || actionType == null) {
-            showAlert("Error", "Select both trigger and action", Alert.AlertType.ERROR);
-            return;
+            if (triggerType == null || actionType == null) {
+                showAlert("Error", "Select both trigger and action", Alert.AlertType.ERROR);
+                return;
+            }
+
+            try {
+                chosenTrigger = RuleFactoryManager.createTrigger(triggerType);
+                chosenAction = RuleFactoryManager.createAction(actionType);
+            } catch (IllegalArgumentException e) {
+                showAlert("Factory Error", e.getMessage(), Alert.AlertType.ERROR);
+                return;
+            }
         }
 
         try {
-            chosenTrigger = RuleFactoryManager.createTrigger(triggerType);
+            String tType = "";
+            if (ruleBeingEdited != null) {
+                if (chosenTrigger instanceof TemporalTrigger) tType = "Temporal Trigger";
+                else if (chosenTrigger instanceof FileExistsTrigger) tType = "File Exists Trigger";
+                else if (chosenTrigger instanceof DayOfTheMonthTrigger) tType = "Day of Month Trigger";
+                else if (chosenTrigger instanceof DayOfTheYearTrigger) tType = "Day of Year Trigger";
+                else if (chosenTrigger instanceof ExternalProgramTrigger) tType = "External Program Trigger";
+                else if (chosenTrigger instanceof CounterIntegerComparisonTrigger) tType = "Counter Comparison Trigger";
+            } else {
+                tType = triggerDropDownMenu.getValue();
+            }
 
-            switch (triggerType) {
+            switch (tType) {
                 case "Temporal Trigger" -> openNewWindowWithInjection(
                         "/flowmate_team5/view/SelectTime.fxml",
                         "Select Time",
@@ -172,6 +264,11 @@ public class MainPageController implements Initializable {
                         "Configure Day of the Month Trigger",
                         (SelectDayOfTheMonthController c) -> c.setTrigger((DayOfTheMonthTrigger) chosenTrigger)
                 );
+                case "Day of Year Trigger" -> openNewWindowWithInjection(
+                        "/flowmate_team5/view/SelectDayOfAYear.fxml",
+                        "Configure Day of the Year Trigger",
+                        (SelectDayOfTheYearController c) -> c.setTrigger((DayOfTheYearTrigger) chosenTrigger)
+                );
                 case "External Program Trigger" -> openNewWindowWithInjection(
                         "/flowmate_team5/view/SelectExternalProgramTriggerView.fxml",
                         "Configure Program Trigger",
@@ -186,9 +283,20 @@ public class MainPageController implements Initializable {
                 );
             }
 
-            chosenAction = RuleFactoryManager.createAction(actionType);
+            String aType = "";
+            if (ruleBeingEdited != null) {
+                if (chosenAction instanceof MessageAction) aType = "Message Action";
+                else if (chosenAction instanceof PlayAudioAction) aType = "Play Audio Action";
+                else if (chosenAction instanceof TextAction) aType = "Write to Text File Action";
+                else if (chosenAction instanceof CopyFileAction) aType = "Copy File Action";
+                else if (chosenAction instanceof MoveFileAction) aType = "Move File Action";
+                else if (chosenAction instanceof DeleteFileAction) aType = "Delete File Action";
+                else if (chosenAction instanceof ExternalProgramAction) aType = "External Program Action";
+            } else {
+                aType = actionDropDownMenu.getValue();
+            }
 
-            switch (actionType) {
+            switch (aType) {
                 case "Message Action" -> openNewWindowWithInjection(
                         "/flowmate_team5/view/WriteAMessage.fxml",
                         "Message",
@@ -225,24 +333,24 @@ public class MainPageController implements Initializable {
                         (SelectExternalProgramActionController c) ->
                                 c.setAction((ExternalProgramAction) chosenAction)
                 );
-                case "Add Counter to Counter Action" -> openNewWindowWithInjection(
-                        "/flowmate_team5/view/SelectTwoCountersView.fxml",
-                        "Configure Counters",
-                        (flowmate_team5.controllers.SelectTwoCountersController c) ->
-                                c.setAction((AddCounterToCounterAction) chosenAction)
-                );
             }
 
-            Rule rule = new Rule(ruleName, chosenTrigger, chosenAction);
-            ruleEngine.addRule(rule);
-            ruleObservableList.add(rule);
+            if (ruleBeingEdited != null) {
+                ruleBeingEdited.setName(ruleName);
+                ruleBeingEdited = null;
+            } else {
+                Rule rule = new Rule(ruleName, chosenTrigger, chosenAction);
+                ruleEngine.addRule(rule);
+                ruleObservableList.add(rule);
+            }
+
+            RulePersistenceManager.saveRules(ruleEngine.getRules());
 
             RuleNameTextArea.clear();
             triggerDropDownMenu.getSelectionModel().clearSelection();
             actionDropDownMenu.getSelectionModel().clearSelection();
+            RuleList.refresh();
 
-        } catch (IllegalArgumentException e) {
-            showAlert("Factory Error", e.getMessage(), Alert.AlertType.ERROR);
         } catch (Exception e) {
             e.printStackTrace();
             showAlert("Error", "An unexpected error occurred", Alert.AlertType.ERROR);
@@ -275,6 +383,7 @@ public class MainPageController implements Initializable {
         private final Button toggleActiveBtn = new Button();
         private final Button sleepBtn = new Button("Sleep");
         private final Button deleteBtn = new Button("Delete");
+        private final Button editBtn = new Button("Edit");
         private final VBox detailsBox = new VBox(6);
         private boolean expanded = false;
 
@@ -286,8 +395,9 @@ public class MainPageController implements Initializable {
             HBox header = new HBox(8, statusDot, nameLabel);
             header.setAlignment(Pos.CENTER_LEFT);
             deleteBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
+            editBtn.setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white;");
 
-            detailsBox.getChildren().addAll(descriptionLabel, counterInfoLabel, toggleActiveBtn, sleepBtn, deleteBtn);
+            detailsBox.getChildren().addAll(descriptionLabel, counterInfoLabel, toggleActiveBtn, sleepBtn, deleteBtn, editBtn);
             detailsBox.setVisible(false);
             detailsBox.setManaged(false);
             root.getChildren().addAll(header, detailsBox);
@@ -328,6 +438,13 @@ public class MainPageController implements Initializable {
                 if (controller != null && controller.getSleepDuration() != null) {
                     r.setSleepDuration(controller.getSleepDuration().toMillis());
                     updateItem(r, false);
+                }
+                e.consume();
+            });
+            editBtn.setOnAction(e -> {
+                Rule r = getItem();
+                if (r != null) {
+                    handleEditRule(r);
                 }
                 e.consume();
             });
@@ -380,6 +497,13 @@ public class MainPageController implements Initializable {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private void handleEditRule(Rule rule) {
+        this.ruleBeingEdited = rule;
+        RuleNameTextArea.setText(rule.getName());
+        createRuleButton.setText("Save Changes");
+        confirmButtonPushed();
     }
 
     private void showAlert(String title, String msg, Alert.AlertType type) {

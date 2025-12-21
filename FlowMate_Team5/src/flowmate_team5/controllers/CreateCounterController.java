@@ -29,6 +29,11 @@ public class CreateCounterController {
         return counter;
     }
 
+    /**
+     * When the confirm button is pushed, this method checks
+     * if the user typed all the necessary fields.
+     * If he did, a new counter is created.
+     */
     @FXML
     void confirmButtonPushed(ActionEvent event) {
         if(counterNameField.getText().isEmpty() || !initialValueField.getText().matches("\\d+") || initialValueField.getText().isEmpty()) {

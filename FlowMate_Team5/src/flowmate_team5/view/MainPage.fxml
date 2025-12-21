@@ -68,6 +68,31 @@
                 <TextField fx:id="RuleNameTextArea" maxWidth="300" promptText="Enter rule name"/>
             </VBox>
 
+            <!-- REPEAT OPTIONS -->
+            <VBox spacing="10" alignment="CENTER">
+
+                <CheckBox fx:id="repeatCheckBox"
+                          text="Repeat rule"
+                          styleClass="section-label"/>
+
+                <HBox fx:id="sleepConfigBox"
+                      spacing="10"
+                      alignment="CENTER"
+                      visible="false"
+                      managed="false">
+
+                    <Label text="Repeat every"/>
+
+                    <TextField fx:id="sleepValueField"
+                               prefWidth="80"
+                               promptText="Value"/>
+
+                    <ComboBox fx:id="sleepUnitComboBox"
+                              prefWidth="120"/>
+                </HBox>
+
+            </VBox>
+
             <VBox spacing="12" alignment="CENTER">
                 <Button fx:id="newCounterButton"
                         text="+ New Counter"
