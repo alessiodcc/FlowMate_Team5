@@ -2,6 +2,7 @@ package flowmate_team5.controllers;
 
 import flowmate_team5.models.triggers.FileExceedsTrigger;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -10,6 +11,7 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 import java.nio.file.Path;
+import java.time.LocalTime;
 import java.util.ResourceBundle;
 
 /**
@@ -34,6 +36,12 @@ public class FileExceedsTriggerController implements Initializable {
     // Trigger instance to be configured by this controller
     private FileExceedsTrigger trigger;
 
+    @FXML
+    private ComboBox<Integer> HourDropDownMenu;
+
+    @FXML
+    private ComboBox<Integer> MinutesDropDownMenu;
+
     /**
      * Injects the FileExceedsTrigger from the MainPageController.
      * This controller does not create the trigger, it only configures it.
@@ -49,7 +57,9 @@ public class FileExceedsTriggerController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        // Initialize dropdowns for hours (0-23) and minutes (0-59)
+        populateTimeComboBoxes(HourDropDownMenu, 0, 23);
+        populateTimeComboBoxes(MinutesDropDownMenu, 0, 59);
         // Configure the size spinner
         SpinnerValueFactory<Integer> sizeFactory =
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 1_000_000, 1);
@@ -62,6 +72,22 @@ public class FileExceedsTriggerController implements Initializable {
 
         // Set default unit to MB
         unitComboBox.getSelectionModel().select("MB");
+    }
+    private void populateTimeComboBoxes(ComboBox<Integer> comboBox, int min, int max) {
+        ObservableList<Integer> options = FXCollections.observableArrayList();
+        for (int i = min; i <= max; i++) {
+            options.add(i);
+        }
+        comboBox.setItems(options);
+
+        // Set cell factory to format numbers with leading zeros (e.g., 05)
+        comboBox.setCellFactory(lv -> new javafx.scene.control.ListCell<>() {
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item == null || empty ? null : String.format("%02d", item));
+            }
+        });
     }
 
     /**
@@ -89,6 +115,22 @@ public class FileExceedsTriggerController implements Initializable {
      */
     @FXML
     private void confirmButtonPushed() {
+        Integer selectedHour = HourDropDownMenu.getValue();
+        Integer selectedMinutes = MinutesDropDownMenu.getValue();
+
+        // Validate input
+        if (selectedHour == null || selectedMinutes == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ATTENTION!");
+            alert.setHeaderText(
+                    "To continue, it's necessary that you select both the hour and the minute!"
+            );
+            alert.showAndWait();
+            return;
+        }
+
+        LocalTime selectedTime = LocalTime.of(selectedHour, selectedMinutes);
+        trigger.setTimeToTrigger(selectedTime);
 
         // Ensure the trigger has been injected before use
         if (trigger == null) {

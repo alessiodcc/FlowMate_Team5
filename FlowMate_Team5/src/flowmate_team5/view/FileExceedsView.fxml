@@ -2,66 +2,102 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
+<?import javafx.scene.image.Image?>
 <AnchorPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="flowmate_team5.controllers.FileExceedsTriggerController"
-            prefWidth="420" prefHeight="360">
+            prefWidth="450" prefHeight="650"> <children>
+    <VBox spacing="15"
+          AnchorPane.topAnchor="0"
+          AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0"
+          AnchorPane.rightAnchor="0"
+          alignment="TOP_CENTER">
 
-    <children>
-        <VBox spacing="18"
-              AnchorPane.topAnchor="0"
-              AnchorPane.bottomAnchor="0"
-              AnchorPane.leftAnchor="0"
-              AnchorPane.rightAnchor="0"
-              alignment="TOP_CENTER">
+        <padding>
+            <Insets top="20" left="30" right="30" bottom="20"/>
+        </padding>
 
-            <padding>
-                <Insets top="25" left="30" right="30" bottom="25"/>
-            </padding>
+        <StackPane prefHeight="100.0" prefWidth="390.0" style="-fx-background-color: #ecf0f1; -fx-background-radius: 10;">
+            <children>
+                <ImageView fitHeight="120" preserveRatio="true">
+                    <image><Image url="@../images/AppLogo.png"/></image>
+                </ImageView>
+                <Label text="File Size Monitor" textFill="#7f8c8d">
+                    <font>
+                        <Font name="System Italic" size="12.0" />
+                    </font>
+                    <StackPane.margin>
+                        <Insets top="70.0" />
+                    </StackPane.margin>
+                </Label>
+            </children>
+        </StackPane>
 
-            <Label text="File Size Trigger"
-                   style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+        <Label text="File Size Trigger"
+               style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
 
-            <!-- Folder -->
-            <VBox spacing="6">
-                <Label text="Folder"/>
-                <HBox spacing="8">
-                    <TextField fx:id="folderField"
-                               editable="false"
-                               prefWidth="280"/>
-                    <Button text="Browse"
-                            onAction="#handleBrowseFolder"/>
-                </HBox>
-            </VBox>
+        <VBox spacing="6" alignment="CENTER_LEFT">
+            <Label text="Folder" style="-fx-font-weight: bold;"/>
+            <HBox spacing="8">
+                <TextField fx:id="folderField"
+                           editable="false"
+                           prefWidth="280"/>
+                <Button text="Browse"
+                        onAction="#handleBrowseFolder"/>
+            </HBox>
+        </VBox>
 
-            <!-- File name -->
-            <VBox spacing="6">
-                <Label text="File name"/>
-                <TextField fx:id="fileNameField"
-                           promptText="example.log"/>
-            </VBox>
+        <VBox spacing="6" alignment="CENTER_LEFT">
+            <Label text="File name" style="-fx-font-weight: bold;"/>
+            <TextField fx:id="fileNameField"
+                       promptText="example.log"/>
+        </VBox>
 
-            <!-- Max size -->
-            <VBox spacing="6">
-                <Label text="Maximum size"/>
-                <HBox spacing="10">
-                    <Spinner fx:id="sizeSpinner"
-                             prefWidth="150"/>
-                    <ComboBox fx:id="unitComboBox"
-                              prefWidth="120"/>
-                </HBox>
-            </VBox>
+        <VBox spacing="6" alignment="CENTER_LEFT">
+            <Label text="Maximum size" style="-fx-font-weight: bold;"/>
+            <HBox spacing="10">
+                <Spinner fx:id="sizeSpinner"
+                         prefWidth="140"/>
+                <ComboBox fx:id="unitComboBox"
+                          prefWidth="110"/>
+            </HBox>
+        </VBox>
 
-            <Button text="Confirm"
-                    onAction="#confirmButtonPushed"
-                    style="-fx-background-color: #3498db;
+        <Separator />
+
+        <VBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Select Activation Time" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <children>
+                    <Label prefWidth="70.0" style="-fx-font-size:14px; -fx-text-fill:#34495e;" text="Hour:" />
+                    <ComboBox fx:id="HourDropDownMenu" prefHeight="35.0" prefWidth="120.0" promptText="Hour" />
+                </children>
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <children>
+                    <Label prefWidth="70.0" style="-fx-font-size:14px; -fx-text-fill:#34495e;" text="Minutes:" />
+                    <ComboBox fx:id="MinutesDropDownMenu" prefHeight="35.0" prefWidth="120.0" promptText="Minutes" />
+                </children>
+            </HBox>
+        </VBox>
+
+        <Region VBox.vgrow="ALWAYS" />
+
+        <Button text="Confirm"
+                onAction="#confirmButtonPushed"
+                style="-fx-background-color: #3498db;
                            -fx-text-fill: white;
                            -fx-font-weight: bold;
-                           -fx-padding: 10 30;
+                           -fx-padding: 10 40;
                            -fx-background-radius: 8;"/>
 
-        </VBox>
-    </children>
+    </VBox>
+</children>
 </AnchorPane>
