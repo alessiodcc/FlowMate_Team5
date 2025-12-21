@@ -3,6 +3,7 @@ package flowmate_team5.factory;
 import flowmate_team5.factory.creators.*;
 import flowmate_team5.models.Action;
 import flowmate_team5.models.Trigger;
+import flowmate_team5.models.triggers.FileExceedsTrigger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +25,11 @@ public class RuleFactoryManager {
                 "File Exists Trigger",
                 new FileExistsTriggerCreator()
         );
+        triggerFactories.put(
+                "File Exceeds Trigger",
+                new FileExceedsTriggerCreator()
+        );
+
         triggerFactories.put(
                 "Day of Week Trigger",
                 new flowmate_team5.factory.creators.DayOfTheWeekTriggerCreator()
