@@ -1,57 +1,83 @@
 package flowmate_team5.models.triggers;
 
 import flowmate_team5.models.Trigger;
+
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Month;
 
-/* Trigger implementation that activates when the current date matches a configured month and day. */
-public class DayOfTheYearTrigger implements Trigger {
+/**
+ * Trigger implementation that activates when the current date
+ * matches a configured year, month, and day.
+ */
+public class DayOfTheYearTrigger implements Trigger, Serializable {
 
+    private int year;
     private Month month;
     private int dayOfMonth;
 
-    /* Initializes the trigger with a specific month and day. */
-    public DayOfTheYearTrigger(Month month, int dayOfMonth) {
+    /**
+     * Full constructor.
+     */
+    public DayOfTheYearTrigger(int year, Month month, int dayOfMonth) {
+        this.year = year;
         this.month = month;
         this.dayOfMonth = dayOfMonth;
     }
 
-    /* Default constructor initializing the trigger to January 1st. */
+    /**
+     * Default constructor required for Factory Method.
+     * Initializes the trigger to January 1st of the current year.
+     */
     public DayOfTheYearTrigger() {
-        this(Month.JANUARY, 1);
+        LocalDate today = LocalDate.now();
+        this.year = today.getYear();
+        this.month = Month.JANUARY;
+        this.dayOfMonth = 1;
     }
 
-    /* Sets the target month for the trigger. */
+    // ---------------- SETTERS ----------------
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
     public void setMonth(Month month) {
         this.month = month;
     }
 
-    /* Retrieves the currently configured month. */
-    public Month getMonth() {
-        return month;
-    }
-
-    /* Sets the target day of the month. */
     public void setDayOfMonth(int dayOfMonth) {
         this.dayOfMonth = dayOfMonth;
     }
 
-    /* Retrieves the currently configured day of the month. */
+    // ---------------- GETTERS ----------------
+
+    public int getYear() {
+        return year;
+    }
+
+    public Month getMonth() {
+        return month;
+    }
+
     public int getDayOfMonth() {
         return dayOfMonth;
     }
 
-    /* Checks if the current system date matches the configured month and day. */
+    // ---------------- TRIGGER LOGIC ----------------
+
     @Override
     public boolean isTriggered() {
         LocalDate today = LocalDate.now();
-        // Return true only if both month and day match the current date
-        return today.getMonth() == this.month && today.getDayOfMonth() == this.dayOfMonth;
+        return today.getYear() == year
+                && today.getMonth() == month
+                && today.getDayOfMonth() == dayOfMonth;
     }
 
-    /* Returns a string representation of the trigger state. */
+    // ---------------- DEBUG ----------------
+
     @Override
     public String toString() {
-        return "Day Trigger: " + month + " " + dayOfMonth;
+        return "Day Trigger: " + dayOfMonth + " " + month + " " + year;
     }
 }
