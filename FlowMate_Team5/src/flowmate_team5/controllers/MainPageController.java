@@ -120,6 +120,14 @@ public class MainPageController implements Initializable {
         sidebar.setVisible(false);
         sidebar.setManaged(false);
         sidebar.setTranslateX(-320);
+
+        javafx.animation.Timeline autoRefresh = new javafx.animation.Timeline(
+                new javafx.animation.KeyFrame(javafx.util.Duration.seconds(1), e -> {
+                    RuleList.refresh();
+                })
+        );
+        autoRefresh.setCycleCount(javafx.animation.Animation.INDEFINITE);
+        autoRefresh.play();
     }
 
 
@@ -509,13 +517,7 @@ public class MainPageController implements Initializable {
             toggleActiveBtn.setText(rule.isActive() ? "Deactivate" : "Activate");
             setGraphic(root);
 
-            javafx.animation.Timeline autoRefresh = new javafx.animation.Timeline(
-                    new javafx.animation.KeyFrame(javafx.util.Duration.seconds(1), e -> {
-                        RuleList.refresh();
-                    })
-            );
-            autoRefresh.setCycleCount(javafx.animation.Animation.INDEFINITE);
-            autoRefresh.play();
+
         }
     }
 
