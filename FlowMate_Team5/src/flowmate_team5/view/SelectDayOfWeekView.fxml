@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="350.0" prefWidth="300.0"
+            xmlns="http://javafx.com/javafx/19"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="flowmate_team5.controllers.SelectDayOfWeekController">
+    <children>
+        <VBox alignment="CENTER_LEFT" layoutX="50.0" layoutY="20.0" prefHeight="300.0" prefWidth="200.0" spacing="10.0">
+            <children>
+                <Label text="Select Active Days">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Label>
+                <Label text="The rule will only trigger on these days:" textFill="#666666" wrapText="true">
+                    <font>
+                        <Font size="11.0" />
+                    </font>
+                </Label>
+
+                <CheckBox fx:id="cbMonday" mnemonicParsing="false" text="Monday" />
+                <CheckBox fx:id="cbTuesday" mnemonicParsing="false" text="Tuesday" />
+                <CheckBox fx:id="cbWednesday" mnemonicParsing="false" text="Wednesday" />
+                <CheckBox fx:id="cbThursday" mnemonicParsing="false" text="Thursday" />
+                <CheckBox fx:id="cbFriday" mnemonicParsing="false" text="Friday" />
+                <CheckBox fx:id="cbSaturday" mnemonicParsing="false" text="Saturday" />
+                <CheckBox fx:id="cbSunday" mnemonicParsing="false" text="Sunday" />
+
+                <Label />
+
+                <Button mnemonicParsing="false" onAction="#handleConfirm" prefWidth="200.0" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Confirm Selection" />
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
