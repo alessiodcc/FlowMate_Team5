@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="flowmate_team5.controllers.FileExceedsTriggerController"
+            prefWidth="420" prefHeight="360">
+
+    <children>
+        <VBox spacing="18"
+              AnchorPane.topAnchor="0"
+              AnchorPane.bottomAnchor="0"
+              AnchorPane.leftAnchor="0"
+              AnchorPane.rightAnchor="0"
+              alignment="TOP_CENTER">
+
+            <padding>
+                <Insets top="25" left="30" right="30" bottom="25"/>
+            </padding>
+
+            <Label text="File Size Trigger"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+            <!-- Folder -->
+            <VBox spacing="6">
+                <Label text="Folder"/>
+                <HBox spacing="8">
+                    <TextField fx:id="folderField"
+                               editable="false"
+                               prefWidth="280"/>
+                    <Button text="Browse"
+                            onAction="#handleBrowseFolder"/>
+                </HBox>
+            </VBox>
+
+            <!-- File name -->
+            <VBox spacing="6">
+                <Label text="File name"/>
+                <TextField fx:id="fileNameField"
+                           promptText="example.log"/>
+            </VBox>
+
+            <!-- Max size -->
+            <VBox spacing="6">
+                <Label text="Maximum size"/>
+                <HBox spacing="10">
+                    <Spinner fx:id="sizeSpinner"
+                             prefWidth="150"/>
+                    <ComboBox fx:id="unitComboBox"
+                              prefWidth="120"/>
+                </HBox>
+            </VBox>
+
+            <Button text="Confirm"
+                    onAction="#confirmButtonPushed"
+                    style="-fx-background-color: #3498db;
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;
+                           -fx-padding: 10 30;
+                           -fx-background-radius: 8;"/>
+
+        </VBox>
+    </children>
+</AnchorPane>
