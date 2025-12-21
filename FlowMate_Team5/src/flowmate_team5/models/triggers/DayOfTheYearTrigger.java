@@ -6,19 +6,34 @@ import java.time.Month;
 
 /* Trigger implementation that activates when the current date matches a configured month and day. */
 public class DayOfTheYearTrigger implements Trigger {
-
+    private int year;
     private Month month;
     private int dayOfMonth;
 
+
     /* Initializes the trigger with a specific month and day. */
-    public DayOfTheYearTrigger(Month month, int dayOfMonth) {
+    public DayOfTheYearTrigger(int year, Month month, int dayOfMonth) {
+        this.year = year;
         this.month = month;
         this.dayOfMonth = dayOfMonth;
     }
 
     /* Default constructor initializing the trigger to January 1st. */
     public DayOfTheYearTrigger() {
-        this(Month.JANUARY, 1);
+        LocalDate today = LocalDate.now();
+        this.year = today.getYear();
+        this.month = Month.JANUARY;
+        this.dayOfMonth = 1;
+    }
+
+    /* Sets the target year for the trigger. */
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    /* Retrieves the currently configured year. */
+    public int getYear() {
+        return year;
     }
 
     /* Sets the target month for the trigger. */
@@ -45,13 +60,14 @@ public class DayOfTheYearTrigger implements Trigger {
     @Override
     public boolean isTriggered() {
         LocalDate today = LocalDate.now();
-        // Return true only if both month and day match the current date
-        return today.getMonth() == this.month && today.getDayOfMonth() == this.dayOfMonth;
+        return today.getYear() == year
+                && today.getMonth() == month
+                && today.getDayOfMonth() == dayOfMonth;
     }
 
     /* Returns a string representation of the trigger state. */
     @Override
     public String toString() {
-        return "Day Trigger: " + month + " " + dayOfMonth;
+        return "Day Trigger: " + month + " " + dayOfMonth + " " + year;
     }
 }
