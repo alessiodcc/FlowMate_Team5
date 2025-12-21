@@ -40,7 +40,7 @@ public class SelectDayOfTheWeekController {
         if (cbSunday.isSelected()) selectedDays.add(DayOfWeek.SUNDAY);
 
         if (selectedDays.isEmpty()) {
-            showAlert("No Days Selected", "Please select at least one day.");
+            showAlert();
             return;
         }
 
@@ -52,10 +52,10 @@ public class SelectDayOfTheWeekController {
         stage.close();
     }
 
-    private void showAlert(String title, String content) {
+    private void showAlert() {
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setContentText(content);
+        alert.setTitle("No Days Selected");
+        alert.setContentText("Please select at least one day.");
         alert.showAndWait();
     }
 }
