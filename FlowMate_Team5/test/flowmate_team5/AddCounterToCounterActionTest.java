@@ -21,8 +21,8 @@ class AddCounterToCounterActionTest {
         action = (AddCounterToCounterAction) creator.createAction();
 
         // 2. Initialize dummy counters using Sara's real Counter class
-        source = new Counter("Source", 10.0);
-        target = new Counter("Target", 50.0);
+        source = new Counter("Source", 10);
+        target = new Counter("Target", 50);
 
         // 3. Configure action
         action.setSourceCounter(source);
@@ -45,7 +45,7 @@ class AddCounterToCounterActionTest {
     @Test
     void testExecuteWithZeroValue() {
         // If source is 0, target should not change
-        source.setValue(0.0);
+        source.setValue(0);
         action.execute();
         assertEquals(50.0, target.getValue(), 0.001, "Adding 0 should change nothing");
     }
