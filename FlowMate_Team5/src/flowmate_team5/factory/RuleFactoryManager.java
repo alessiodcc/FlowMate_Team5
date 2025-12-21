@@ -75,7 +75,10 @@ public class RuleFactoryManager {
                 "External Program Action",
                 new ExternalProgramActionCreator()
         );
-
+        actionFactories.put(
+                "Add Counter to Counter Action",
+                new flowmate_team5.factory.creators.AddCounterToCounterActionCreator()
+        );
 
     }
 

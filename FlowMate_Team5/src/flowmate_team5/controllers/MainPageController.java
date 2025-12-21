@@ -14,6 +14,7 @@ import flowmate_team5.models.Counter;
 import flowmate_team5.models.Trigger;
 import flowmate_team5.models.actions.*;
 import flowmate_team5.models.triggers.*;
+import flowmate_team5.controllers.SelectTwoCountersController;
 import flowmate_team5.models.actions.ExternalProgramAction;
 import flowmate_team5.models.actions.AddCounterToCounterAction;
 
@@ -338,7 +339,7 @@ public class MainPageController implements Initializable {
                         "/flowmate_team5/view/SelectTwoCountersView.fxml",
                         "Configure Counters",
                         (flowmate_team5.controllers.SelectTwoCountersController c) ->
-                                c.setAction((AddCounterToCounterAction) chosenAction)
+                                c.setAction(chosenAction)
                 );
             }
 
