@@ -10,7 +10,7 @@
 <AnchorPane prefHeight="350.0" prefWidth="300.0"
             xmlns="http://javafx.com/javafx/19"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="flowmate_team5.controllers.SelectDayOfWeekController">
+            fx:controller="flowmate_team5.controllers.SelectDayOfTheWeekController">
     <children>
         <VBox alignment="CENTER_LEFT" layoutX="50.0" layoutY="20.0" prefHeight="300.0" prefWidth="200.0" spacing="10.0">
             <children>

@@ -28,7 +28,6 @@ public class CompareCounterIntegerController implements Initializable {
     }
 
     @Override
-    @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Setup Operators
         operatorComboBox.setItems(FXCollections.observableArrayList(

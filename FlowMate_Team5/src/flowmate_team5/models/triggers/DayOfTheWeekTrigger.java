@@ -9,10 +9,12 @@ import java.io.Serializable;
 import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DayOfTheWeekTrigger implements Trigger, Serializable {
     private String triggerName = "Day of the Week Trigger";
-    private DayOfWeek dayOfWeek;
+    private List<DayOfWeek> activeDays = new ArrayList<>();
     transient private Clock clock = Clock.systemDefaultZone(); // useful for the tests
 
     public DayOfTheWeekTrigger() {
@@ -22,13 +24,9 @@ public class DayOfTheWeekTrigger implements Trigger, Serializable {
     /**
      *  Getter and Setter Methods
      */
-    public DayOfWeek getDayOfWeek() {
-        return dayOfWeek;
-    }
+    public void setDays(List<DayOfWeek> days) { this.activeDays = days; }
 
-    public void setDayOfWeek(DayOfWeek dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
-    }
+    public List<DayOfWeek> getDays() { return activeDays; }
 
     public Clock getClock() {
         return clock;
@@ -45,7 +43,7 @@ public class DayOfTheWeekTrigger implements Trigger, Serializable {
     @Override
     public boolean isTriggered() {
         DayOfWeek today = LocalDate.now(this.clock).getDayOfWeek();
-        return today.equals(dayOfWeek);
+        return activeDays.contains(today);
     }
 
     /**

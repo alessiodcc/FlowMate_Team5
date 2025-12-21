@@ -13,7 +13,6 @@ import flowmate_team5.models.Action;
 import flowmate_team5.models.Counter;
 import flowmate_team5.models.Trigger;
 import flowmate_team5.models.actions.*;
-import flowmate_team5.models.actions.AddCounterToCounterAction;
 import flowmate_team5.models.triggers.*;
 import flowmate_team5.models.actions.ExternalProgramAction;
 
@@ -58,6 +57,7 @@ public class MainPageController implements Initializable {
         triggerDropDownMenu.setItems(FXCollections.observableArrayList(
                 "Temporal Trigger",
                 "File Exists Trigger",
+                "Day of Week Trigger",
                 "Day of Month Trigger",
                 "Day of Year Trigger",
                 "External Program Trigger",
@@ -254,9 +254,9 @@ public class MainPageController implements Initializable {
                         (FileExistsController c) -> c.setTrigger((FileExistsTrigger) chosenTrigger)
                 );
                 case "Day of Week Trigger" -> openNewWindowWithInjection(
-                        "/flowmate_team5/view/SelectDayOfWeekView.fxml", // Check if inside /view/ folder!
+                        "/flowmate_team5/view/SelectDayOfTheWeekView.fxml", // Use correct FXML name
                         "Select Days",
-                        (flowmate_team5.controllers.SelectDayOfWeekController c) ->
+                        (flowmate_team5.controllers.SelectDayOfTheWeekController c) -> // Use correct Controller name
                                 c.setTrigger((DayOfTheWeekTrigger) chosenTrigger)
                 );
                 case "Day of Month Trigger" -> openNewWindowWithInjection(

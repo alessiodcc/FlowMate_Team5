@@ -1,6 +1,5 @@
 package flowmate_team5.controllers;
 
-// CORRECTED IMPORT TO MATCH YOUR CREATOR
 import flowmate_team5.models.triggers.DayOfTheWeekTrigger;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -11,7 +10,8 @@ import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectDayOfWeekController {
+// Class name now includes "OfThe"
+public class SelectDayOfTheWeekController {
 
     @FXML private CheckBox cbMonday;
     @FXML private CheckBox cbTuesday;
@@ -21,7 +21,6 @@ public class SelectDayOfWeekController {
     @FXML private CheckBox cbSaturday;
     @FXML private CheckBox cbSunday;
 
-    // Corrected Type
     private DayOfTheWeekTrigger trigger;
 
     public void setTrigger(DayOfTheWeekTrigger trigger) {
@@ -46,7 +45,6 @@ public class SelectDayOfWeekController {
         }
 
         if (trigger != null) {
-            // Ensure your DayOfTheWeekTrigger.java has this method!
             trigger.setDays(selectedDays);
         }
 
