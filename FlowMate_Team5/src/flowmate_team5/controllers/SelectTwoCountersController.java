@@ -3,15 +3,16 @@ package flowmate_team5.controllers;
 import flowmate_team5.core.RuleEngine;
 import flowmate_team5.models.Action;
 import flowmate_team5.models.Counter;
-import javafx.fxml.FXML;
 import flowmate_team5.models.actions.AddCounterToCounterAction;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
 
 /**
  * Controller for SelectTwoCountersView.fxml (US21).
- * NOTE: The file name MUST be SelectTwoCountersController.java (Plural).
+ * NOTE: The file name MUST be SelectTwoCountersController.java.
  */
 public class SelectTwoCountersController {
 
@@ -22,10 +23,11 @@ public class SelectTwoCountersController {
 
     @FXML
     public void initialize() {
-        // Check if RuleEngine has data, then load it into the dropdowns
+        // 1. Get real data from RuleEngine
         if (RuleEngine.getInstance().getCounters() != null) {
-            sourceComboBox.getItems().addAll(RuleEngine.getInstance().getCounters());
-            targetComboBox.getItems().addAll(RuleEngine.getInstance().getCounters());
+            var list = FXCollections.observableArrayList(RuleEngine.getInstance().getCounters());
+            sourceComboBox.setItems(list);
+            targetComboBox.setItems(list);
         }
     }
 
@@ -38,6 +40,7 @@ public class SelectTwoCountersController {
         Counter source = sourceComboBox.getValue();
         Counter target = targetComboBox.getValue();
 
+        // 2. Validate input
         if (source == null || target == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText("Please select both counters.");
@@ -45,14 +48,16 @@ public class SelectTwoCountersController {
             return;
         }
 
+        // 3. Save data into the Action object
         if (currentAction instanceof AddCounterToCounterAction) {
             AddCounterToCounterAction specificAction = (AddCounterToCounterAction) currentAction;
-
             specificAction.setSourceCounter(source);
             specificAction.setTargetCounter(target);
 
-            System.out.println("Success: Saved " + source.getName() + " -> " + target.getName());
+            System.out.println("Saved Action: " + source.getName() + " -> " + target.getName());
         }
+
+        // 4. Close window
         Stage stage = (Stage) sourceComboBox.getScene().getWindow();
         stage.close();
     }

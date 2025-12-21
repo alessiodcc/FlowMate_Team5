@@ -11,31 +11,19 @@ public class AddCounterToCounterAction implements Action, Serializable {
     private Counter targetCounter;
 
     // --- Getters & Setters ---
-    public void setSourceCounter(Counter source) {
-        this.sourceCounter = source;
-    }
-    public Counter getSourceCounter() {
-        return sourceCounter;
-    }
+    public void setSourceCounter(Counter source) { this.sourceCounter = source; }
+    public Counter getSourceCounter() { return sourceCounter; }
 
-    public void setTargetCounter(Counter target) {
-        this.targetCounter = target;
-    }
-    public Counter getTargetCounter() {
-        return targetCounter;
-    }
+    public void setTargetCounter(Counter target) { this.targetCounter = target; }
+    public Counter getTargetCounter() { return targetCounter; }
 
     // --- Execution Logic ---
     @Override
     public void execute() {
         if (sourceCounter != null && targetCounter != null) {
-            // Logic: Target Value = Target Value + Source Value
             int newValue = targetCounter.getValue() + sourceCounter.getValue();
             targetCounter.setValue(newValue);
-
-            System.out.println("Executed: Added " + sourceCounter.getValue()
-                    + " to " + targetCounter.getName()
-                    + " (Total: " + newValue + ")");
+            System.out.println("Executed: " + sourceCounter.getName() + " added to " + targetCounter.getName());
         }
     }
 

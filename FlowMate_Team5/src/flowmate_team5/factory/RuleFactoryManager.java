@@ -75,7 +75,9 @@ public class RuleFactoryManager {
                 "External Program Action",
                 new ExternalProgramActionCreator()
         );
-
+        actionFactories.put("Add Counter to Counter Action",
+                new AddCounterToCounterActionCreator()
+        );
 
     }
 

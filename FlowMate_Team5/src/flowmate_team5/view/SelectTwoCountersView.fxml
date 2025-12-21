@@ -15,13 +15,15 @@
                     <font><Font name="System Bold" size="16.0" /></font>
                 </Label>
 
-                <Label text="Select Source Counter:" />
-                <ComboBox fx:id="sourceComboBox" prefWidth="200.0" promptText="Choose Source..." />
+                <Label text="Source Counter:" />
+                <ComboBox fx:id="sourceComboBox" prefWidth="200.0" promptText="Select Source..." />
 
-                <Label text="Select Target Counter:" />
-                <ComboBox fx:id="targetComboBox" prefWidth="200.0" promptText="Choose Target..." />
+                <Label text="Target Counter:" />
+                <ComboBox fx:id="targetComboBox" prefWidth="200.0" promptText="Select Target..." />
 
-                <Label /> <Button mnemonicParsing="false" onAction="#handleConfirm" prefWidth="200.0" style="-fx-background-color: #2196F3; -fx-text-fill: white;" text="Confirm &amp; Save" />
+                <Label />
+
+                <Button mnemonicParsing="false" onAction="#handleConfirm" prefWidth="200.0" style="-fx-background-color: #2196F3; -fx-text-fill: white;" text="Confirm" />
             </children>
         </VBox>
     </children>
