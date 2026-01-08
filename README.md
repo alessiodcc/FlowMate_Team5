@@ -17,7 +17,7 @@ The following document contains all the SCRUM artifacts: from the Product Backlo
 * [Full SCRUM Documentation](https://docs.google.com/document/d/11fPEo5kGQMnFngaNRFzWzMNs8GsHeU3bfTTezjifycs/edit?tab=t.0)
 
 ## Presentations
-* [Pre-Game phase Presentation]("Downloads/Pre-Game%20phase.pdf")
-* [First sprint Presentation]("Downloads/First%20Sprint%20Review.pdf")
-* [Second sprint Presentation]("Downloads/2nd%20Sprint%20Presentation.pdf")
-* [Final Presentation]("Downloads/FlowMate%20Final%20Presentation.pdf")
+* [Pre-Game phase Presentation](Downloads/Pre-Game%20phase.pdf)
+* [First sprint Presentation](Downloads/First%20Sprint%20Review.pdf)
+* [Second sprint Presentation](Downloads/2nd%20Sprint%20Presentation.pdf)
+* [Final Presentation](Downloads/FlowMate%20Final%20Presentation.pdf)
